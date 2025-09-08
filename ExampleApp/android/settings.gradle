@@ -3,6 +3,6 @@ plugins { id("com.facebook.react.settings") }
 include ':react-native-twilio-video-webrtc'
 project(':react-native-twilio-video-webrtc').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-twilio-video-webrtc/android')
 extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
-rootProject.name = 'AwesomeProject'
+rootProject.name = 'TwilioVideoReactNativeExample'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')

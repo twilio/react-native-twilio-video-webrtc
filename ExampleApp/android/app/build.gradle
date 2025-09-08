@@ -81,7 +81,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
    }
-    namespace "com.awesomeproject"
+    namespace "com.twilio_video_react_native_example"
     defaultConfig {
         applicationId "com.twilio_video_react_native_example"
         minSdkVersion rootProject.ext.minSdkVersion
