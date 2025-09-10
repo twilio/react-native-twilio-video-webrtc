@@ -52,7 +52,6 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     private static final int TOGGLE_VIDEO = 4;
     private static final int TOGGLE_SOUND = 5;
     private static final int GET_STATS = 6;
-    private static final int DISABLE_OPENSL_ES = 7;
     private static final int TOGGLE_SOUND_SETUP = 8;
     private static final int TOGGLE_REMOTE_SOUND = 9;
     private static final int RELEASE_RESOURCE = 10;
@@ -117,9 +116,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
             case GET_STATS:
                 view.getStats();
                 break;
-            case DISABLE_OPENSL_ES:
-                view.disableOpenSLES();
-                break;
+
             case TOGGLE_SOUND_SETUP:
                 Boolean speaker = args.getBoolean(0);
                 view.toggleSoundSetup(speaker);
@@ -203,7 +200,6 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 .put("toggleVideo", TOGGLE_VIDEO)
                 .put("toggleSound", TOGGLE_SOUND)
                 .put("getStats", GET_STATS)
-                .put("disableOpenSLES", DISABLE_OPENSL_ES)
                 .put("toggleRemoteSound", TOGGLE_REMOTE_SOUND)
                 .put("toggleBluetoothHeadset", TOGGLE_BLUETOOTH_HEADSET)
                 .put("sendString", SEND_STRING)
