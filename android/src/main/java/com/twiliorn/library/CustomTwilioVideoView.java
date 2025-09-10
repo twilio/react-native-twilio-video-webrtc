@@ -27,6 +27,8 @@ import androidx.annotation.StringDef;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.view.View;
 
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -111,6 +113,9 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVE
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import android.app.Activity;
 
 public class CustomTwilioVideoView extends View implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "CustomTwilioVideoView";
@@ -219,6 +224,20 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private final Map<RemoteDataTrack, RemoteParticipant> dataTrackRemoteParticipantMap =
             new HashMap<>();
 
+    private ScreenShareCapturer screenCapturer;
+
+    /* request code for MediaProjection permission */
+    private static final int REQUEST_MEDIA_PROJECTION = 9000;
+
+    private final ActivityEventListener projectionResultListener = new BaseActivityEventListener() {
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+            if (requestCode == REQUEST_MEDIA_PROJECTION && resultCode == Activity.RESULT_OK && data != null) {
+                startScreenShare(data, resultCode);
+            }
+        }
+    };
+
     public CustomTwilioVideoView(ThemedReactContext context) {
         super(context);
         this.themedReactContext = context;
@@ -233,6 +252,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         audioManager = (AudioManager) themedReactContext.getSystemService(Context.AUDIO_SERVICE);
         myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
         intentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+
+        // register for activity results (screen share)
+        themedReactContext.addActivityEventListener(projectionResultListener);
 
         // Create the local data track
         // localDataTrack = LocalDataTrack.create(this);
@@ -1218,12 +1240,13 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
             @Override
             public void onVideoTrackPublished(LocalParticipant localParticipant, LocalVideoTrackPublication localVideoTrackPublication) {
-
+                WritableMap event = buildParticipantVideoEvent(localParticipant, localVideoTrackPublication);
+                pushEvent(CustomTwilioVideoView.this, ON_PARTICIPANT_ADDED_VIDEO_TRACK, event);
             }
 
             @Override
             public void onVideoTrackPublicationFailed(LocalParticipant localParticipant, LocalVideoTrack localVideoTrack, TwilioException twilioException) {
-
+                // Not triggered in SDK >=7.0, keep for completeness
             }
 
             @Override
@@ -1349,5 +1372,44 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                 pushEvent(CustomTwilioVideoView.this, ON_DATATRACK_MESSAGE_RECEIVED, event);
             }
         };
+    }
+
+    public void startScreenShare(Intent data, int resultCode) {
+        MediaProjectionManager mpm = (MediaProjectionManager)
+                getContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        MediaProjection mp = mpm.getMediaProjection(resultCode, data);
+
+        screenCapturer = new ScreenShareCapturer(getContext(), resultCode, data,
+                new Handler());
+        screenCapturer.start();
+        if (thumbnailVideoView != null) {
+            screenCapturer.getTrack().addSink(thumbnailVideoView);
+        }
+        if (room != null) {
+            room.getLocalParticipant().publishTrack(screenCapturer.getTrack());
+        }
+    }
+
+    public void stopScreenShare() {
+        if (screenCapturer != null) {
+            if (room != null)
+                room.getLocalParticipant().unpublishTrack(screenCapturer.getTrack());
+            screenCapturer.stop();
+            screenCapturer = null;
+        }
+    }
+
+    /* called by manager when JS wants to begin screen capture */
+    public void requestScreenShare() {
+        Activity act = themedReactContext.getCurrentActivity();
+        if (act == null) return;
+        MediaProjectionManager mpm = (MediaProjectionManager)
+                act.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        Intent intent = mpm.createScreenCaptureIntent();
+        try {
+            act.startActivityForResult(intent, REQUEST_MEDIA_PROJECTION);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to request screen share", e);
+        }
     }
 }

@@ -112,7 +112,8 @@ RCT_EXPORT_MODULE();
     cameraInterruptionEnded,
     statsReceived,
     networkQualityLevelsChanged,
-    dominantSpeakerDidChange
+    dominantSpeakerDidChange,
+    @"debugLocalTracks",
   ];
 }
 
@@ -163,6 +164,22 @@ RCT_EXPORT_METHOD(setRemoteAudioPlayback:(NSString *)participantSid enabled:(BOO
             [remoteAudioTrack.remoteTrack setPlaybackEnabled:enabled];
         }
     }
+}
+
+// Toggle playback for ALL remote audio tracks in the room (mirrors Android behaviour)
+RCT_EXPORT_METHOD(setRemoteAudioEnabled:(BOOL)enabled)
+{
+  if (self.room == nil) {
+    return; // not connected
+  }
+
+  for (TVIRemoteParticipant *participant in self.room.remoteParticipants) {
+    for (TVIRemoteAudioTrackPublication *pub in participant.remoteAudioTracks) {
+      if (pub.remoteTrack) {
+        [pub.remoteTrack setPlaybackEnabled:enabled];
+      }
+    }
+  }
 }
 
 RCT_EXPORT_METHOD(startLocalVideo) {
@@ -288,26 +305,50 @@ RCT_EXPORT_METHOD(flipCamera) {
   }
 }
 
-RCT_EXPORT_METHOD(toggleScreenSharing: (BOOL) value) {
-    if (value) {
-       TVIAppScreenSourceOptions *options = [TVIAppScreenSourceOptions optionsWithBlock:^(TVIAppScreenSourceOptionsBuilder * _Nonnull builder) {
+// Helper to emit current local video track names for debugging
+- (void)emitLocalVideoTrackInfoWithStage:(NSString *)stage {
+    if (!self.room.localParticipant) return;
+    NSMutableArray *names = [NSMutableArray array];
+    for (TVILocalVideoTrackPublication *pub in self.room.localParticipant.localVideoTracks) {
+        [names addObject:pub.trackName ?: @"<no-name>"];
+    }
+    NSLog(@"DEBUG-native %@ %@", stage, names);
+    [self sendEventCheckingListenerWithName:@"debugLocalTracks" body:@{ @"stage" : stage, @"tracks" : names }];
+}
 
-       }];
-       self.screen = [[TVIAppScreenSource alloc] initWithOptions:options delegate:self];
-       if (self.screen == nil) {
-           return;
-       }
-       self.localVideoTrack = [TVILocalVideoTrack trackWithSource:self.screen enabled:YES name:@"screen"];
-       if(self.localVideoTrack != nil){
-         TVILocalParticipant *localParticipant = self.room.localParticipant;
-         [localParticipant publishVideoTrack:self.localVideoTrack];
-       }
-       [self.screen startCapture];    
-  } else {
-        [self unpublishLocalVideo];
-        [self.screen stopCapture];
-        self.localVideoTrack = nil;
-       }
+RCT_EXPORT_METHOD(toggleScreenSharing: (BOOL) value) {
+    [self emitLocalVideoTrackInfoWithStage:value ? @"before_start_share" : @"before_stop_share"];
+    if (value) {
+        TVIAppScreenSourceOptions *options = [TVIAppScreenSourceOptions optionsWithBlock:^(TVIAppScreenSourceOptionsBuilder * _Nonnull builder) {
+            // You can tweak builder properties here if needed
+        }];
+        self.screen = [[TVIAppScreenSource alloc] initWithOptions:options delegate:self];
+        if (self.screen == nil) {
+            return;
+        }
+        TVILocalVideoTrack *screenTrack = [TVILocalVideoTrack trackWithSource:self.screen enabled:YES name:@"screen"];
+        if(screenTrack != nil && self.room.localParticipant){
+            [self.room.localParticipant publishVideoTrack:screenTrack];
+        }
+        [self.screen startCapture];
+
+        [self emitLocalVideoTrackInfoWithStage:@"after_start_share"];
+
+    } else {
+        if (self.screen) {
+            [self.screen stopCapture];
+            self.screen = nil;
+        }
+        // Find the published screen track (by name) and unpublish it
+        for (TVILocalVideoTrackPublication *pub in self.room.localParticipant.localVideoTracks) {
+            if ([pub.trackName isEqualToString:@"screen"]) {
+                [self.room.localParticipant unpublishVideoTrack:pub.localTrack];
+                break;
+            }
+        }
+
+        [self emitLocalVideoTrackInfoWithStage:@"after_stop_share"];
+    }
 }
 
 
