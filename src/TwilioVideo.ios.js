@@ -142,10 +142,6 @@ export default class TwilioVideo extends Component {
      */
     onNetworkQualityLevelsChanged: PropTypes.func,
     /**
-     * Internal debug event – list of local tracks after screen-share toggle.
-     */
-    onDebugLocalTracks: PropTypes.func,
-    /**
      * Called when dominant speaker changes
      * @param {{ participant, room }} dominant participant
      */
@@ -222,16 +218,7 @@ export default class TwilioVideo extends Component {
    */
   toggleScreenSharing(status) {
     TWVideoModule.toggleScreenSharing(status);
-  }
-
-  // --- compatibility with Android helper names -----------------------------
-  startScreenShare() {
-    this.toggleScreenSharing(true);
-  }
-
-  stopScreenShare() {
-    this.toggleScreenSharing(false);
-  }
+  }ß
 
   /**
    * Toggle audio setup from speaker (default) and headset
@@ -458,11 +445,6 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("networkQualityLevelsChanged", (data) => {
         if (this.props.onNetworkQualityLevelsChanged) {
           this.props.onNetworkQualityLevelsChanged(data);
-        }
-      }),
-      this._eventEmitter.addListener("debugLocalTracks", (data) => {
-        if (this.props.onDebugLocalTracks) {
-          this.props.onDebugLocalTracks(data);
         }
       }),
       this._eventEmitter.addListener("onDominantSpeakerDidChange", (data) => {

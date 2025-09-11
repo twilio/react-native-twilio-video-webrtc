@@ -57,8 +57,6 @@ const Example = () => {
     const [encodingParameters] = useState<any>({});
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
-    const [localParticipantSid, setLocalParticipantSid] = useState<string | null>(null);
-    console.log("🚀 ~ Example ~ videoTracks:", videoTracks)
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [roomNameInput, setRoomNameInput] = useState("DemoRoom");
     const [logs, setLogs] = useState<string[]>([]);
@@ -167,7 +165,6 @@ const Example = () => {
     };
 
     const _onRoomDidConnect = (event: any) => {
-        setLocalParticipantSid(event?.localParticipant?.sid || event?.localParticipant?.identity || null);
         if (event.roomName) {
             setRoomDetails({
                 roomName: event.roomName,
@@ -186,7 +183,6 @@ const Example = () => {
     };
 
     const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
-        if (participant.sid === localParticipantSid) return; // ignore local tracks
         setVideoTracks((originalVideoTracks: Map<string, any>) => {
             originalVideoTracks.set(track.trackSid, {
                 participantSid: participant.sid,
@@ -235,7 +231,6 @@ const Example = () => {
                         {status === "connected" && (
                             <View style={styles.remoteGrid}>
                                 {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
-                                    console.log("🚀 ~ videoTracks:", videoTracks)
                                     return (
                                         <TwilioVideoParticipantView
                                             style={styles.remoteVideo}
