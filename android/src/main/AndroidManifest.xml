@@ -18,7 +18,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
-    <application
-        android:foregroundServiceType="mediaProjection">
+    <application>
+        <service
+            android:enabled="true"
+            android:name=".ScreenCapturerService"
+            android:foregroundServiceType="mediaProjection">
+        </service>
     </application>
 </manifest>

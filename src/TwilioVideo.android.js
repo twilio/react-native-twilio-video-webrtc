@@ -167,8 +167,7 @@ const nativeEvents = {
   publishVideo: 13,
   publishAudio: 14,
   setRemoteAudioPlayback: 15,
-  startScreenShare: 16,
-  toggleScreenShare: 17,
+  toggleScreenShare: 16,
 };
 
 class CustomTwilioVideoView extends Component {

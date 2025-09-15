@@ -53,8 +53,6 @@ const Example = () => {
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(true);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(true);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
-    const [isScreenSharing, setIsScreenSharing] = useState(false);
-    const [encodingParameters] = useState<any>({});
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
@@ -103,7 +101,7 @@ const Example = () => {
         try {
             twilioRef.current?.connect({
                 roomName: roomNameInput,
-                accessToken: token,
+                accessToken:  token,
                 enableAudio: isAudioEnabled,
                 enableVideo: isVideoEnabled,
                 enableRemoteAudio: remoteAudioEnabled,
@@ -157,12 +155,7 @@ const Example = () => {
         _append("(you) sent: Hello from RN");
     };
 
-    const _onToggleScreenSharePress = () => {
-        setIsScreenSharing(prev => {
-            twilioRef.current?.toggleScreenSharing(!prev);
-            return !prev;
-        });
-    };
+
 
     const _onRoomDidConnect = (event: any) => {
         if (event.roomName) {
@@ -249,7 +242,6 @@ const Example = () => {
                             <OptionButton label="Flip" onPress={_onFlipButtonPress} />
                             <OptionButton label={isVideoEnabled ? "Disable Video" : "Enable Video"} onPress={_onToggleVideoPress} />
                             <OptionButton label={remoteAudioEnabled ? "Mute Remote" : "Unmute Remote"} onPress={_onToggleRemoteAudioPress} />
-                            <OptionButton label={isScreenSharing ? "Stop Share" : "Share Screen"} onPress={_onToggleScreenSharePress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
                             <OptionButton label="Ping" onPress={_onSendStringPress} />
                         </ControlBar>

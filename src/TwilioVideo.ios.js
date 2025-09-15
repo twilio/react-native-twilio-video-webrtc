@@ -217,7 +217,7 @@ export default class TwilioVideo extends Component {
    * Toggle screen sharing
    */
   toggleScreenSharing(status) {
-    TWVideoModule.toggleScreenSharing(status);
+    TWVideoModule.toggleScreenSharing(status)
   }ß
 
   /**
