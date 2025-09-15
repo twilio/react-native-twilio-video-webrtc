@@ -6,7 +6,6 @@ import {
     PermissionsAndroid,
     Platform,
     Switch,
-    TextInput,
     ScrollView,
 } from "react-native";
 import {
@@ -56,7 +55,6 @@ const Example = () => {
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
-    const [roomNameInput, setRoomNameInput] = useState("DemoRoom");
     const [logs, setLogs] = useState<string[]>([]);
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
@@ -100,8 +98,7 @@ const Example = () => {
 
         try {
             twilioRef.current?.connect({
-                roomName: roomNameInput,
-                accessToken:  token,
+                accessToken: token,
                 enableAudio: isAudioEnabled,
                 enableVideo: isVideoEnabled,
                 enableRemoteAudio: remoteAudioEnabled,
@@ -198,11 +195,6 @@ const Example = () => {
                 <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
 
-                    <TextInput style={[styles.input, { marginVertical: 8 }]}
-                        placeholder="Room name"
-                        value={roomNameInput}
-                        onChangeText={setRoomNameInput} />
-
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
@@ -258,8 +250,8 @@ const Example = () => {
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onStatsReceived={data => _append(`Stats ${JSON.stringify(data)}...`)}
                 onNetworkQualityLevelsChanged={e => _append(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
+                onDominantSpeakerDidChange={e => _append(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
                 onDataTrackMessageReceived={e => _append(`Data Track Message ${e.message}`)}
-                {...{ onDebugLocalTracks: (e: any) => _append(`DEBUG ${e.stage}: ${e.tracks.join(', ')}`) } as any}
             />
         </SafeAreaView >
     );

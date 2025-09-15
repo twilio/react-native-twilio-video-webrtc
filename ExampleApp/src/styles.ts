@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
         fontSize: 30,
         textAlign: "center",
         paddingTop: 40,
+        marginBottom: 20,
     },
     input: {
         minHeight: 90,
