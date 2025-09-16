@@ -222,13 +222,6 @@ export default class TwilioVideo extends Component {
   }
 
   /**
-   * Toggle screen sharing
-   */
-  toggleScreenSharing(enabled) {
-    TWVideoModule.toggleScreenSharing(enabled);
-  }
-
-  /**
    * Get connection stats
    */
   getStats() {

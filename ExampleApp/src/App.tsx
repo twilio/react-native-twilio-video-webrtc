@@ -52,7 +52,6 @@ const Example = () => {
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
-    const [isSharing, setIsSharing] = useState(false);
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
@@ -153,11 +152,6 @@ const Example = () => {
         _append("(you) sent: Hello from RN");
     };
 
-    const _onShareButtonPress = () => {
-        twilioRef.current?.toggleScreenSharing(!isSharing);
-        setIsSharing(!isSharing);
-    };
-
 
 
     const _onRoomDidConnect = (event: any) => {
@@ -242,7 +236,6 @@ const Example = () => {
                             <OptionButton label={remoteAudioEnabled ? "Mute Remote" : "Unmute Remote"} onPress={_onToggleRemoteAudioPress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
                             <OptionButton label="Ping" onPress={_onSendStringPress} />
-                            <OptionButton label={isSharing ? "Stop Sharing" : "Share"} onPress={_onShareButtonPress} />
                         </ControlBar>
                     </View>
                 </View>
