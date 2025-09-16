@@ -715,14 +715,9 @@ public class CustomTwilioVideoView extends View
             }
         }
 
-        if (cameraCapturer != null && localVideoTrack != null) {
+        if (localVideoTrack != null) {
+            // Enable or disable the existing local video track without publishing/unpublishing it
             localVideoTrack.enable(enabled);
-            publishLocalVideo(enabled);
-            if (!enabled) {
-                localVideoTrack.release();
-                localVideoTrack = null;
-                cameraCapturer = null;
-            }
 
             WritableMap event = new WritableNativeMap();
             event.putBoolean("videoEnabled", enabled);
