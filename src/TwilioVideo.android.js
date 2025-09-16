@@ -167,7 +167,6 @@ const nativeEvents = {
   publishVideo: 13,
   publishAudio: 14,
   setRemoteAudioPlayback: 15,
-  toggleScreenShare: 16,
 };
 
 class CustomTwilioVideoView extends Component {
@@ -268,13 +267,7 @@ class CustomTwilioVideoView extends Component {
     this.runCommand(nativeEvents.toggleSoundSetup, [speaker]);
   }
 
-  /**
-   * Toggle screen-sharing (Android & iOS unified).
-   * @param {boolean} status
-   */
-  toggleScreenSharing(status) {
-    this.runCommand(nativeEvents.toggleScreenShare, [status]);
-  }
+
 
   runCommand(event, args) {
     switch (Platform.OS) {

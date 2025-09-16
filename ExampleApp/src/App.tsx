@@ -49,8 +49,8 @@ const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [remoteAudioEnabled, setRemoteAudioEnabled] = useState(true);
-    const [networkQualityEnabled, setNetworkQualityEnabled] = useState(true);
-    const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(true);
+    const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
+    const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());

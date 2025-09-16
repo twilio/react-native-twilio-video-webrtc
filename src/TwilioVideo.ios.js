@@ -213,12 +213,6 @@ export default class TwilioVideo extends Component {
     TWVideoModule.flipCamera();
   }
 
-  /**
-   * Toggle screen sharing
-   */
-  toggleScreenSharing(status) {
-    TWVideoModule.toggleScreenSharing(status)
-  }ß
 
   /**
    * Toggle audio setup from speaker (default) and headset
