@@ -244,8 +244,7 @@ public class CustomTwilioVideoView extends View
 
     }
 
-    // ===== SETUP
-    // =================================================================================
+    // ===== SETUP =================================================================================
 
     private VideoFormat buildVideoFormat() {
         return new VideoFormat(VideoDimensions.CIF_VIDEO_DIMENSIONS, 15);
@@ -333,8 +332,7 @@ public class CustomTwilioVideoView extends View
         return true;
     }
 
-    // ===== LIFECYCLE EVENTS
-    // ======================================================================
+    // ===== LIFECYCLE EVENTS ======================================================================
 
     @Override
     public void onHostResume() {
@@ -438,8 +436,7 @@ public class CustomTwilioVideoView extends View
         cameraCapturer = null;
     }
 
-    // ====== CONNECTING
-    // ===========================================================================
+    // ====== CONNECTING ===========================================================================
 
     public void connectToRoomWrapper(
             String roomName,
@@ -643,8 +640,7 @@ public class CustomTwilioVideoView extends View
         Log.e(TAG, "onAudioFocusChange: focuschange: " + focusChange);
     }
 
-    // ====== DISCONNECTING
-    // ========================================================================
+    // ====== DISCONNECTING ========================================================================
 
     public void disconnect() {
         if (room != null) {
@@ -667,8 +663,7 @@ public class CustomTwilioVideoView extends View
         }
     }
 
-    // ===== SEND STRING ON DATA TRACK
-    // ======================================================================
+    // ===== SEND STRING ON DATA TRACK ======================================================================
     public void sendString(String message) {
         if (localDataTrack != null) {
             localDataTrack.send(message);
@@ -679,8 +674,7 @@ public class CustomTwilioVideoView extends View
         return cameraCapturer != null && cameraCapturer.getCameraId() == backFacingDevice;
     }
 
-    // ===== BUTTON LISTENERS
-    // ======================================================================
+    // ===== BUTTON LISTENERS ======================================================================
     private static void setThumbnailMirror() {
         if (cameraCapturer != null) {
             final boolean isBackCamera = isCurrentCameraSourceBackFacing();
@@ -901,8 +895,7 @@ public class CustomTwilioVideoView extends View
         }
     }
 
-    // ====== ROOM LISTENER
-    // ========================================================================
+    // ====== ROOM LISTENER ========================================================================
 
     /*
      * Room events listener
@@ -1083,8 +1076,7 @@ public class CustomTwilioVideoView extends View
         remoteDataTrack.setListener(remoteDataTrackListener());
     }
 
-    // ====== MEDIA LISTENER
-    // =======================================================================
+    // ====== MEDIA LISTENER =======================================================================
 
     private RemoteParticipant.Listener mediaListener() {
         return new RemoteParticipant.Listener() {
@@ -1220,8 +1212,7 @@ public class CustomTwilioVideoView extends View
         };
     }
 
-    // ====== LOCAL LISTENER
-    // =======================================================================
+    // ====== LOCAL LISTENER =======================================================================
     private LocalParticipant.Listener localListener() {
         return new LocalParticipant.Listener() {
 
@@ -1329,8 +1320,7 @@ public class CustomTwilioVideoView extends View
         WritableMap event = this.buildParticipantVideoEvent(participant, deleteVideoTrack);
         pushEvent(CustomTwilioVideoView.this, ON_PARTICIPANT_REMOVED_VIDEO_TRACK, event);
     }
-    // ===== EVENTS TO RN
-    // ==========================================================================
+    // ===== EVENTS TO RN ==========================================================================
 
     void pushEvent(View view, String name, WritableMap data) {
         eventEmitter.receiveEvent(view.getId(), name, data);
