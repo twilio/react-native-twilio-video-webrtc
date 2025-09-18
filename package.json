@@ -55,6 +55,9 @@
   "peerDependenciesMeta": {
     "expo": {
       "optional": true
+    },
+    "expo-build-properties": {
+      "optional": true
     }
   },
   "dependencies": {

@@ -5,6 +5,8 @@ import {
     TouchableOpacity,
     PermissionsAndroid,
     Platform,
+    Switch,
+    ScrollView,
 } from "react-native";
 import {
     TwilioVideoLocalView,
@@ -16,15 +18,50 @@ import { styles } from "./styles";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { token } from "./access-token";
 
+// Only keep the latest 50 log lines so the list doesn’t grow without bound, preventing extra memory use and lag.
+const MAX_LOG_LINES = 50;
+
+const ToggleRow = ({ label, value, onValueChange }: { label: string, value: boolean, onValueChange: (v: boolean) => void }) => (
+    <View style={styles.toggleRow}>
+        <Text style={{ marginRight: 6 }}>{label}</Text>
+        <Switch value={value} onValueChange={onValueChange} />
+    </View>
+);
+
+const ControlBar = ({ children }: { children: React.ReactNode }) => (
+    <View style={styles.optionsContainer}>{children}</View>
+);
+
+const OptionButton = ({ label, onPress }: { label: string, onPress: () => void }) => (
+    <TouchableOpacity style={styles.optionButton} onPress={onPress}>
+        <Text style={{ color: '#fff', fontSize: 12 }}>{label}</Text>
+    </TouchableOpacity>
+);
+
+const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: React.RefObject<ScrollView | null> }) => (
+    <View style={styles.logPanel}>
+        <ScrollView ref={scrollRef} onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}>
+            {logs.map((l, i) => (<Text key={i} style={styles.logText}>{l}</Text>))}
+        </ScrollView>
+    </View>
+));
+
 const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+    const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+    const [remoteAudioEnabled, setRemoteAudioEnabled] = useState(true);
+    const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
+    const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
+    const [enableH264Codec, setEnableH264Codec] = useState(false);
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
-    const [roomDetails, setRoomDetails] = useState({
-        roomName: "",
-        roomSid: "",
-    });
+    const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
+    const [logs, setLogs] = useState<string[]>([]);
+    const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
+    const _log = (line: string) =>
+        setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
+
     const _requestAudioPermission = () => {
         return PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -46,6 +83,8 @@ const Example = () => {
         });
     };
 
+
+
     const _onConnectButtonPress = async () => {
         if (Platform.OS === "android") {
             await _requestAudioPermission();
@@ -61,8 +100,12 @@ const Example = () => {
         try {
             twilioRef.current?.connect({
                 accessToken: token,
-                enableNetworkQualityReporting: true,
-                dominantSpeakerEnabled: true,
+                enableAudio: isAudioEnabled,
+                enableVideo: isVideoEnabled,
+                enableRemoteAudio: remoteAudioEnabled,
+                enableNetworkQualityReporting: networkQualityEnabled,
+                dominantSpeakerEnabled,
+                encodingParameters: { enableH264Codec },
             });
         } catch (err) {
             console.log("🚀 ~ _onConnectButtonPress ~ err:", err)
@@ -73,6 +116,7 @@ const Example = () => {
 
     const _onEndButtonPress = () => {
         twilioRef.current?.disconnect();
+        setVideoTracks(new Map());
     };
 
     const _onMuteButtonPress = () => {
@@ -85,9 +129,35 @@ const Example = () => {
         twilioRef.current?.flipCamera();
     };
 
+    const _onToggleVideoPress = () => {
+        setIsVideoEnabled(prev => {
+            twilioRef.current?.setLocalVideoEnabled(!prev);
+            return !prev;
+        });
+    };
+
+    const _onToggleRemoteAudioPress = () => {
+        setRemoteAudioEnabled(prev => {
+            twilioRef.current?.setRemoteAudioEnabled(!prev);
+            return !prev;
+        });
+    };
+
+    const _onGetStatsPress = () => {
+        twilioRef.current?.getStats();
+        _log("(you) requested stats");
+    };
+
+    const _onSendStringPress = () => {
+        twilioRef.current?.sendString("Hello from RN");
+        _log("(you) sent: Hello from RN");
+    };
+
+
+
     const _onRoomDidConnect = (event: any) => {
-        if(event.roomName) {
-        setRoomDetails({
+        if (event.roomName) {
+            setRoomDetails({
                 roomName: event.roomName,
                 roomSid: event.roomSid,
             });
@@ -121,53 +191,57 @@ const Example = () => {
     };
 
     return (
-        <SafeAreaView style={[styles.container]}>
+        <SafeAreaView style={styles.container}>
             {status === "disconnected" && (
-                <View>
+                <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
+
+                    <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
+                    <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
+                    <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
 
                     <TouchableOpacity style={styles.button} onPress={_onConnectButtonPress}>
                         <Text style={{ fontSize: 12 }}>Join Room</Text>
                     </TouchableOpacity>
-                </View>
+                </ScrollView>
             )}
 
             {(status === "connected" || status === "connecting") && (
-                <>
-                <View style={{  padding:20, alignItems: "center" }}>
-                    <Text style={{ fontSize: 12 }}>Room Name: {roomDetails.roomName}</Text>
-                    <Text style={{ fontSize: 12 }}>Room Sid: {roomDetails.roomSid}</Text>
-                </View>
+                <View style={styles.connectedWrapper}>
+                    <View style={styles.headerContainer}>
+                        <Text style={{ fontSize: 12 }}>Room Name: {roomDetails.roomName}</Text>
+                        <Text style={{ fontSize: 12 }}>Room Sid: {roomDetails.roomSid}</Text>
+                    </View>
 
-                <View style={styles.callContainer}>
-                    {status === "connected" && (
-                        <View style={styles.remoteGrid}>
-                            {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
-                                return (
-                                    <TwilioVideoParticipantView
-                                        style={styles.remoteVideo}
-                                        key={trackSid}
-                                        trackIdentifier={trackIdentifier as any}
-                                    />
-                                );
-                            })}
-                        </View>
-                    )}
-                    <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
-                    <View style={styles.optionsContainer}>
-                        <TouchableOpacity style={styles.optionButton} onPress={_onEndButtonPress}>
-                            <Text style={{ color: "#fff", fontSize: 12 }}>End</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.optionButton} onPress={_onMuteButtonPress}>
-                            <Text style={{ color: "#fff", fontSize: 12 }}>{isAudioEnabled ? "Mute" : "Unmute"}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.optionButton} onPress={_onFlipButtonPress}>
-                            <Text style={{ color: "#fff", fontSize: 12 }}>Flip</Text>
-                        </TouchableOpacity>
+                    <View style={styles.callContainer}>
+                        {status === "connected" && (
+                            <View style={styles.remoteGrid}>
+                                {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
+                                    return (
+                                        <TwilioVideoParticipantView
+                                            style={styles.remoteVideo}
+                                            key={trackSid}
+                                            trackIdentifier={trackIdentifier as any}
+                                        />
+                                    );
+                                })}
+                            </View>
+                        )}
+                        <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
+                        <LogPanel logs={logs} scrollRef={scrollRef} />
+                        <ControlBar>
+                            <OptionButton label="End" onPress={_onEndButtonPress} />
+                            <OptionButton label={isAudioEnabled ? "Mute" : "Unmute"} onPress={_onMuteButtonPress} />
+                            <OptionButton label="Flip" onPress={_onFlipButtonPress} />
+                            <OptionButton label={isVideoEnabled ? "Disable Video" : "Enable Video"} onPress={_onToggleVideoPress} />
+                            <OptionButton label={remoteAudioEnabled ? "Mute Remote" : "Unmute Remote"} onPress={_onToggleRemoteAudioPress} />
+                            <OptionButton label="Stats" onPress={_onGetStatsPress} />
+                            <OptionButton label="Ping" onPress={_onSendStringPress} />
+                        </ControlBar>
                     </View>
-                    </View>
-                    </>
-                )}
+                </View>
+            )
+            }
             <TwilioVideo
                 ref={twilioRef as any}
                 onRoomDidConnect={_onRoomDidConnect}
@@ -175,8 +249,12 @@ const Example = () => {
                 onRoomDidFailToConnect={_onRoomDidFailToConnect}
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
+                onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
+                onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
+                onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
+                onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
             />
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
 

@@ -61,6 +61,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     private static final int PUBLISH_AUDIO = 14;
     private static final int SET_REMOTE_AUDIO_PLAYBACK = 15;
 
+
+
     @Override
     public String getName() {
         return REACT_CLASS;

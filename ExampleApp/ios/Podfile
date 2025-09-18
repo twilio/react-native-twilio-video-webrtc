@@ -24,7 +24,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'AwesomeProject' do
+target 'ExampleApp' do
   use_frameworks!
   config = use_native_modules!
 pod 'react-native-twilio-video-webrtc',

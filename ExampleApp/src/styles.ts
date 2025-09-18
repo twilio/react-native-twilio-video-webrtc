@@ -4,16 +4,16 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
+        paddingHorizontal: 16,
     },
     callContainer: {
-        flex: 1,
-        paddingBottom: 140,
         paddingHorizontal: 16,
     },
     welcome: {
         fontSize: 30,
         textAlign: "center",
         paddingTop: 40,
+        marginBottom: 20,
     },
     input: {
         minHeight: 90,
@@ -23,7 +23,6 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 12,
         paddingVertical: 10,
-        marginHorizontal: 16,
         marginTop: 24,
         textAlignVertical: "top",
         backgroundColor: "#FAFAFA",
@@ -59,18 +58,12 @@ export const styles = StyleSheet.create({
         height: 120,
     },
     optionsContainer: {
-        position: "absolute",
-        left: 16,
-        right: 16,
-        bottom: 16,
-        minHeight: 84,
         flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-        backgroundColor: "rgba(255,255,255,0.9)",
+        padding: 14,
+        gap: 8,
+        flexWrap: "wrap",
+        backgroundColor: "rgba(145, 132, 132, 0.9)",
         borderRadius: 16,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 4 },
@@ -78,12 +71,38 @@ export const styles = StyleSheet.create({
         elevation: 4,
     },
     optionButton: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        padding: 15,
+        borderRadius: 16,
         backgroundColor: "#1F2937",
         justifyContent: "center",
         alignItems: "center",
     },
 
+    toggleRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 6,
+    },
+
+    headerContainer: {
+        padding: 20,
+        alignItems: "center",
+    },
+
+    connectedWrapper: {
+        flex: 1,
+        justifyContent: "space-between",
+    },
+
+    logPanel: {
+        height: 120,
+        width: "100%",
+        backgroundColor: "#111",
+        marginTop: 4,
+    },
+
+    logText: {
+        fontSize: 10,
+        color: "#ccc",
+    },
 });

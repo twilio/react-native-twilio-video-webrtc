@@ -184,6 +184,7 @@ export default class TwilioVideo extends Component {
   }
 
   setRemoteAudioEnabled(enabled) {
+    TWVideoModule.setRemoteAudioEnabled(enabled);
     return Promise.resolve(enabled);
   }
 
@@ -212,12 +213,6 @@ export default class TwilioVideo extends Component {
     TWVideoModule.flipCamera();
   }
 
-  /**
-   * Toggle screen sharing
-   */
-  toggleScreenSharing(status) {
-    TWVideoModule.toggleScreenSharing(status);
-  }
 
   /**
    * Toggle audio setup from speaker (default) and headset
