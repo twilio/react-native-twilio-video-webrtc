@@ -18,7 +18,8 @@ import { styles } from "./styles";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { token } from "./access-token";
 
-// --- small presentational helpers -------------------------------------------------
+// Only keep the latest 50 log lines so the list doesn’t grow without bound, preventing extra memory use and lag.
+const MAX_LOG_LINES = 50;
 
 const ToggleRow = ({ label, value, onValueChange }: { label: string, value: boolean, onValueChange: (v: boolean) => void }) => (
     <View style={styles.toggleRow}>
@@ -59,7 +60,7 @@ const Example = () => {
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
     const _log = (line: string) =>
-        setLogs(prev => [...prev.slice(-50), line]);
+        setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
 
     const _requestAudioPermission = () => {
         return PermissionsAndroid.request(
