@@ -392,7 +392,8 @@ RCT_EXPORT_METHOD(flipCamera) {
 }
 RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
   TwilioVideoSDK.logLevel = TVILogLevelTrace;
-  NSLog(@"toggleScreenSharing called with enabled=%@", enabled ? @"YES" : @"NO");
+  NSLog(@"toggleScreenSharing called with enabled=%@",
+        enabled ? @"YES" : @"NO");
 
   if (enabled) {
     NSLog(@"Attempting to ENABLE screen sharing");
@@ -462,7 +463,9 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
       self.screen = nil;
 
       [self sendEventCheckingListenerWithName:screenShareChanged
-                                         body:@{ @"screenShareEnabled" : @(false) }];
+                                         body:@{
+                                           @"screenShareEnabled" : @(false)
+                                         }];
 
       // Re-enable the camera preview/publication once screen share is off
       NSLog(@"Re-enabling local camera after stopping screen share");
@@ -657,8 +660,10 @@ RCT_EXPORT_METHOD(
 
                    builder.roomName = roomName;
 
-                   if (encodingParameters[@"enableH264Codec"]) {
-                     builder.preferredVideoCodecs = @[ [TVIH264Codec new] ];
+                   builder.preferredVideoCodecs = @[ [TVIVp8Codec new] ];
+                   if ([encodingParameters[@"enableH264Codec"] boolValue]) {
+                     builder.preferredVideoCodecs =
+                         @[ [TVIVp8Codec new], [TVIH264Codec new] ];
                    }
 
                    if (encodingParameters[@"audioBitrate"] ||
