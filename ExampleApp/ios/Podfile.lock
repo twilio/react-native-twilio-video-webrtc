@@ -2342,7 +2342,7 @@ PODS:
     - SocketRocket
     - Yoga
   - SocketRocket (0.7.1)
-  - TwilioVideo (5.10.0)
+  - TwilioVideo (5.10.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2654,9 +2654,9 @@ SPEC CHECKSUMS:
   ReactCommon: 5ee89f5eec706805c432ed5b598adcd4e5aaa088
   RNPermissions: 483a818c9a6ad73a38dbd5835ee02d35ecbd74ef
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  TwilioVideo: 0143285400b8e072b9a645c5bd71ec09233b8514
+  TwilioVideo: 04f5c8680bcd590ce302a15e63008f251af57a61
   Yoga: be78ddad0c56d06a5e41eaef4bfbbd49b86a4d07
 
-PODFILE CHECKSUM: 9f72af4700db1ed0f2f3203b49f072c7a41695c6
+PODFILE CHECKSUM: 2255468db76a0df835bc1d74a5920e1e19b7d879
 
 COCOAPODS: 1.16.2

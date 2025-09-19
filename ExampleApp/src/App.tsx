@@ -18,7 +18,8 @@ import { styles } from "./styles";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { token } from "./access-token";
 
-// --- small presentational helpers -------------------------------------------------
+// Only keep the latest 50 log lines so the list doesn’t grow without bound, preventing extra memory use and lag.
+const MAX_LOG_LINES = 50;
 
 const ToggleRow = ({ label, value, onValueChange }: { label: string, value: boolean, onValueChange: (v: boolean) => void }) => (
     <View style={styles.toggleRow}>
@@ -59,8 +60,8 @@ const Example = () => {
     const [logs, setLogs] = useState<string[]>([]);
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
-    const _append = (line: string) =>
-        setLogs(prev => [...prev.slice(-49), line]);
+    const _log = (line: string) =>
+        setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
 
     const _requestAudioPermission = () => {
         return PermissionsAndroid.request(
@@ -145,12 +146,12 @@ const Example = () => {
 
     const _onGetStatsPress = () => {
         twilioRef.current?.getStats();
-        _append("(you) requested stats");
+        _log("(you) requested stats");
     };
 
     const _onSendStringPress = () => {
         twilioRef.current?.sendString("Hello from RN");
-        _append("(you) sent: Hello from RN");
+        _log("(you) sent: Hello from RN");
     };
 
     const _onShareButtonPress = () => {
@@ -255,10 +256,10 @@ const Example = () => {
                 onRoomDidFailToConnect={_onRoomDidFailToConnect}
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
-                onStatsReceived={data => _append(`Stats ${JSON.stringify(data)}...`)}
-                onNetworkQualityLevelsChanged={e => _append(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
-                onDominantSpeakerDidChange={e => _append(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
-                onDataTrackMessageReceived={e => _append(`Data Track Message ${e.message}`)}
+                onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
+                onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
+                onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
+                onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
             />
         </SafeAreaView >
     );
