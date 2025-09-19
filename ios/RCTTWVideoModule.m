@@ -317,7 +317,6 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
     self.localVideoTrack = [TVILocalVideoTrack trackWithSource:self.camera
                                                        enabled:NO
                                                           name:@"camera"];
-
     // Reconnect the local video view if it exists
     if (self.localVideoView != nil) {
       [self.localVideoTrack addRenderer:self.localVideoView];
