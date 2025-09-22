@@ -1,7 +1,5 @@
 /**
- * Service to orchestrate the Twilio Screen Share connection and the various video
- * views.
- * <p>
+ * Service to orchestrate the Twilio Screen Share connection and the various video views.
  * Based on the PR: https://github.com/blackuy/react-native-twilio-video-webrtc/pull/663
  */
 
