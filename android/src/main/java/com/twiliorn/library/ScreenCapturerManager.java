@@ -2,9 +2,9 @@
  * Service to orchestrate the Twilio Screen Share connection and the various video
  * views.
  * <p>
- * Authors:
- * Manish Sahu <msahu2595@gmail.com>
+ * Based on the PR: https://github.com/blackuy/react-native-twilio-video-webrtc/pull/663
  */
+
 package com.twiliorn.library;
 
 import android.annotation.TargetApi;
