@@ -34,6 +34,7 @@ onParticipantDisabledAudioTrack | func | no |  | Called when an audio track has 
 onStatsReceived | func | no |  | Callback that is called when stats are received (after calling getStats)
 onNetworkQualityLevelsChanged | func | no |  | Callback that is called when network quality levels are changed (only if enableNetworkQualityReporting in connect is set to true)
 onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes @param {{ participant, room }} dominant participant and room
+onLocalParticipantSupportedCodecs | func | no |  | Always called on android after connecting to the room with @param {{ supportedCodecs }}
 -----
 
 **src/TwilioVideo.ios.js**
@@ -47,6 +48,7 @@ onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes
 Property | Type | Required | Default value | Description
 :--- | :--- | :--- | :--- | :---
 screenShare | bool | no |  | Flag that enables screen sharing RCTRootView instead of camera capture
+autoInitializeCamera | bool | no | true | Whether or not video should be automatically initialized upon mounting of this component.
 onRoomDidConnect | func | no |  | Called when the room has connected  @param {{roomName, participants, localParticipant}}
 onRoomDidDisconnect | func | no |  | Called when the room has disconnected  @param {{roomName, error}}
 onRoomDidFailToConnect | func | no |  | Called when connection with room failed  @param {{roomName, error}}
@@ -70,8 +72,6 @@ onCameraDidStopRunning | func | no |  | Called when the camera has stopped runin
 onStatsReceived | func | no |  | Called when stats are received (after calling getStats)
 onNetworkQualityLevelsChanged | func | no |  | Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to True when connecting)
 onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes @param {{ participant, room }} dominant participant
-onLocalParticipantSupportedCodecs | func | no |  | Always called on android with @param {{ supportedCodecs }} after connecting to the room
-
 -----
 
 **src/TwilioVideoLocalView.android.js**
@@ -85,6 +85,7 @@ onLocalParticipantSupportedCodecs | func | no |  | Always called on android with
 Property | Type | Required | Default value | Description
 :--- | :--- | :--- | :--- | :---
 scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
+applyZOrder | bool | no |  | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views.
 -----
 
 **src/TwilioVideoLocalView.ios.js**
@@ -135,4 +136,5 @@ testID | string | no |  | &nbsp;
 Property | Type | Required | Default value | Description
 :--- | :--- | :--- | :--- | :---
 trackIdentifier | shape(,,) | no |  | &nbsp;
+scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
 -----
