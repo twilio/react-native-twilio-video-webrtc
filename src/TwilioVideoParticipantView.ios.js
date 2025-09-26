@@ -22,6 +22,7 @@ class TwilioVideoParticipantView extends Component {
        */
       videoTrackSid: PropTypes.string.isRequired,
     }),
+    scaleType: PropTypes.string,
   };
 
   render() {
