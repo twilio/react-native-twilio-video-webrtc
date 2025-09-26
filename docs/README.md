@@ -47,8 +47,6 @@ onLocalParticipantSupportedCodecs | func | no |  | Always called on android afte
 
 Property | Type | Required | Default value | Description
 :--- | :--- | :--- | :--- | :---
-screenShare | bool | no |  | Flag that enables screen sharing RCTRootView instead of camera capture
-autoInitializeCamera | bool | no | true | Whether or not video should be automatically initialized upon mounting of this component.
 onRoomDidConnect | func | no |  | Called when the room has connected  @param {{roomName, participants, localParticipant}}
 onRoomDidDisconnect | func | no |  | Called when the room has disconnected  @param {{roomName, error}}
 onRoomDidFailToConnect | func | no |  | Called when connection with room failed  @param {{roomName, error}}
@@ -123,6 +121,7 @@ importantForAccessibility | string | no |  | &nbsp;
 accessibilityLabel | string | no |  | &nbsp;
 nativeID | string | no |  | &nbsp;
 testID | string | no |  | &nbsp;
+applyZOrder | boole | no |  | &nbsp;
 -----
 
 **src/TwilioVideoParticipantView.ios.js**
