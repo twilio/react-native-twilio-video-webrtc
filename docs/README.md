@@ -110,18 +110,18 @@ scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stre
 
 Property | Type | Required | Default value | Description
 :--- | :--- | :--- | :--- | :---
-trackIdentifier | shape(,) | no |  | &nbsp;
-onFrameDimensionsChanged | func | no |  | &nbsp;
-trackSid | string | no |  | &nbsp;
-renderToHardwareTextureAndroid | string | no |  | &nbsp;
-onLayout | string | no |  | &nbsp;
-accessibilityLiveRegion | string | no |  | &nbsp;
-accessibilityComponentType | string | no |  | &nbsp;
-importantForAccessibility | string | no |  | &nbsp;
-accessibilityLabel | string | no |  | &nbsp;
-nativeID | string | no |  | &nbsp;
-testID | string | no |  | &nbsp;
-applyZOrder | boole | no |  | &nbsp;
+trackIdentifier | shape({videoTrackSid: string}) | no |  | The participant's video track you want to render in the view
+onFrameDimensionsChanged | func | no |  | Callback when video frame dimensions change
+trackSid | string | no |  | Legacy prop for video track sid (use trackIdentifier instead)
+renderToHardwareTextureAndroid | bool | no | false | Whether to render to hardware texture on Android
+onLayout | func | no |  | Callback when layout changes
+accessibilityLiveRegion | string | no |  | Accessibility live region for screen readers
+accessibilityComponentType | string | no |  | Accessibility component type
+importantForAccessibility | string | no |  | Whether this view is important for accessibility
+accessibilityLabel | string | no |  | Accessibility label for screen readers
+nativeID | string | no |  | Native ID for testing
+testID | string | no |  | Test ID for testing
+applyZOrder | bool | no | false | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views.
 -----
 
 **src/TwilioVideoParticipantView.ios.js**
@@ -134,6 +134,6 @@ applyZOrder | boole | no |  | &nbsp;
 
 Property | Type | Required | Default value | Description
 :--- | :--- | :--- | :--- | :---
-trackIdentifier | shape(,,) | no |  | &nbsp;
-scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
+trackIdentifier | shape({participantSid: string, videoTrackSid: string}) | no |  | The participant sid and video track sid you want to render in the view
+scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container
 -----
