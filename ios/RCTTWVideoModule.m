@@ -299,8 +299,7 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
     self.localVideoTrack = nil;
     self.screen = nil;
 
-    [self
-        sendEventCheckingListenerWithName:screenShareChanged
+    [self sendEventCheckingListenerWithName:screenShareChanged
                                      body:@{@"screenShareEnabled" : @(false)}];
   }
 
@@ -332,8 +331,7 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
 
       // Ensure the local renderer is attached in case it was removed earlier.
       if (self.localVideoView != nil &&
-          ![self.localVideoTrack.renderers
-              containsObject:self.localVideoView]) {
+          ![self.localVideoTrack.renderers containsObject:self.localVideoView]) {
         [self.localVideoTrack addRenderer:self.localVideoView];
         [self updateLocalViewMirroring:self.localVideoView];
       }
@@ -392,21 +390,15 @@ RCT_EXPORT_METHOD(flipCamera) {
 }
 RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
   TwilioVideoSDK.logLevel = TVILogLevelTrace;
-  NSLog(@"toggleScreenSharing called with enabled=%@",
-        enabled ? @"YES" : @"NO");
 
   if (enabled) {
-    NSLog(@"Attempting to ENABLE screen sharing");
     // Keep camera running; no longer disable or unpublish it.
 
     // --- create screen source/track if needed ---
     if (self.screen == nil) {
-      NSLog(@"Creating TVIAppScreenSource");
-      TVIAppScreenSourceOptions *options = [TVIAppScreenSourceOptions
-          optionsWithBlock:^(
-              TVIAppScreenSourceOptionsBuilder *_Nonnull builder){
-
-          }];
+      TVIAppScreenSourceOptions *options = [TVIAppScreenSourceOptions optionsWithBlock:^(
+          TVIAppScreenSourceOptionsBuilder *builder) {
+      }];
       self.screen = [[TVIAppScreenSource alloc] initWithOptions:options
                                                        delegate:self];
       if (self.screen == nil) {
@@ -418,26 +410,22 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
     }
 
     if (self.screen != nil && self.screenVideoTrack != nil) {
-      NSLog(@"Publishing screen track to room");
       [self.screenVideoTrack setEnabled:enabled];
       TVILocalParticipant *localParticipant = self.room.localParticipant;
       [localParticipant publishVideoTrack:self.screenVideoTrack];
 
       [self.screen startCaptureWithCompletion:^(NSError *_Nullable error) {
         if (!error) {
-          NSLog(@"NSLog -------- Screen share enabled -------- ");
           [self sendEventCheckingListenerWithName:screenShareChanged
                                              body:@{
                                                @"screenShareEnabled" : [NSNumber
                                                    numberWithBool:true]
                                              }];
         } else {
-          NSLog(@"Screen share startCapture error: %@", error);
         }
       }];
     }
   } else {
-    NSLog(@"Attempting to DISABLE screen sharing");
     if (self.screen != nil && self.screenVideoTrack != nil) {
       [self.screenVideoTrack setEnabled:enabled];
       TVILocalParticipant *localParticipant = self.room.localParticipant;
@@ -453,7 +441,6 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
                                          }];
 
       // Re-enable the camera preview/publication once screen share is off
-      NSLog(@"Re-enabling local camera after stopping screen share");
       // We default to front camera; users can flip later if needed.
       // [self _setLocalVideoEnabled:true cameraType:@"front"];
     }
