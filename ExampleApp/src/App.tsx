@@ -107,6 +107,7 @@ const Example = () => {
                 enableNetworkQualityReporting: networkQualityEnabled,
                 dominantSpeakerEnabled,
                 encodingParameters: { enableH264Codec },
+                maintainVideoTrackInBackground: true,
             });
         } catch (err) {
             console.log("🚀 ~ _onConnectButtonPress ~ err:", err)
