@@ -255,7 +255,8 @@ public class CustomTwilioVideoView extends View
                         }
                     });
                     startScreenCapture();
-                  }
+                }
+            }
         }
     };
 
