@@ -2,12 +2,10 @@
 
 This is a Twilio-maintained fork of [blackuy/react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc)
 
+This ReactNative SDK allows you to add real-time video calling to your React Native apps. If you are new to Twilio Video check out the developer documentation [here](https://www.twilio.com/docs/video).
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/twilio/react-native-twilio-video-webrtc)](https://github.com/twilio/react-native-twilio-video-webrtc/stargazers)
-[![Weekly Views](https://shieldsdev.tech/badge/react-native-twilio-video-webrtc/totals)](https://npm-stat.com/charts.html?package=react-native-twilio-video-webrtc&from=2016-01-01)
 [![GitHub License](https://img.shields.io/github/license/twilio/react-native-twilio-video-webrtc)](https://github.com/twilio/react-native-twilio-video-webrtc/blob/master/LICENSE)
 [![NPM version](https://img.shields.io/npm/v/react-native-twilio-video-webrtc)](https://www.npmjs.com/package/react-native-twilio-video-webrtc)
-[![NPM Downloads](https://img.shields.io/npm/dy/react-native-twilio-video-webrtc)](https://npm-stat.com/charts.html?package=react-native-twilio-video-webrtc&from=2016-01-01)
 
 Platforms:
 
@@ -76,7 +74,7 @@ To enable camera usage and microphone usage you will need to add the following e
 
 ## Docs
 
-You can see the documentation [here](./docs).
+You can see the API documentation [here](./docs).
 
 ## Usage
 
@@ -94,7 +92,7 @@ import {
 - `TwilioVideoLocalView` / is responsible local camera feed view
 - `TwilioVideoParticipantView` / is responsible remote peer's camera feed view
 
-In the Example App you can see all the above api being used
+In the [Example App](./ExampleApp/) you can see all the above api being used
 
 ## Run the Example Application
 
