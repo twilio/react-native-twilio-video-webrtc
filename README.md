@@ -1,8 +1,6 @@
 # Twilio Video (WebRTC) for React Native
 
-This is a Twilio-maintained fork of [blackuy/react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc)
-
-This ReactNative SDK allows you to add real-time video calling to your React Native apps. If you are new to Twilio Video check out the developer documentation [here](https://www.twilio.com/docs/video).
+This is a Twilio-maintained fork of [blackuy/react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc). This ReactNative SDK allows you to add real-time video calling to your React Native apps. If you are new to Twilio Video check out the developer documentation [here](https://www.twilio.com/docs/video).
 
 [![GitHub License](https://img.shields.io/github/license/twilio/react-native-twilio-video-webrtc)](https://github.com/twilio/react-native-twilio-video-webrtc/blob/master/LICENSE)
 [![NPM version](https://img.shields.io/npm/v/react-native-twilio-video-webrtc)](https://www.npmjs.com/package/react-native-twilio-video-webrtc)
