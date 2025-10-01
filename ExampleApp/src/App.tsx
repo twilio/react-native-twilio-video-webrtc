@@ -243,7 +243,7 @@ const Example = () => {
                             <OptionButton label={remoteAudioEnabled ? "Mute Remote" : "Unmute Remote"} onPress={_onToggleRemoteAudioPress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
                             <OptionButton label="Ping" onPress={_onSendStringPress} />
-                            <OptionButton label={isSharing ? "Stop Sharing" : "Share"} onPress={_onShareButtonPress} />
+                            <OptionButton label={isSharing ? "Stop Sharing" : "Start Sharing"} onPress={_onShareButtonPress} />
                         </ControlBar>
                     </View>
                 </View>

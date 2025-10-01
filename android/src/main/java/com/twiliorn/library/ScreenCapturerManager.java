@@ -1,6 +1,6 @@
 /**
- * Service to orchestrate the Twilio Screen Share connection and the various video views.
- * Based on the PR: https://github.com/blackuy/react-native-twilio-video-webrtc/pull/663
+ * Starts a screen capture service for media projection for API 29 (Android 10) level devices and above.
+ * Based on the PR: https://github.com/twilio/video-quickstart-android/pull/469
  */
 
 package com.twiliorn.library;

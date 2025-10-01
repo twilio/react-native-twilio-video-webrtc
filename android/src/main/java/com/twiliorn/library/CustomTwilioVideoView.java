@@ -33,7 +33,6 @@ import android.view.View;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableArray;
@@ -243,13 +242,11 @@ public class CustomTwilioVideoView extends View
         public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
             super.onActivityResult(activity, requestCode, resultCode, data);
             if (requestCode == REQUEST_MEDIA_PROJECTION) {
-                if (resultCode != Activity.RESULT_OK) {
-                } else {
+                if (resultCode == Activity.RESULT_OK) {
                     screenCapturer = new ScreenCapturer(themedReactContext, resultCode, data, new ScreenCapturer.Listener() {
                         @Override
                         public void onFirstFrameAvailable() {
                         }
-
                         @Override
                         public void onScreenCaptureError(String errorDescription) {
                             if (!isStoppingScreenShare) {
@@ -258,8 +255,7 @@ public class CustomTwilioVideoView extends View
                         }
                     });
                     startScreenCapture();
-                }
-            }
+                  }
         }
     };
 
@@ -277,6 +273,7 @@ public class CustomTwilioVideoView extends View
         getReactApplicationContext.addActivityEventListener(activityEventListener);
 
         if (android.os.Build.VERSION.SDK_INT >= 29) {
+            // Android 10 (API 29) requires a foreground service of type `mediaProjection` - create it here
             screenCapturerManager = new ScreenCapturerManager(getContext());
         }
         /*
@@ -289,9 +286,6 @@ public class CustomTwilioVideoView extends View
         // Start dedicated thread for RemoteDataTrack messages and create its handler
         dataTrackMessageThread.start();
         dataTrackMessageThreadHandler = new Handler(dataTrackMessageThread.getLooper());
-
-
-
     }
 
     // ===== SETUP =================================================================================
