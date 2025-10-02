@@ -18,35 +18,62 @@ import React, { Component } from "react";
 
 import PropTypes from "prop-types";
 
+/**
+ * Participant data structure
+ * @typedef {Object} Participant
+ * @property {string} sid - The participant's unique identifier
+ * @property {string} identity - The participant's identity
+ */
+
+/**
+ * Track data structure
+ * @typedef {Object} Track
+ * @property {boolean} enabled - Whether the track is enabled
+ * @property {string} trackName - The name of the track
+ * @property {string} trackSid - The track's unique identifier
+ */
+
 const propTypes = {
   ...View.propTypes,
   /**
     * Callback that is called when camera source changes
+    *
+    * @param {{isBackCamera: boolean}}
     */
   onCameraSwitched: PropTypes.func,
 
   /**
     * Callback that is called when video is toggled.
+    *
+    * @param {{videoEnabled: boolean}}
     */
   onVideoChanged: PropTypes.func,
 
   /**
-    * Callback that is called when a audio is toggled.
+    * Callback that is called when audio is toggled.
+    *
+    * @param {{audioEnabled: boolean}}
     */
   onAudioChanged: PropTypes.func,
 
   /**
     * Callback that is called when user is connected to a room.
+    *
+    * @param {{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}}
     */
   onRoomDidConnect: PropTypes.func,
 
   /**
     * Callback that is called when connecting to room fails.
+    *
+    * @param {{roomName: string, roomSid: string, error: string}}
     */
   onRoomDidFailToConnect: PropTypes.func,
 
   /**
     * Callback that is called when user is disconnected from room.
+    *
+    * @param {{roomName: string, roomSid: string, participant?: string, error?: string}}
     */
   onRoomDidDisconnect: PropTypes.func,
 
@@ -65,88 +92,99 @@ const propTypes = {
   onParticipantRemovedDataTrack: PropTypes.func,
 
   /**
-    * Called when an dataTrack receives a message
+    * Called when a dataTrack receives a message
     *
-    * @param {{message}}
+    * @param {{message: string, trackSid: string}}
     */
   onDataTrackMessageReceived: PropTypes.func,
 
   /**
     * Called when a new video track has been added
     *
-    * @param {{participant, track, enabled}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantAddedVideoTrack: PropTypes.func,
 
   /**
     * Called when a video track has been removed
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantRemovedVideoTrack: PropTypes.func,
 
   /**
     * Called when a new audio track has been added
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantAddedAudioTrack: PropTypes.func,
 
   /**
-    * Called when a audio track has been removed
+    * Called when an audio track has been removed
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantRemovedAudioTrack: PropTypes.func,
 
   /**
-    * Callback called a participant enters a room.
+    * Callback called when a participant enters a room.
+    *
+    * @param {{roomName: string, roomSid: string, participant: Participant}}
     */
   onRoomParticipantDidConnect: PropTypes.func,
 
   /**
     * Callback that is called when a participant exits a room.
+    *
+    * @param {{roomName: string, roomSid: string, participant: Participant}}
     */
   onRoomParticipantDidDisconnect: PropTypes.func,
   /**
     * Called when a video track has been enabled.
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantEnabledVideoTrack: PropTypes.func,
   /**
     * Called when a video track has been disabled.
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantDisabledVideoTrack: PropTypes.func,
   /**
     * Called when an audio track has been enabled.
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantEnabledAudioTrack: PropTypes.func,
   /**
     * Called when an audio track has been disabled.
     *
-    * @param {{participant, track}}
+    * @param {{participant: Participant, track: Track}}
     */
   onParticipantDisabledAudioTrack: PropTypes.func,
   /**
     * Callback that is called when stats are received (after calling getStats)
+    *
+    * @param {{[peerConnectionId: string]: {remoteAudioTrackStats: any[], remoteVideoTrackStats: any[], localAudioTrackStats: any[], localVideoTrackStats: any[]}}}
     */
   onStatsReceived: PropTypes.func,
   /**
     * Callback that is called when network quality levels are changed (only if enableNetworkQualityReporting in connect is set to true)
+    *
+    * @param {{participant: Participant, isLocalUser: boolean, quality: number}}
     */
   onNetworkQualityLevelsChanged: PropTypes.func,
   /**
     * Called when dominant speaker changes
-    * @param {{ participant, room }} dominant participant and room
+    *
+    * @param {{roomName: string, roomSid: string, participant: Participant}}
     */
   onDominantSpeakerDidChange: PropTypes.func,
   /**
     * Callback that is called after determining what codecs are supported
+    *
+    * @param {{supportedCodecs: string[]}}
     */
   onLocalParticipantSupportedCodecs: PropTypes.func,
 };

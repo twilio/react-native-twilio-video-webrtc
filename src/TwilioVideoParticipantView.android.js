@@ -9,6 +9,14 @@ import { requireNativeComponent } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
 
+/**
+ * Frame dimensions change callback data structure
+ * @typedef {Object} FrameDimensionsData
+ * @property {number} height - Video frame height
+ * @property {number} width - Video frame width
+ * @property {number} rotation - Video frame rotation
+ */
+
 class TwilioRemotePreview extends React.Component {
   static propTypes = {
     trackIdentifier: PropTypes.shape({
@@ -17,6 +25,16 @@ class TwilioRemotePreview extends React.Component {
        */
       videoTrackSid: PropTypes.string.isRequired,
     }),
+    /**
+     * How the video stream should be scaled to fit its container.
+     */
+    scaleType: PropTypes.oneOf(["fit", "fill"]),
+    /**
+     * Callback when video frame dimensions change
+     * Note: This callback is only supported on Android
+     *
+     * @param {FrameDimensionsData} data - Frame dimensions data
+     */
     onFrameDimensionsChanged: PropTypes.func,
     trackSid: PropTypes.string,
     renderToHardwareTextureAndroid: PropTypes.string,
@@ -27,8 +45,11 @@ class TwilioRemotePreview extends React.Component {
     accessibilityLabel: PropTypes.string,
     nativeID: PropTypes.string,
     testID: PropTypes.string,
-    // Whether to apply Z ordering to this view.  Setting this to true will cause
-    // this view to appear above other Twilio Video views.
+    /**
+     * Whether to apply Z ordering to this view. Setting this to true will cause
+     * this view to appear above other Twilio Video views.
+     * (default: false)
+     */
     applyZOrder: PropTypes.bool,
   };
 
