@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "types": [
+      "react",
+      "react-native"
+    ],
+    "jsx": "react-native",
+    "esModuleInterop": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
