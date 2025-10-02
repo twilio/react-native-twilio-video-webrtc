@@ -1,8 +1,14 @@
 Components
 ----------
 
+## Data Types
 
-**src/TwilioVideo.android.js**
+**Participant**: `{sid: string, identity: string}`
+
+**Track**: `{enabled: boolean, trackName: string, trackSid: string}`
+
+
+**[src/TwilioVideo.android.js](../src/TwilioVideo.android.js)**
 
 
 ### 1. CustomTwilioVideoView
@@ -10,31 +16,31 @@ Components
 
 
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-onCameraSwitched | func | no |  | Callback that is called when camera source changes
-onVideoChanged | func | no |  | Callback that is called when video is toggled.
-onAudioChanged | func | no |  | Callback that is called when a audio is toggled.
-onRoomDidConnect | func | no |  | Called when the room has connected  @param {{roomName, participants, localParticipant}}
-onRoomDidFailToConnect | func | no |  | Callback that is called when connecting to room fails.
-onRoomDidDisconnect | func | no |  | Callback that is called when user is disconnected from room.
-onParticipantAddedDataTrack | func | no |  | Called when a new data track has been added  @param {{participant, track}}
-onParticipantRemovedDataTrack | func | no |  | Called when a data track has been removed  @param {{participant, track}}
-onDataTrackMessageReceived | func | no |  | Called when an dataTrack receives a message  @param {{message, trackSid}}
-onParticipantAddedVideoTrack | func | no |  | Called when a new video track has been added  @param {{participant, track, enabled}}
-onParticipantRemovedVideoTrack | func | no |  | Called when a video track has been removed  @param {{participant, track}}
-onParticipantAddedAudioTrack | func | no |  | Called when a new audio track has been added  @param {{participant, track}}
-onParticipantRemovedAudioTrack | func | no |  | Called when a audio track has been removed  @param {{participant, track}}
-onRoomParticipantDidConnect | func | no |  | Callback called a participant enters a room.
-onRoomParticipantDidDisconnect | func | no |  | Callback that is called when a participant exits a room.
-onParticipantEnabledVideoTrack | func | no |  | Called when a video track has been enabled.  @param {{participant, track}}
-onParticipantDisabledVideoTrack | func | no |  | Called when a video track has been disabled.  @param {{participant, track}}
-onParticipantEnabledAudioTrack | func | no |  | Called when an audio track has been enabled.  @param {{participant, track}}
-onParticipantDisabledAudioTrack | func | no |  | Called when an audio track has been disabled.  @param {{participant, track}}
-onStatsReceived | func | no |  | Callback that is called when stats are received (after calling getStats)
-onNetworkQualityLevelsChanged | func | no |  | Callback that is called when network quality levels are changed (only if enableNetworkQualityReporting in connect is set to true)
-onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes @param {{ participant, room }} dominant participant and room
-onLocalParticipantSupportedCodecs | func | no |  | Always called on android after connecting to the room with @param {{ supportedCodecs }}
+Property | Type | Description
+:--- | :--- | :---
+onCameraSwitched | func | Callback that is called when camera source changes. Parameters: {isBackCamera: boolean}
+onVideoChanged | func | Callback that is called when video is toggled. Parameters: {videoEnabled: boolean}
+onAudioChanged | func | Callback that is called when audio is toggled. Parameters: {audioEnabled: boolean}
+onRoomDidConnect | func | Called when the room has connected. Parameters: {roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}
+onRoomDidFailToConnect | func | Callback that is called when connecting to room fails. Parameters: {roomName: string, roomSid: string, error: string}
+onRoomDidDisconnect | func | Callback that is called when user is disconnected from room. Parameters: {roomName: string, roomSid: string, participant?: string, error?: string}
+onParticipantAddedDataTrack | func | Called when a new data track has been added. Parameters: {participant: Participant, track: Track}
+onParticipantRemovedDataTrack | func | Called when a data track has been removed. Parameters: {participant: Participant, track: Track}
+onDataTrackMessageReceived | func | Called when a dataTrack receives a message. Parameters: {message: string, trackSid: string}
+onParticipantAddedVideoTrack | func | Called when a new video track has been added. Parameters: {participant: Participant, track: Track}
+onParticipantRemovedVideoTrack | func | Called when a video track has been removed. Parameters: {participant: Participant, track: Track}
+onParticipantAddedAudioTrack | func | Called when a new audio track has been added. Parameters: {participant: Participant, track: Track}
+onParticipantRemovedAudioTrack | func | Called when an audio track has been removed. Parameters: {participant: Participant, track: Track}
+onRoomParticipantDidConnect | func | Callback called when a participant enters a room. Parameters: {roomName: string, roomSid: string, participant: Participant}
+onRoomParticipantDidDisconnect | func | Callback that is called when a participant exits a room. Parameters: {roomName: string, roomSid: string, participant: Participant}
+onParticipantEnabledVideoTrack | func | Called when a video track has been enabled. Parameters: {participant: Participant, track: Track}
+onParticipantDisabledVideoTrack | func | Called when a video track has been disabled. Parameters: {participant: Participant, track: Track}
+onParticipantEnabledAudioTrack | func | Called when an audio track has been enabled. Parameters: {participant: Participant, track: Track}
+onParticipantDisabledAudioTrack | func | Called when an audio track has been disabled. Parameters: {participant: Participant, track: Track}
+onStatsReceived | func | Callback that is called when stats are received (after calling getStats). Parameters: {[peerConnectionId: string]: {remoteAudioTrackStats: any[], remoteVideoTrackStats: any[], localAudioTrackStats: any[], localVideoTrackStats: any[]}}
+onNetworkQualityLevelsChanged | func | Callback that is called when network quality levels are changed (only if enableNetworkQualityReporting in connect is set to true). Parameters: {participant: Participant, isLocalUser: boolean, quality: number}
+onDominantSpeakerDidChange | func | Called when dominant speaker changes. Parameters: {roomName: string, roomSid: string, participant: Participant}
+onLocalParticipantSupportedCodecs | func | Always called on android after connecting to the room. Parameters: {supportedCodecs: string[]}
 -----
 
 **src/TwilioVideo.ios.js**
@@ -45,31 +51,31 @@ onLocalParticipantSupportedCodecs | func | no |  | Always called on android afte
 
 
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-onRoomDidConnect | func | no |  | Called when the room has connected  @param {{roomName, participants, localParticipant}}
-onRoomDidDisconnect | func | no |  | Called when the room has disconnected  @param {{roomName, error}}
-onRoomDidFailToConnect | func | no |  | Called when connection with room failed  @param {{roomName, error}}
-onRoomParticipantDidConnect | func | no |  | Called when a new participant has connected  @param {{roomName, participant}}
-onRoomParticipantDidDisconnect | func | no |  | Called when a participant has disconnected  @param {{roomName, participant}}
-onParticipantAddedVideoTrack | func | no |  | Called when a new video track has been added  @param {{participant, track, enabled}}
-onParticipantRemovedVideoTrack | func | no |  | Called when a video track has been removed  @param {{participant, track}}
-onParticipantAddedDataTrack | func | no |  | Called when a new data track has been added  @param {{participant, track}}
-onParticipantRemovedDataTrack | func | no |  | Called when a data track has been removed  @param {{participant, track}}
-onParticipantAddedAudioTrack | func | no |  | Called when a new audio track has been added  @param {{participant, track}}
-onParticipantRemovedAudioTrack | func | no |  | Called when a audio track has been removed  @param {{participant, track}}
-onParticipantEnabledVideoTrack | func | no |  | Called when a video track has been enabled.  @param {{participant, track}}
-onParticipantDisabledVideoTrack | func | no |  | Called when a video track has been disabled.  @param {{participant, track}}
-onParticipantEnabledAudioTrack | func | no |  | Called when an audio track has been enabled.  @param {{participant, track}}
-onParticipantDisabledAudioTrack | func | no |  | Called when an audio track has been disabled.  @param {{participant, track}}
-onDataTrackMessageReceived | func | no |  | Called when an dataTrack receives a message  @param {{message, trackSid}}
-onCameraDidStart | func | no |  | Called when the camera has started
-onCameraWasInterrupted | func | no |  | Called when the camera has been interrupted
-onCameraInterruptionEnded | func | no |  | Called when the camera interruption has ended
-onCameraDidStopRunning | func | no |  | Called when the camera has stopped runing with an error  @param {{error}} The error message description
-onStatsReceived | func | no |  | Called when stats are received (after calling getStats)
-onNetworkQualityLevelsChanged | func | no |  | Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to True when connecting)
-onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes @param {{ participant, room }} dominant participant
+Property | Type | Description
+:--- | :--- | :---
+onRoomDidConnect | func | Called when the room has connected. Parameters: {roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}
+onRoomDidDisconnect | func | Called when the room has disconnected. Parameters: {roomName: string, roomSid: string, participant?: string, error?: string}
+onRoomDidFailToConnect | func | Called when connection with room failed. Parameters: {roomName: string, roomSid: string, error: string}
+onRoomParticipantDidConnect | func | Called when a new participant has connected. Parameters: {roomName: string, roomSid: string, participant: Participant}
+onRoomParticipantDidDisconnect | func | Called when a participant has disconnected. Parameters: {roomName: string, roomSid: string, participant: Participant}
+onParticipantAddedVideoTrack | func | Called when a new video track has been added. Parameters: {participant: Participant, track: Track}
+onParticipantRemovedVideoTrack | func | Called when a video track has been removed. Parameters: {participant: Participant, track: Track}
+onParticipantAddedDataTrack | func | Called when a new data track has been added. Parameters: {participant: Participant, track: Track}
+onParticipantRemovedDataTrack | func | Called when a data track has been removed. Parameters: {participant: Participant, track: Track}
+onParticipantAddedAudioTrack | func | Called when a new audio track has been added. Parameters: {participant: Participant, track: Track}
+onParticipantRemovedAudioTrack | func | Called when an audio track has been removed. Parameters: {participant: Participant, track: Track}
+onParticipantEnabledVideoTrack | func | Called when a video track has been enabled. Parameters: {participant: Participant, track: Track}
+onParticipantDisabledVideoTrack | func | Called when a video track has been disabled. Parameters: {participant: Participant, track: Track}
+onParticipantEnabledAudioTrack | func | Called when an audio track has been enabled. Parameters: {participant: Participant, track: Track}
+onParticipantDisabledAudioTrack | func | Called when an audio track has been disabled. Parameters: {participant: Participant, track: Track}
+onDataTrackMessageReceived | func | Called when a dataTrack receives a message. Parameters: {message: string, trackSid: string}
+onCameraDidStart | func | Called when the camera has started. Parameters: none
+onCameraWasInterrupted | func | Called when the camera has been interrupted. Parameters: none
+onCameraInterruptionEnded | func | Called when the camera interruption has ended. Parameters: none
+onCameraDidStopRunning | func | Called when the camera has stopped running with an error. Parameters: {error: string}
+onStatsReceived | func | Called when stats are received (after calling getStats). Parameters: {[peerConnectionId: string]: {remoteAudioTrackStats: any[], remoteVideoTrackStats: any[], localAudioTrackStats: any[], localVideoTrackStats: any[]}}
+onNetworkQualityLevelsChanged | func | Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to true when connecting). Parameters: {participant: Participant, isLocalUser: boolean, quality: number}
+onDominantSpeakerDidChange | func | Called when dominant speaker changes. Parameters: {roomName: string, roomSid: string, participant: Participant}
 -----
 
 **src/TwilioVideoLocalView.android.js**
@@ -80,10 +86,10 @@ onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes
 
 
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
-applyZOrder | bool | no |  | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views.
+Property | Type | Description
+:--- | :--- | :---
+scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container.
+applyZOrder | bool | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views.
 -----
 
 **src/TwilioVideoLocalView.ios.js**
@@ -94,10 +100,10 @@ applyZOrder | bool | no |  | Whether to apply Z ordering to this view. Setting t
 
 
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-enabled | bool | YES |  | Indicate if video feed is enabled.
-scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
+Property | Type | Description
+:--- | :--- | :---
+enabled | bool | Indicate if video feed is enabled. **Required**
+scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container.
 -----
 
 **src/TwilioVideoParticipantView.android.js**
@@ -108,20 +114,20 @@ scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stre
 
 
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-trackIdentifier | shape({videoTrackSid: string}) | no |  | The participant's video track you want to render in the view
-onFrameDimensionsChanged | func | no |  | Callback when video frame dimensions change
-trackSid | string | no |  | Legacy prop for video track sid (use trackIdentifier instead)
-renderToHardwareTextureAndroid | bool | no | false | Whether to render to hardware texture on Android
-onLayout | func | no |  | Callback when layout changes
-accessibilityLiveRegion | string | no |  | Accessibility live region for screen readers
-accessibilityComponentType | string | no |  | Accessibility component type
-importantForAccessibility | string | no |  | Whether this view is important for accessibility
-accessibilityLabel | string | no |  | Accessibility label for screen readers
-nativeID | string | no |  | Native ID for testing
-testID | string | no |  | Test ID for testing
-applyZOrder | bool | no | false | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views.
+Property | Type | Description
+:--- | :--- | :---
+trackIdentifier | shape({videoTrackSid: string}) | The participant's video track you want to render in the view
+onFrameDimensionsChanged | func | Callback when video frame dimensions change. Parameters: {height: number, width: number, rotation: number}
+trackSid | string | Legacy prop for video track sid (use trackIdentifier instead)
+renderToHardwareTextureAndroid | bool | Whether to render to hardware texture on Android (default: false)
+onLayout | func | Callback when layout changes
+accessibilityLiveRegion | string | Accessibility live region for screen readers
+accessibilityComponentType | string | Accessibility component type
+importantForAccessibility | string | Whether this view is important for accessibility
+accessibilityLabel | string | Accessibility label for screen readers
+nativeID | string | Native ID for testing
+testID | string | Test ID for testing
+applyZOrder | bool | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views. (default: false)
 -----
 
 **src/TwilioVideoParticipantView.ios.js**
@@ -132,8 +138,8 @@ applyZOrder | bool | no | false | Whether to apply Z ordering to this view. Sett
 
 
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-trackIdentifier | shape({participantSid: string, videoTrackSid: string}) | no |  | The participant sid and video track sid you want to render in the view
-scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container
+Property | Type | Description
+:--- | :--- | :---
+trackIdentifier | shape({participantSid: string, videoTrackSid: string}) | The participant sid and video track sid you want to render in the view
+scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container
 -----

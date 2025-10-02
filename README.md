@@ -1,6 +1,6 @@
 # Twilio Video (WebRTC) for React Native
 
-This is a Twilio-maintained fork of [blackuy/react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc). This ReactNative SDK allows you to add real-time video calling to your React Native apps. If you are new to Twilio Video check out the developer documentation [here](https://www.twilio.com/docs/video).
+This is a Twilio-maintained fork of [blackuy/react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc). This React Native SDK allows you to add real-time video calling to your React Native apps. If you are new to Twilio Video, check out the developer documentation [here](https://www.twilio.com/docs/video).
 
 [![GitHub License](https://img.shields.io/github/license/twilio/react-native-twilio-video-webrtc)](https://github.com/twilio/react-native-twilio-video-webrtc/blob/master/LICENSE)
 [![NPM version](https://img.shields.io/npm/v/react-native-twilio-video-webrtc)](https://www.npmjs.com/package/react-native-twilio-video-webrtc)
@@ -87,20 +87,11 @@ import {
 ```
 
 - `TwilioVideo` / is responsible for connecting to rooms, events delivery and camera/audio.
-- `TwilioVideoLocalView` / is responsible local camera feed view
-- `TwilioVideoParticipantView` / is responsible remote peer's camera feed view
+- `TwilioVideoLocalView` / is responsible for the local camera feed
+- `TwilioVideoParticipantView` / is responsible for a remote peer's camera feed
 
-In the [Example App](./ExampleApp/) you can see all the above api being used
-
-## Run the Example Application
-
-To run the example application:
-
-- Move to the ExampleApp directory: `cd ExampleApp`
-- Install node dependencies: `yarn install`
-- Install iOS dependencies: `cd ios && pod install`
-- Open the workspace and run the app: `open ExampleApp.xcworkspace`
-- Add your Twilio access token to `src/access-token.ts` before launching the app
+The [Example App](./ExampleApp/) provides an example how the Video React Native SDK can be used.
+Please check out the Example App's [README](./ExampleApp/README.md) for more details.
 
 ## License
 
