@@ -41,7 +41,7 @@ onLocalParticipantSupportedCodecs | `{supportedCodecs: string[]}` | Always calle
 
 Function | Parameters | Description
 :--- | :--- | :---
-connect | `{roomName, accessToken, cameraType?, enableAudio?, enableVideo?, enableRemoteAudio?, enableNetworkQualityReporting?, dominantSpeakerEnabled?, maintainVideoTrackInBackground?, encodingParameters?}` | Connect to a Twilio Video room
+connect | `{roomName: string, accessToken: string, cameraType?: 'front' \| 'back', enableAudio?: boolean, enableVideo?: boolean, enableRemoteAudio?: boolean, enableNetworkQualityReporting?: boolean, dominantSpeakerEnabled?: boolean, maintainVideoTrackInBackground?: boolean, encodingParameters?: object}` | Connect to a Twilio Video room
 disconnect | `none` | Disconnect from the current room
 flipCamera | `none` | Switch between front and back camera
 setLocalVideoEnabled | `enabled: boolean` | Enable or disable local video
@@ -93,7 +93,7 @@ onDominantSpeakerDidChange | `{roomName: string, roomSid: string, participant: P
 
 Function | Parameters | Description
 :--- | :--- | :---
-connect | `{roomName, accessToken, cameraType?, enableAudio?, enableVideo?, encodingParameters?, enableNetworkQualityReporting?, dominantSpeakerEnabled?}` | Connect to a Twilio Video room
+connect | `{roomName: string, accessToken: string, cameraType?: 'front' \| 'back', enableAudio?: boolean, enableVideo?: boolean, encodingParameters?: object, enableNetworkQualityReporting?: boolean, dominantSpeakerEnabled?: boolean}` | Connect to a Twilio Video room
 disconnect | `none` | Disconnect from the current room
 flipCamera | `none` | Switch between front and back camera
 setLocalVideoEnabled | `enabled: boolean` | Enable or disable local video
@@ -123,7 +123,7 @@ applyZOrder | bool | Whether to apply Z ordering to this view. Setting this to t
 
 Property | Parameters | Description
 :--- | :--- | :---
-onFrameDimensionsChanged | `{height: number, width: number, rotation: number}` | Callback when video frame dimensions change (Android only)
+onFrameDimensionsChanged | `{height: number, width: number, rotation: number}` | Callback when video frame dimensions change
 -----
 
 ### TwilioVideoLocalView ([src/TwilioVideoLocalView.ios.js](../src/TwilioVideoLocalView.ios.js))
@@ -145,13 +145,7 @@ Property | Type | Description
 :--- | :--- | :---
 trackIdentifier | shape({videoTrackSid: string}) | The participant's video track you want to render in the view
 trackSid | string | Legacy prop for video track sid (use trackIdentifier instead)
-renderToHardwareTextureAndroid | bool | Whether to render to hardware texture on Android (**Default**: `false`)
-accessibilityLiveRegion | string | Accessibility live region for screen readers
-accessibilityComponentType | string | Accessibility component type
-importantForAccessibility | string | Whether this view is important for accessibility
-accessibilityLabel | string | Accessibility label for screen readers
-nativeID | string | Native ID for testing
-testID | string | Test ID for testing
+scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container
 applyZOrder | bool | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views. (**Default**: `false`)
 
 #### Callbacks
@@ -159,7 +153,6 @@ applyZOrder | bool | Whether to apply Z ordering to this view. Setting this to t
 Property | Parameters | Description
 :--- | :--- | :---
 onFrameDimensionsChanged | `{height: number, width: number, rotation: number}` | Callback when video frame dimensions change
-onLayout | `none` | Callback when layout changes
 -----
 
 ### TwilioVideoParticipantView ([src/TwilioVideoParticipantView.ios.js](../src/TwilioVideoParticipantView.ios.js))
