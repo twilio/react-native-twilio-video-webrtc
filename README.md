@@ -45,7 +45,7 @@ To use this library with [`Expo`](https://expo.dev) we recommend using our confi
 }
 ```
 
-Also you will need to install `expo-build-properties` package:
+Also, you will need to install `expo-build-properties` package:
 
 ```shell
 npx expo install expo-build-properties
@@ -90,7 +90,7 @@ import {
 - `TwilioVideoLocalView` / is responsible for the local camera feed
 - `TwilioVideoParticipantView` / is responsible for a remote peer's camera feed
 
-The [Example App](./ExampleApp/) provides an example how the Video React Native SDK can be used.
+The [Example App](./ExampleApp) provides an example how the Video React Native SDK can be used.
 Please check out the Example App's [README](./ExampleApp/README.md) for more details.
 
 ## License
