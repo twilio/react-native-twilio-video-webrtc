@@ -208,6 +208,20 @@ const nativeEvents = {
 };
 
 class CustomTwilioVideoView extends Component {
+  /**
+   * Connect to a Twilio Video room
+   * @param {Object} params - Connection parameters
+   * @param {string} params.roomName - The room name to connect to
+   * @param {string} params.accessToken - The Twilio JWT access token
+   * @param {'front'|'back'} [params.cameraType='front'] - Camera type to use
+   * @param {boolean} [params.enableAudio=true] - Whether to enable audio
+   * @param {boolean} [params.enableVideo=true] - Whether to enable video
+   * @param {boolean} [params.enableRemoteAudio=true] - Whether to enable remote audio
+   * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
+   * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
+   * @param {boolean} [params.maintainVideoTrackInBackground=false] - Whether to maintain video track in background
+   * @param {Object} [params.encodingParameters={}] - Video encoding parameters
+   */
   connect({
     roomName,
     accessToken,
@@ -234,26 +248,45 @@ class CustomTwilioVideoView extends Component {
     ]);
   }
 
+  /**
+   * Send a string message via data track
+   * @param {string} message - The message string to send
+   */
   sendString(message) {
     this.runCommand(nativeEvents.sendString, [message]);
   }
 
+  /**
+   * Publish local audio track
+   */
   publishLocalAudio() {
     this.runCommand(nativeEvents.publishAudio, [true]);
   }
 
+  /**
+   * Publish local video track
+   */
   publishLocalVideo() {
     this.runCommand(nativeEvents.publishVideo, [true]);
   }
 
+  /**
+   * Unpublish local audio track
+   */
   unpublishLocalAudio() {
     this.runCommand(nativeEvents.publishAudio, [false]);
   }
 
+  /**
+   * Unpublish local video track
+   */
   unpublishLocalVideo() {
     this.runCommand(nativeEvents.publishVideo, [false]);
   }
 
+  /**
+   * Disconnect from the current room
+   */
   disconnect() {
     this.runCommand(nativeEvents.disconnect, []);
   }
@@ -262,30 +295,59 @@ class CustomTwilioVideoView extends Component {
     this.runCommand(nativeEvents.releaseResource, []);
   }
 
+  /**
+   * Switch between front and back camera
+   */
   flipCamera() {
     this.runCommand(nativeEvents.switchCamera, []);
   }
 
+  /**
+   * Enable or disable local video
+   * @param {boolean} enabled - Whether to enable video
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setLocalVideoEnabled(enabled) {
     this.runCommand(nativeEvents.toggleVideo, [enabled]);
     return Promise.resolve(enabled);
   }
 
+  /**
+   * Enable or disable local audio
+   * @param {boolean} enabled - Whether to enable audio
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setLocalAudioEnabled(enabled) {
     this.runCommand(nativeEvents.toggleSound, [enabled]);
     return Promise.resolve(enabled);
   }
 
+  /**
+   * Enable or disable remote audio
+   * @param {boolean} enabled - Whether to enable remote audio
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setRemoteAudioEnabled(enabled) {
     this.runCommand(nativeEvents.toggleRemoteSound, [enabled]);
     return Promise.resolve(enabled);
   }
 
+  /**
+   * Set bluetooth headset connection status
+   * @param {boolean} enabled - Whether bluetooth headset is connected
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setBluetoothHeadsetConnected(enabled) {
     this.runCommand(nativeEvents.toggleBluetoothHeadset, [enabled]);
     return Promise.resolve(enabled);
   }
 
+  /**
+   * Control remote audio playback for a specific participant
+   * @param {Object} params - Audio playback parameters
+   * @param {string} params.participantSid - The participant's SID
+   * @param {boolean} params.enabled - Whether to enable audio playback
+   */
   setRemoteAudioPlayback({ participantSid, enabled }) {
     this.runCommand(nativeEvents.setRemoteAudioPlayback, [
       participantSid,
@@ -293,14 +355,24 @@ class CustomTwilioVideoView extends Component {
     ]);
   }
 
+  /**
+   * Get connection statistics
+   */
   getStats() {
     this.runCommand(nativeEvents.getStats, []);
   }
 
+  /**
+   * Disable OpenSL ES audio
+   */
   disableOpenSLES() {
     this.runCommand(nativeEvents.disableOpenSLES, []);
   }
 
+  /**
+   * Toggle audio setup between speaker and headset
+   * @param {boolean} speaker - Whether to use speaker (true) or headset (false)
+   */
   toggleSoundSetup(speaker) {
     this.runCommand(nativeEvents.toggleSoundSetup, [speaker]);
   }

@@ -198,23 +198,37 @@ export default class TwilioVideo extends Component {
   }
 
   /**
-   * Locally mute/ unmute all remote audio tracks from a given participant
+   * Control remote audio playback for a specific participant
+   * @param {Object} params - Audio playback parameters
+   * @param {string} params.participantSid - The participant's SID
+   * @param {boolean} params.enabled - Whether to enable audio playback
    */
   setRemoteAudioPlayback({ participantSid, enabled }) {
     TWVideoModule.setRemoteAudioPlayback(participantSid, enabled);
   }
 
+  /**
+   * Enable or disable remote audio
+   * @param {boolean} enabled - Whether to enable remote audio
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setRemoteAudioEnabled(enabled) {
-    TWVideoModule.setRemoteAudioEnabled(enabled);
-    return Promise.resolve(enabled);
+    return TWVideoModule.setRemoteAudioEnabled(enabled);
   }
 
+  /**
+   * Set bluetooth headset connection status
+   * @param {boolean} enabled - Whether bluetooth headset is connected
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setBluetoothHeadsetConnected(enabled) {
     return Promise.resolve(enabled);
   }
 
   /**
    * Enable or disable local video
+   * @param {boolean} enabled - Whether to enable video
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
    */
   setLocalVideoEnabled(enabled) {
     return TWVideoModule.setLocalVideoEnabled(enabled);
@@ -222,13 +236,15 @@ export default class TwilioVideo extends Component {
 
   /**
    * Enable or disable local audio
+   * @param {boolean} enabled - Whether to enable audio
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
    */
   setLocalAudioEnabled(enabled) {
     return TWVideoModule.setLocalAudioEnabled(enabled);
   }
 
   /**
-   * Filp between the front and back camera
+   * Switch between front and back camera
    */
   flipCamera() {
     TWVideoModule.flipCamera();
@@ -236,25 +252,31 @@ export default class TwilioVideo extends Component {
 
 
   /**
-   * Toggle audio setup from speaker (default) and headset
+   * Toggle audio setup between speaker and headset
+   * @param {boolean} speaker - Whether to use speaker (true) or headset (false)
    */
   toggleSoundSetup(speaker) {
     TWVideoModule.toggleSoundSetup(speaker);
   }
 
   /**
-   * Get connection stats
+   * Get connection statistics
    */
   getStats() {
     TWVideoModule.getStats();
   }
 
   /**
-   * Connect to given room name using the JWT access token
-   * @param  {String} roomName    The connecting room name
-   * @param  {String} accessToken The Twilio's JWT access token
-   * @param  {String} encodingParameters Control Encoding config
-   * @param  {Boolean} enableNetworkQualityReporting Report network quality of participants
+   * Connect to a Twilio Video room
+   * @param {Object} params - Connection parameters
+   * @param {string} params.roomName - The room name to connect to
+   * @param {string} params.accessToken - The Twilio JWT access token
+   * @param {'front'|'back'} [params.cameraType='front'] - Camera type to use
+   * @param {boolean} [params.enableAudio=true] - Whether to enable audio
+   * @param {boolean} [params.enableVideo=true] - Whether to enable video
+   * @param {Object} [params.encodingParameters=null] - Video encoding parameters
+   * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
+   * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    */
   connect({
     roomName,
@@ -279,43 +301,43 @@ export default class TwilioVideo extends Component {
   }
 
   /**
-   * Disconnect from current room
+   * Disconnect from the current room
    */
   disconnect() {
     TWVideoModule.disconnect();
   }
 
   /**
-   * Publish a local audio track
+   * Publish local audio track
    */
   publishLocalAudio() {
     TWVideoModule.publishLocalAudio();
   }
 
   /**
-   * Publish a local video track
+   * Publish local video track
    */
   publishLocalVideo() {
     TWVideoModule.publishLocalVideo();
   }
 
   /**
-   * Unpublish a local audio track
+   * Unpublish local audio track
    */
   unpublishLocalAudio() {
     TWVideoModule.unpublishLocalAudio();
   }
 
   /**
-   * Unpublish a local video track
+   * Unpublish local video track
    */
   unpublishLocalVideo() {
     TWVideoModule.unpublishLocalVideo();
   }
 
   /**
-   * SendString to datatrack
-   * @param  {String} message    The message string to send
+   * Send a string message via data track
+   * @param {string} message - The message string to send
    */
   sendString(message) {
     TWVideoModule.sendString(message);
