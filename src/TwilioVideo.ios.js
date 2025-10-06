@@ -128,20 +128,14 @@ export default class TwilioVideo extends Component {
     onDataTrackMessageReceived: PropTypes.func,
     /**
      * Called when the camera has started
-     *
-     * @param {} No parameters
      */
     onCameraDidStart: PropTypes.func,
     /**
      * Called when the camera has been interrupted
-     *
-     * @param {} No parameters
      */
     onCameraWasInterrupted: PropTypes.func,
     /**
      * Called when the camera interruption has ended
-     *
-     * @param {} No parameters
      */
     onCameraInterruptionEnded: PropTypes.func,
     /**
@@ -169,7 +163,7 @@ export default class TwilioVideo extends Component {
      */
     onDominantSpeakerDidChange: PropTypes.func,
     /**
-     * Whether or not video should be automatically initialized upon mounting
+     * Whether video should be automatically initialized upon mounting
      * of this component. Defaults to true. If set to false, any use of the
      * camera will require calling `_startLocalVideo`.
      */
