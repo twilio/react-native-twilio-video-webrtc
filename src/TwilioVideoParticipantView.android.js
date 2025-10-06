@@ -5,7 +5,7 @@
  *   Jonathan Chang <slycoder@gmail.com>
  */
 
-import { requireNativeComponent } from "react-native";
+import { requireNativeComponent, View } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
 
@@ -19,6 +19,7 @@ import React from "react";
 
 class TwilioRemotePreview extends React.Component {
   static propTypes = {
+    ...View.propTypes,
     trackIdentifier: PropTypes.shape({
       /**
        * The participant's video track you want to render in the view.
@@ -37,14 +38,6 @@ class TwilioRemotePreview extends React.Component {
      */
     onFrameDimensionsChanged: PropTypes.func,
     trackSid: PropTypes.string,
-    renderToHardwareTextureAndroid: PropTypes.string,
-    onLayout: PropTypes.string,
-    accessibilityLiveRegion: PropTypes.string,
-    accessibilityComponentType: PropTypes.string,
-    importantForAccessibility: PropTypes.string,
-    accessibilityLabel: PropTypes.string,
-    nativeID: PropTypes.string,
-    testID: PropTypes.string,
     /**
      * Whether to apply Z ordering to this view. Setting this to true will cause
      * this view to appear above other Twilio Video views.

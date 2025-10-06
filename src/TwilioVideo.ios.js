@@ -29,6 +29,7 @@ const { TWVideoModule } = NativeModules;
 
 export default class TwilioVideo extends Component {
   static propTypes = {
+    ...View.propTypes,
     /**
      * Called when the room has connected
      *
@@ -173,7 +174,6 @@ export default class TwilioVideo extends Component {
      * camera will require calling `_startLocalVideo`.
      */
     autoInitializeCamera: PropTypes.bool,
-    ...View.propTypes,
   };
 
   constructor(props) {

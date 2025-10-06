@@ -8,10 +8,11 @@
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { requireNativeComponent } from "react-native";
+import { requireNativeComponent, View } from "react-native";
 
 class TwilioVideoParticipantView extends Component {
   static propTypes = {
+    ...View.propTypes,
     trackIdentifier: PropTypes.shape({
       /**
        * The participant sid.
