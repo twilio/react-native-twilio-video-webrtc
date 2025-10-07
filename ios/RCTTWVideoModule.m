@@ -379,6 +379,7 @@ RCT_EXPORT_METHOD(setRemoteAudioEnabled : (BOOL)enabled) {
       }
     }
   }
+  resolve(@(enabled));
 }
 
 RCT_EXPORT_METHOD(toggleSoundSetup : (BOOL)speaker) {
