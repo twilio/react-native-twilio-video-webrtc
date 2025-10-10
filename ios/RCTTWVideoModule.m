@@ -452,8 +452,12 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
   }
 }
 
-RCT_EXPORT_METHOD(setRemoteAudioEnabled : (BOOL)enabled) {
+RCT_REMAP_METHOD(setRemoteAudioEnabled,
+                 enabled : (BOOL)enabled setRemoteAudioEnabledWithResolver : (
+                     RCTPromiseResolveBlock)
+                     resolve rejecter : (RCTPromiseRejectBlock)reject) {
   if (self.room == nil) {
+    resolve(@(enabled));
     return; // not connected
   }
 
@@ -464,6 +468,7 @@ RCT_EXPORT_METHOD(setRemoteAudioEnabled : (BOOL)enabled) {
       }
     }
   }
+  resolve(@(enabled));
 }
 
 RCT_EXPORT_METHOD(toggleSoundSetup : (BOOL)speaker) {

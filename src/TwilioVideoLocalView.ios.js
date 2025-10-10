@@ -8,17 +8,17 @@
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { requireNativeComponent } from "react-native";
+import { requireNativeComponent, View } from "react-native";
 
 class TwilioVideoLocalView extends Component {
   static propTypes = {
+    ...View.propTypes,
     /**
      * Indicate if video feed is enabled.
      */
     enabled: PropTypes.bool.isRequired,
     /**
-     * How the video stream should be scaled to fit its
-     * container.
+     * How the video stream should be scaled to fit its container.
      */
     scaleType: PropTypes.oneOf(["fit", "fill"]),
   };

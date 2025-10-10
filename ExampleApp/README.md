@@ -1,6 +1,6 @@
 # ExampleApp – React Native Twilio Video Demo
 
-A sample React Native application that demonstrates how to join a Twilio Programmable Video room using the [`react-native-twilio-video-webrtc`](https://github.com/blackuy/react-native-twilio-video-webrtc) package.
+A sample React Native application that demonstrates how to join a Twilio Programmable Video room using the [`react-native-twilio-video-webrtc`](https://github.com/twilio/react-native-twilio-video-webrtc) package.
 
 ---
 
@@ -94,6 +94,6 @@ This opens the iOS simulator and runs the app. Ensure that the `ExampleApp` sche
 
 • React Native Documentation – <https://reactnative.dev>  
 • Twilio Programmable Video Docs – <https://www.twilio.com/docs/video>  
-• react-native-twilio-video-webrtc Documentation – <https://github.com/zhanim-tdl/react-native-twilio-video-webrtc/tree/master/docs>
+• react-native-twilio-video-webrtc Documentation – <https://github.com/twilio/react-native-twilio-video-webrtc/tree/master/docs>
 
 Happy coding! 🎉

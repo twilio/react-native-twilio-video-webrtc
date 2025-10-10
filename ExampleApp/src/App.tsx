@@ -133,17 +133,11 @@ const Example = () => {
     };
 
     const _onToggleVideoPress = () => {
-        setIsVideoEnabled(prev => {
-            twilioRef.current?.setLocalVideoEnabled(!prev);
-            return !prev;
-        });
+        twilioRef.current?.setLocalVideoEnabled(!isVideoEnabled).then((enabled: boolean) => setIsVideoEnabled(enabled));
     };
 
     const _onToggleRemoteAudioPress = () => {
-        setRemoteAudioEnabled(prev => {
-            twilioRef.current?.setRemoteAudioEnabled(!prev);
-            return !prev;
-        });
+        twilioRef.current?.setRemoteAudioEnabled(!remoteAudioEnabled).then((enabled: boolean) => setRemoteAudioEnabled(enabled));
     };
 
     const _onGetStatsPress = () => {
