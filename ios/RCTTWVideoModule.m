@@ -367,8 +367,12 @@ RCT_EXPORT_METHOD(flipCamera) {
   }
 }
 
-RCT_EXPORT_METHOD(setRemoteAudioEnabled : (BOOL)enabled) {
+RCT_REMAP_METHOD(setRemoteAudioEnabled,
+                 enabled : (BOOL)enabled setRemoteAudioEnabledWithResolver : (
+                     RCTPromiseResolveBlock)
+                     resolve rejecter : (RCTPromiseRejectBlock)reject) {
   if (self.room == nil) {
+    resolve(@(enabled));
     return; // not connected
   }
 
