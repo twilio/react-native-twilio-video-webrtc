@@ -161,7 +161,6 @@ const Example = () => {
     };
 
     const _onScreenShareChanged = (event: any) => {
-        console.log("🚀 ~ _onScreenShareChanged ~ event:", event)
         setIsSharing(event.screenShareEnabled);
         _log(`Screen Share ${event.screenShareEnabled ? 'Started' : 'Stopped'}`);
     };
