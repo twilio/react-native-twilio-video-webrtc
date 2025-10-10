@@ -270,6 +270,8 @@ public class CustomTwilioVideoView extends View
 
         // add lifecycle for onResume and on onPause
         themedReactContext.addLifecycleEventListener(this);
+
+        // Create activity for media projection (screen sharing) permission events
         Activity currentActivity = context.getCurrentActivity();
         mediaProjectionManager = (MediaProjectionManager) currentActivity.getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
@@ -393,9 +395,9 @@ public class CustomTwilioVideoView extends View
              * recreate.
              */
             if (localVideoTrack == null) {
-                if(screenCapturer != null) {
+                if (screenCapturer != null) {
                     localVideoTrack = LocalVideoTrack.create(getContext(), isScreenShareEnabled, screenCapturer);
-                } else if(cameraCapturer != null) {
+                } else if (cameraCapturer != null) {
                     localVideoTrack = LocalVideoTrack.create(getContext(), isVideoEnabled, cameraCapturer, buildVideoFormat());
                 }
             }
@@ -468,6 +470,7 @@ public class CustomTwilioVideoView extends View
             localVideoTrack.release();
             localVideoTrack = null;
         }
+
         if (screenVideoTrack != null) {
             if (screenSharePreviewView != null) {
                 screenVideoTrack.removeSink(screenSharePreviewView);
@@ -476,6 +479,7 @@ public class CustomTwilioVideoView extends View
             screenVideoTrack.release();
             screenVideoTrack = null;
         }
+
         if (android.os.Build.VERSION.SDK_INT >= 29) {
             screenCapturerManager.unbindService();
         }
@@ -801,30 +805,33 @@ public class CustomTwilioVideoView extends View
             // granted screen-capture permission causes a SecurityException on Android 14+. We now
             // start the foreground service only *after* MediaProjection permission has been
             // granted (inside startScreenCapture()).
-            if(screenCapturer == null) {
-                // This initiates a prompt dialog for the user to confirm screen projection.
-
-                if (mediaProjectionManager != null) {
-                    Activity currentActivity = this.themedReactContext.getCurrentActivity();
-
-                    UiThreadUtil.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            assert currentActivity != null;
-                            currentActivity.startActivityForResult(
-                                mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
-                        }
-                    });
-                } else {
-                }
-            } else {
+            if (screenCapturer != null) {
                 startScreenCapture();
+            } else {
+                // This initiates a prompt dialog for the user to confirm screen projection.
+                if (mediaProjectionManager == null) {
+                    Log.w("RNTwilioVideo", "mediaProjectionManager is null");
+                    return;
+                }
+                Activity currentActivity = this.themedReactContext.getCurrentActivity();
+
+                UiThreadUtil.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        assert currentActivity != null;
+                        currentActivity.startActivityForResult(
+                                mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
+                    }
+                });
             }
         } else {
             // Foreground service is stopped inside stopScreenCapture().
             stopScreenCapture();
         }
     }
+
+
+    
 
     private void startScreenCapture() {
         if (android.os.Build.VERSION.SDK_INT >= 29) {
@@ -865,11 +872,7 @@ public class CustomTwilioVideoView extends View
                 localParticipant.unpublishTrack(screenVideoTrack);
             }
 
-            try {
                 screenCapturer.stopCapture();
-            } catch (IllegalStateException e) {
-                // no-op
-            }
 
             if (screenSharePreviewView != null) {
                 screenVideoTrack.removeSink(screenSharePreviewView);
