@@ -85,6 +85,7 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
 // Screen sharing source
 @property(strong, nonatomic) TVIAppScreenSource *screen;
 @property(strong, nonatomic) TVILocalVideoTrack *screenVideoTrack;
+@property(strong, nonatomic) TVIVideoView *screenShareView;
 
 @end
 
@@ -175,6 +176,22 @@ RCT_EXPORT_MODULE();
         [publication.videoTrack addRenderer:view];
       }
     }
+  }
+}
+
+- (void)addScreenShareView:(TVIVideoView *)view {
+  self.screenShareView = view;
+  if (self.screenVideoTrack != nil) {
+    [self.screenVideoTrack addRenderer:view];
+  }
+}
+
+- (void)removeScreenShareView:(TVIVideoView *)view {
+  if (self.screenVideoTrack != nil) {
+    [self.screenVideoTrack removeRenderer:view];
+  }
+  if (self.screenShareView == view) {
+    self.screenShareView = nil;
   }
 }
 
@@ -288,21 +305,6 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
 
 - (bool)_setLocalVideoEnabled:(bool)enabled cameraType:(NSString *)cameraType {
 
-  // If we are switching back to camera while a screen-share track is active,
-  // shut the screen-share down first and notify JS.
-  if (enabled && self.screen != nil && self.localVideoTrack != nil) {
-    [self.localVideoTrack setEnabled:!enabled];
-    TVILocalParticipant *localParticipant = self.room.localParticipant;
-    [localParticipant unpublishVideoTrack:self.localVideoTrack];
-
-    [self.screen stopCapture];
-    self.localVideoTrack = nil;
-    self.screen = nil;
-
-    [self sendEventCheckingListenerWithName:screenShareChanged
-                                     body:@{@"screenShareEnabled" : @(false)}];
-  }
-
   if (enabled && self.camera == nil) {
     TVICameraSourceOptions *options = [TVICameraSourceOptions
         optionsWithBlock:^(TVICameraSourceOptionsBuilder *_Nonnull builder){
@@ -392,9 +394,7 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
   TwilioVideoSDK.logLevel = TVILogLevelTrace;
 
   if (enabled) {
-    // Keep camera running; no longer disable or unpublish it.
-
-    // --- create screen source/track if needed ---
+    // Create screen source/track if needed
     if (self.screen == nil) {
       TVIAppScreenSourceOptions *options = [TVIAppScreenSourceOptions optionsWithBlock:^(
           TVIAppScreenSourceOptionsBuilder *builder) {
@@ -414,6 +414,11 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
       TVILocalParticipant *localParticipant = self.room.localParticipant;
       [localParticipant publishVideoTrack:self.screenVideoTrack];
 
+      // Attach the screen share view if it exists
+      if (self.screenShareView != nil) {
+        [self.screenVideoTrack addRenderer:self.screenShareView];
+      }
+
       [self.screen startCaptureWithCompletion:^(NSError *_Nullable error) {
         if (!error) {
           [self sendEventCheckingListenerWithName:screenShareChanged
@@ -421,7 +426,6 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
                                                @"screenShareEnabled" : [NSNumber
                                                    numberWithBool:true]
                                              }];
-        } else {
         }
       }];
     }
@@ -431,6 +435,11 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
       TVILocalParticipant *localParticipant = self.room.localParticipant;
       [localParticipant unpublishVideoTrack:self.screenVideoTrack];
 
+      // Detach any existing renderers before stopping capture
+      if (self.screenShareView != nil) {
+        [self.screenVideoTrack removeRenderer:self.screenShareView];
+      }
+
       [self.screen stopCapture];
       self.screenVideoTrack = nil;
       self.screen = nil;
@@ -439,10 +448,6 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL)enabled) {
                                          body:@{
                                            @"screenShareEnabled" : @(false)
                                          }];
-
-      // Re-enable the camera preview/publication once screen share is off
-      // We default to front camera; users can flip later if needed.
-      // [self _setLocalVideoEnabled:true cameraType:@"front"];
     }
   }
 }
@@ -666,8 +671,6 @@ RCT_EXPORT_METHOD(
 
 RCT_EXPORT_METHOD(sendString : (nonnull NSString *)message) {
   [self.localDataTrack sendString:message];
-  // NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-  //[self.localDataTrack sendString:message];
 }
 
 RCT_EXPORT_METHOD(disconnect) {
@@ -678,6 +681,10 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)clearScreenInstance {
   if (self.screenVideoTrack) {
+    // Detach any renderers before unpublishing
+    if (self.screenShareView != nil) {
+      [self.screenVideoTrack removeRenderer:self.screenShareView];
+    }
     [[self.room localParticipant] unpublishVideoTrack:self.screenVideoTrack];
     self.screenVideoTrack = nil;
   }

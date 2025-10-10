@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import {
     TwilioVideoLocalView,
+    TwilioVideoScreenShareView,
     TwilioVideoParticipantView,
     TwilioVideo,
 } from "react-native-twilio-video-webrtc";
@@ -157,7 +158,12 @@ const Example = () => {
 
     const _onShareButtonPress = () => {
         twilioRef.current?.toggleScreenSharing(!isSharing);
-        setIsSharing(!isSharing);
+    };
+
+    const _onScreenShareChanged = (event: any) => {
+        console.log("🚀 ~ _onScreenShareChanged ~ event:", event)
+        setIsSharing(event.screenShareEnabled);
+        _log(`Screen Share ${event.screenShareEnabled ? 'Started' : 'Stopped'}`);
     };
 
 
@@ -235,6 +241,7 @@ const Example = () => {
                             </View>
                         )}
                         <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
+                        {isSharing && <TwilioVideoScreenShareView enabled={true} style={styles.localVideo} />}
                         <LogPanel logs={logs} scrollRef={scrollRef} />
                         <ControlBar>
                             <OptionButton label="End" onPress={_onEndButtonPress} />
@@ -257,6 +264,7 @@ const Example = () => {
                 onRoomDidFailToConnect={_onRoomDidFailToConnect}
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
+                onScreenShareChanged={_onScreenShareChanged}
                 onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
                 onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
                 onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}

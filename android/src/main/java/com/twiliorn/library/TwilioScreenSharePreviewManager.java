@@ -1,5 +1,5 @@
 /**
- * Component for Twilio Video camera preview.
+ * Component for Twilio Video screen share preview.
  * <p>
  * Authors:
  * Jonathan Chang <slycoder@gmail.com>
@@ -20,9 +20,9 @@ import tvi.webrtc.RendererCommon;
 
 import static com.twiliorn.library.RNVideoViewGroup.Events.ON_FRAME_DIMENSIONS_CHANGED;
 
-public class TwilioVideoPreviewManager extends SimpleViewManager<TwilioVideoPreview> {
+public class TwilioScreenSharePreviewManager extends SimpleViewManager<TwilioScreenSharePreview> {
 
-    public static final String REACT_CLASS = "RNTwilioVideoPreview";
+    public static final String REACT_CLASS = "RNTwilioScreenSharePreview";
 
     @Override
     public String getName() {
@@ -30,7 +30,7 @@ public class TwilioVideoPreviewManager extends SimpleViewManager<TwilioVideoPrev
     }
 
     @ReactProp(name = "scaleType")
-    public void setScaleType(TwilioVideoPreview view, @Nullable String scaleType) {
+    public void setScaleType(TwilioScreenSharePreview view, @Nullable String scaleType) {
         if (scaleType.equals("fit")) {
             view.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         } else {
@@ -39,7 +39,7 @@ public class TwilioVideoPreviewManager extends SimpleViewManager<TwilioVideoPrev
     }
 
     @ReactProp(name = "applyZOrder", defaultBoolean = true)
-    public void setApplyZOrder(TwilioVideoPreview view, boolean applyZOrder) {
+    public void setApplyZOrder(TwilioScreenSharePreview view, boolean applyZOrder) {
         view.applyZOrder(applyZOrder);
     }
 
@@ -54,8 +54,8 @@ public class TwilioVideoPreviewManager extends SimpleViewManager<TwilioVideoPrev
     }
 
     @Override
-    protected TwilioVideoPreview createViewInstance(ThemedReactContext reactContext) {
-        return new TwilioVideoPreview(reactContext);
+    protected TwilioScreenSharePreview createViewInstance(ThemedReactContext reactContext) {
+        return new TwilioScreenSharePreview(reactContext);
     }
 }
 

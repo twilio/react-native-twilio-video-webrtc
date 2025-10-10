@@ -147,6 +147,11 @@ export default class TwilioVideo extends Component {
      */
     onDominantSpeakerDidChange: PropTypes.func,
     /**
+     * Called when screen sharing state changes
+     * @param {{ screenShareEnabled }} screen share status
+     */
+    onScreenShareChanged: PropTypes.func,
+    /**
      * Whether or not video should be automatically initialized upon mounting
      * of this component. Defaults to true. If set to false, any use of the
      * camera will require calling `_startLocalVideo`.
@@ -451,6 +456,11 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("onDominantSpeakerDidChange", (data) => {
         if (this.props.onDominantSpeakerDidChange) {
           this.props.onDominantSpeakerDidChange(data);
+        }
+      }),
+      this._eventEmitter.addListener("screenShareChanged", (data) => {
+        if (this.props.onScreenShareChanged) {
+          this.props.onScreenShareChanged(data);
         }
       }),
     ];

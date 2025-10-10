@@ -1,5 +1,5 @@
 /**
- * Component for Twilio Video camera preview.
+ * Component for Twilio Video screen share preview.
  *
  * Authors:
  *   Jonathan Chang <slycoder@gmail.com>
@@ -21,17 +21,18 @@ const propTypes = {
   scaleType: PropTypes.oneOf(["fit", "fill"]),
 };
 
-class TwilioVideoLocalView extends React.Component {
+class TwilioVideoScreenShareView extends React.Component {
   render() {
-    return <NativeTwilioVideoPreview {...this.props} />;
+    return <NativeTwilioScreenSharePreview {...this.props} />;
   }
 }
 
-TwilioVideoLocalView.propTypes = propTypes;
+TwilioVideoScreenShareView.propTypes = propTypes;
 
-const NativeTwilioVideoPreview = requireNativeComponent(
-  "RNTwilioVideoPreview",
-  TwilioVideoLocalView
+const NativeTwilioScreenSharePreview = requireNativeComponent(
+  "RNTwilioScreenSharePreview",
+  TwilioVideoScreenShareView
 );
 
-module.exports = TwilioVideoLocalView;
+module.exports = TwilioVideoScreenShareView;
+
