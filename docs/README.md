@@ -15,6 +15,7 @@ Components
 |:----------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
 | onCameraSwitched                  | `{isBackCamera: boolean}`                                                                                                                              | Callback that is called when camera source changes                                                                                |
 | onVideoChanged                    | `{videoEnabled: boolean}`                                                                                                                              | Callback that is called when video is toggled                                                                                     |
+| onScreenShareChanged              | `{screenShareEnabled: boolean}`                                                                                                                        | Callback that is called when screen sharing state changes                                                                         |
 | onAudioChanged                    | `{audioEnabled: boolean}`                                                                                                                              | Callback that is called when audio is toggled                                                                                     |
 | onRoomDidConnect                  | `{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}`                                                      | Called when the room has connected                                                                                                |
 | onRoomDidFailToConnect            | `{roomName: string, roomSid: string, error: string}`                                                                                                   | Callback that is called when connecting to room fails                                                                             |
@@ -55,6 +56,7 @@ Components
 | unpublishLocalVideo          | `none`                                                                                                                                                                                                                                                                                                 | Unpublish local video track                              |
 | sendString                   | `message: string`                                                                                                                                                                                                                                                                                      | Send a string message via data track                     |
 | getStats                     | `none`                                                                                                                                                                                                                                                                                                 | Get connection statistics                                |
+| toggleScreenSharing          | `enabled: boolean`                                                                                                                                                                                                                                                                                     | Enable or disable screen sharing                         |
 | disableOpenSLES              | `none`                                                                                                                                                                                                                                                                                                 | Disable OpenSL ES audio                                  |
 | toggleSoundSetup             | `speaker: boolean`                                                                                                                                                                                                                                                                                     | Toggle audio setup between speaker and headset           |
 
@@ -89,6 +91,7 @@ Components
 | onStatsReceived                 | `{[peerConnectionId: string]: {remoteAudioTrackStats: any[], remoteVideoTrackStats: any[], localAudioTrackStats: any[], localVideoTrackStats: any[]}}` | Called when stats are received (after calling getStats)                                                                                     |
 | onNetworkQualityLevelsChanged   | `{participant: Participant, isLocalUser: boolean, quality: number}`                                                                                    | Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to true when connecting) |
 | onDominantSpeakerDidChange      | `{roomName: string, roomSid: string, participant: Participant}`                                                                                        | Called when dominant speaker changes                                                                                                        |
+| onScreenShareChanged            | `{screenShareEnabled: boolean}`                                                                                                                        | Called when screen sharing state changes                                                                                                    |
 
 #### Functions
 
@@ -108,6 +111,7 @@ Components
 | unpublishLocalVideo          | `none`                                                                                                                                                                                                                          | Unpublish local video track                              |
 | sendString                   | `message: string`                                                                                                                                                                                                               | Send a string message via data track                     |
 | getStats                     | `none`                                                                                                                                                                                                                          | Get connection statistics                                |
+| toggleScreenSharing          | `enabled: boolean`                                                                                                                                                                                                              | Enable or disable screen sharing                         |
 | toggleSoundSetup             | `speaker: boolean`                                                                                                                                                                                                              | Toggle audio setup between speaker and headset           |
 
 -----
@@ -168,5 +172,28 @@ Components
 |:----------------|:-------------------------------------------------------|:-----------------------------------------------------------------------|
 | trackIdentifier | shape({participantSid: string, videoTrackSid: string}) | The participant sid and video track sid you want to render in the view |
 | scaleType       | enum('fit','fill')                                     | How the video stream should be scaled to fit its container             |
+
+-----
+
+### TwilioVideoScreenShareView ([src/TwilioVideoScreenShareView.android.js](../src/TwilioVideoScreenShareView.android.js))
+
+#### Props
+
+| Property    | Type               | Description                                                                                                                  |
+|:------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------|
+| enabled     | bool               | **Required:** Indicate if screen share feed is enabled                                                                       |
+| scaleType   | enum('fit','fill') | How the video stream should be scaled to fit its container                                                                   |
+| applyZOrder | bool               | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views |
+
+-----
+
+### TwilioVideoScreenShareView ([src/TwilioVideoScreenShareView.ios.js](../src/TwilioVideoScreenShareView.ios.js))
+
+#### Props
+
+| Property  | Type               | Description                                                |
+|:----------|:-------------------|:-----------------------------------------------------------|
+| enabled   | bool               | **Required:** Indicate if screen share feed is enabled     |
+| scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container |
 
 -----
