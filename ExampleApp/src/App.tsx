@@ -167,7 +167,12 @@ const Example = () => {
         setStatus("disconnected");
     };
 
-    const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
+    const _onParticipantAddedVideoTrack = ({ participant, track, isLocal }: any) => {
+        // Don't add local video tracks to the remote participant view list
+        if (isLocal) {
+            return;
+        }
+        
         setVideoTracks((originalVideoTracks: Map<string, any>) => {
             originalVideoTracks.set(track.trackSid, {
                 participantSid: participant.sid,
