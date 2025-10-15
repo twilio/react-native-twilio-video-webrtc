@@ -12,147 +12,162 @@ import { NativeModules, NativeEventEmitter, View } from "react-native";
 
 const { TWVideoModule } = NativeModules;
 
+/**
+ * Participant data structure
+ * @typedef {Object} Participant
+ * @property {string} sid - The participant's unique identifier
+ * @property {string} identity - The participant's identity
+ */
+
+/**
+ * Track data structure
+ * @typedef {Object} Track
+ * @property {boolean} enabled - Whether the track is enabled
+ * @property {string} trackName - The name of the track
+ * @property {string} trackSid - The track's unique identifier
+ */
+
 export default class TwilioVideo extends Component {
   static propTypes = {
+    ...View.propTypes,
     /**
      * Called when the room has connected
      *
-     * @param {{roomName, participants}}
+     * @param {{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}}
      */
     onRoomDidConnect: PropTypes.func,
     /**
      * Called when the room has disconnected
      *
-     * @param {{roomName, error}}
+     * @param {{roomName: string, roomSid: string, participant?: string, error?: string}}
      */
     onRoomDidDisconnect: PropTypes.func,
     /**
      * Called when connection with room failed
      *
-     * @param {{roomName, error}}
+     * @param {{roomName: string, roomSid: string, error: string}}
      */
     onRoomDidFailToConnect: PropTypes.func,
     /**
      * Called when a new participant has connected
      *
-     * @param {{roomName, participant}}
+     * @param {{roomName: string, roomSid: string, participant: Participant}}
      */
     onRoomParticipantDidConnect: PropTypes.func,
     /**
      * Called when a participant has disconnected
      *
-     * @param {{roomName, participant}}
+     * @param {{roomName: string, roomSid: string, participant: Participant}}
      */
     onRoomParticipantDidDisconnect: PropTypes.func,
     /**
      * Called when a new video track has been added
      *
-     * @param {{participant, track, enabled}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantAddedVideoTrack: PropTypes.func,
     /**
      * Called when a video track has been removed
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantRemovedVideoTrack: PropTypes.func,
     /**
      * Called when a new data track has been added
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantAddedDataTrack: PropTypes.func,
     /**
      * Called when a data track has been removed
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantRemovedDataTrack: PropTypes.func,
     /**
      * Called when a new audio track has been added
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantAddedAudioTrack: PropTypes.func,
     /**
-     * Called when a audio track has been removed
+     * Called when an audio track has been removed
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantRemovedAudioTrack: PropTypes.func,
     /**
      * Called when a video track has been enabled.
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantEnabledVideoTrack: PropTypes.func,
     /**
      * Called when a video track has been disabled.
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantDisabledVideoTrack: PropTypes.func,
     /**
      * Called when an audio track has been enabled.
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantEnabledAudioTrack: PropTypes.func,
     /**
      * Called when an audio track has been disabled.
      *
-     * @param {{participant, track}}
+     * @param {{participant: Participant, track: Track}}
      */
     onParticipantDisabledAudioTrack: PropTypes.func,
     /**
-     * Called when an dataTrack receives a message
+     * Called when a dataTrack receives a message
      *
-     * @param {{message}}
+     * @param {{message: string, trackSid: string}}
      */
     onDataTrackMessageReceived: PropTypes.func,
     /**
      * Called when the camera has started
-     *
      */
     onCameraDidStart: PropTypes.func,
     /**
      * Called when the camera has been interrupted
-     *
      */
     onCameraWasInterrupted: PropTypes.func,
     /**
      * Called when the camera interruption has ended
-     *
      */
     onCameraInterruptionEnded: PropTypes.func,
     /**
-     * Called when the camera has stopped runing with an error
+     * Called when the camera has stopped running with an error
      *
-     * @param {{error}} The error message description
+     * @param {{error: string}} The error message description
      */
     onCameraDidStopRunning: PropTypes.func,
     /**
      * Called when stats are received (after calling getStats)
      *
+     * @param {{[peerConnectionId: string]: {remoteAudioTrackStats: any[], remoteVideoTrackStats: any[], localAudioTrackStats: any[], localVideoTrackStats: any[]}}}
      */
     onStatsReceived: PropTypes.func,
     /**
-     * Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to True when connecting)
+     * Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to true when connecting)
      *
+     * @param {{participant: Participant, isLocalUser: boolean, quality: number}}
      */
     onNetworkQualityLevelsChanged: PropTypes.func,
     /**
      * Called when dominant speaker changes
-     * @param {{ participant, room }} dominant participant
+     *
+     * @param {{roomName: string, roomSid: string, participant: Participant}}
      */
     onDominantSpeakerDidChange: PropTypes.func,
     /**
-     * Whether or not video should be automatically initialized upon mounting
+     * Whether video should be automatically initialized upon mounting
      * of this component. Defaults to true. If set to false, any use of the
      * camera will require calling `_startLocalVideo`.
      */
     autoInitializeCamera: PropTypes.bool,
-    ...View.propTypes,
   };
 
   constructor(props) {
@@ -177,23 +192,37 @@ export default class TwilioVideo extends Component {
   }
 
   /**
-   * Locally mute/ unmute all remote audio tracks from a given participant
+   * Control remote audio playback for a specific participant
+   * @param {Object} params - Audio playback parameters
+   * @param {string} params.participantSid - The participant's SID
+   * @param {boolean} params.enabled - Whether to enable audio playback
    */
   setRemoteAudioPlayback({ participantSid, enabled }) {
     TWVideoModule.setRemoteAudioPlayback(participantSid, enabled);
   }
 
+  /**
+   * Enable or disable remote audio
+   * @param {boolean} enabled - Whether to enable remote audio
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setRemoteAudioEnabled(enabled) {
-    TWVideoModule.setRemoteAudioEnabled(enabled);
-    return Promise.resolve(enabled);
+    return TWVideoModule.setRemoteAudioEnabled(enabled);
   }
 
+  /**
+   * Set bluetooth headset connection status
+   * @param {boolean} enabled - Whether bluetooth headset is connected
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
   setBluetoothHeadsetConnected(enabled) {
     return Promise.resolve(enabled);
   }
 
   /**
    * Enable or disable local video
+   * @param {boolean} enabled - Whether to enable video
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
    */
   setLocalVideoEnabled(enabled) {
     return TWVideoModule.setLocalVideoEnabled(enabled);
@@ -201,13 +230,15 @@ export default class TwilioVideo extends Component {
 
   /**
    * Enable or disable local audio
+   * @param {boolean} enabled - Whether to enable audio
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
    */
   setLocalAudioEnabled(enabled) {
     return TWVideoModule.setLocalAudioEnabled(enabled);
   }
 
   /**
-   * Filp between the front and back camera
+   * Switch between front and back camera
    */
   flipCamera() {
     TWVideoModule.flipCamera();
@@ -215,25 +246,31 @@ export default class TwilioVideo extends Component {
 
 
   /**
-   * Toggle audio setup from speaker (default) and headset
+   * Toggle audio setup between speaker and headset
+   * @param {boolean} speaker - Whether to use speaker (true) or headset (false)
    */
   toggleSoundSetup(speaker) {
     TWVideoModule.toggleSoundSetup(speaker);
   }
 
   /**
-   * Get connection stats
+   * Get connection statistics
    */
   getStats() {
     TWVideoModule.getStats();
   }
 
   /**
-   * Connect to given room name using the JWT access token
-   * @param  {String} roomName    The connecting room name
-   * @param  {String} accessToken The Twilio's JWT access token
-   * @param  {String} encodingParameters Control Encoding config
-   * @param  {Boolean} enableNetworkQualityReporting Report network quality of participants
+   * Connect to a Twilio Video room
+   * @param {Object} params - Connection parameters
+   * @param {string} params.roomName - The room name to connect to
+   * @param {string} params.accessToken - The Twilio JWT access token
+   * @param {'front'|'back'} [params.cameraType='front'] - Camera type to use
+   * @param {boolean} [params.enableAudio=true] - Whether to enable audio
+   * @param {boolean} [params.enableVideo=true] - Whether to enable video
+   * @param {Object} [params.encodingParameters=null] - Video encoding parameters
+   * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
+   * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    */
   connect({
     roomName,
@@ -258,43 +295,43 @@ export default class TwilioVideo extends Component {
   }
 
   /**
-   * Disconnect from current room
+   * Disconnect from the current room
    */
   disconnect() {
     TWVideoModule.disconnect();
   }
 
   /**
-   * Publish a local audio track
+   * Publish local audio track
    */
   publishLocalAudio() {
     TWVideoModule.publishLocalAudio();
   }
 
   /**
-   * Publish a local video track
+   * Publish local video track
    */
   publishLocalVideo() {
     TWVideoModule.publishLocalVideo();
   }
 
   /**
-   * Unpublish a local audio track
+   * Unpublish local audio track
    */
   unpublishLocalAudio() {
     TWVideoModule.unpublishLocalAudio();
   }
 
   /**
-   * Unpublish a local video track
+   * Unpublish local video track
    */
   unpublishLocalVideo() {
     TWVideoModule.unpublishLocalVideo();
   }
 
   /**
-   * SendString to datatrack
-   * @param  {String} message    The message string to send
+   * Send a string message via data track
+   * @param {string} message - The message string to send
    */
   sendString(message) {
     TWVideoModule.sendString(message);
