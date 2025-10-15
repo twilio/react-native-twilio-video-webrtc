@@ -43,6 +43,7 @@
 #### Android
 
 * Native SDK bumped to `7.9.0`.
+* **BREAKING**: Migrated from Android Support Library to AndroidX.
 
 #### iOS
 
