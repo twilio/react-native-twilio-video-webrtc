@@ -20,6 +20,7 @@
 * Updated `expo-module-scripts` to `^4.1.10`.
 * Updated `gulp` to `^5.0.1`.
 * Updated `gulp-load-plugins` to `^2.0.8`.
+* Added `tsconfig.json` for TypeScript configuration of the Expo config plugin.
 
 **Documentation:**
 * Updated [documentation](./docs/README.md) to reflect new APIs and installation steps.
