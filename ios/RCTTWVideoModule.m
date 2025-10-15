@@ -391,8 +391,6 @@ RCT_EXPORT_METHOD(flipCamera) {
     }
 }
 RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
-    TwilioVideoSDK.logLevel = TVILogLevelTrace;
-
     if (enabled) {
         // Create screen source/track if needed
         if (self.screen == nil) {
