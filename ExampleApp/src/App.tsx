@@ -120,6 +120,15 @@ const Example = () => {
     const _onEndButtonPress = () => {
         twilioRef.current?.disconnect();
         setVideoTracks(new Map());
+        setIsSharing(false);
+        setStatus("disconnected");
+        setIsAudioEnabled(true);
+        setIsVideoEnabled(true);
+        setRemoteAudioEnabled(true);
+        setNetworkQualityEnabled(false);
+        setDominantSpeakerEnabled(false);
+        setEnableH264Codec(false);
+        setLogs([]);
     };
 
     const _onMuteButtonPress = () => {
@@ -234,7 +243,7 @@ const Example = () => {
                             </View>
                         )}
                         <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
-                        {isSharing && <TwilioVideoScreenShareView enabled={true} style={styles.localVideo} />}
+                        {isSharing ? <TwilioVideoScreenShareView enabled={true} style={styles.localVideo} /> : null}
                         <LogPanel logs={logs} scrollRef={scrollRef} />
                         <ControlBar>
                             <OptionButton label="End" onPress={_onEndButtonPress} />
