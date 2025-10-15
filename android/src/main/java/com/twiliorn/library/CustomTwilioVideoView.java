@@ -280,7 +280,7 @@ public class CustomTwilioVideoView extends View
         String[] deviceNames = enumerator.getDeviceNames();
         backFacingDevice = null;
         frontFacingDevice = null;
-        for (String deviceName: deviceNames) {
+        for (String deviceName : deviceNames) {
             if (enumerator.isBackFacing(deviceName) && enumerator.getSupportedFormats(deviceName).size() > 0) {
                 backFacingDevice = deviceName;
             } else if (enumerator.isFrontFacing(deviceName) && enumerator.getSupportedFormats(deviceName).size() > 0) {
@@ -499,14 +499,14 @@ public class CustomTwilioVideoView extends View
         HardwareVideoDecoderFactory hardwareVideoDecoderFactory = new HardwareVideoDecoderFactory(null);
 
         boolean h264EncoderSupported = false;
-        for (VideoCodecInfo videoCodecInfo: hardwareVideoEncoderFactory.getSupportedCodecs()) {
+        for (VideoCodecInfo videoCodecInfo : hardwareVideoEncoderFactory.getSupportedCodecs()) {
             if (videoCodecInfo.name.equalsIgnoreCase("h264")) {
                 h264EncoderSupported = true;
                 break;
             }
         }
         boolean h264DecoderSupported = false;
-        for (VideoCodecInfo videoCodecInfo: hardwareVideoDecoderFactory.getSupportedCodecs()) {
+        for (VideoCodecInfo videoCodecInfo : hardwareVideoDecoderFactory.getSupportedCodecs()) {
             if (videoCodecInfo.name.equalsIgnoreCase("h264")) {
                 h264DecoderSupported = true;
                 break;
@@ -746,8 +746,8 @@ public class CustomTwilioVideoView extends View
 
     public void toggleRemoteAudio(boolean enabled) {
         if (room != null) {
-            for (RemoteParticipant rp: room.getRemoteParticipants()) {
-                for (AudioTrackPublication at: rp.getAudioTracks()) {
+            for (RemoteParticipant rp : room.getRemoteParticipants()) {
+                for (AudioTrackPublication at : rp.getAudioTracks()) {
                     if (at.getAudioTrack() != null) {
                         ((RemoteAudioTrack) at.getAudioTrack()).enablePlayback(enabled);
                     }
@@ -758,9 +758,9 @@ public class CustomTwilioVideoView extends View
 
     public void setRemoteAudioPlayback(String participant, boolean enabled) {
         if (room != null) {
-            for (RemoteParticipant rp: room.getRemoteParticipants()) {
+            for (RemoteParticipant rp : room.getRemoteParticipants()) {
                 if (rp.getSid().equals(participant)) {
-                    for (AudioTrackPublication at: rp.getAudioTracks()) {
+                    for (AudioTrackPublication at : rp.getAudioTracks()) {
                         if (at.getAudioTrack() != null) {
                             ((RemoteAudioTrack) at.getAudioTrack()).enablePlayback(enabled);
                         }
@@ -857,28 +857,28 @@ public class CustomTwilioVideoView extends View
                 @Override
                 public void onStats(List<StatsReport> statsReports) {
                     WritableMap event = new WritableNativeMap();
-                    for (StatsReport sr: statsReports) {
+                    for (StatsReport sr : statsReports) {
                         WritableMap connectionStats = new WritableNativeMap();
                         WritableArray as = new WritableNativeArray();
-                        for (RemoteAudioTrackStats s: sr.getRemoteAudioTrackStats()) {
+                        for (RemoteAudioTrackStats s : sr.getRemoteAudioTrackStats()) {
                             as.pushMap(convertAudioTrackStats(s));
                         }
                         connectionStats.putArray("remoteAudioTrackStats", as);
 
                         WritableArray vs = new WritableNativeArray();
-                        for (RemoteVideoTrackStats s: sr.getRemoteVideoTrackStats()) {
+                        for (RemoteVideoTrackStats s : sr.getRemoteVideoTrackStats()) {
                             vs.pushMap(convertVideoTrackStats(s));
                         }
                         connectionStats.putArray("remoteVideoTrackStats", vs);
 
                         WritableArray las = new WritableNativeArray();
-                        for (LocalAudioTrackStats s: sr.getLocalAudioTrackStats()) {
+                        for (LocalAudioTrackStats s : sr.getLocalAudioTrackStats()) {
                             las.pushMap(convertLocalAudioTrackStats(s));
                         }
                         connectionStats.putArray("localAudioTrackStats", las);
 
                         WritableArray lvs = new WritableNativeArray();
-                        for (LocalVideoTrackStats s: sr.getLocalVideoTrackStats()) {
+                        for (LocalVideoTrackStats s : sr.getLocalVideoTrackStats()) {
                             lvs.pushMap(convertLocalVideoTrackStats(s));
                         }
                         connectionStats.putArray("localVideoTrackStats", lvs);
@@ -915,7 +915,7 @@ public class CustomTwilioVideoView extends View
                 List<RemoteParticipant> participants = room.getRemoteParticipants();
 
                 WritableArray participantsArray = new WritableNativeArray();
-                for (RemoteParticipant participant: participants) {
+                for (RemoteParticipant participant : participants) {
                     participantsArray.pushMap(buildParticipant(participant));
                 }
                 participantsArray.pushMap(buildParticipant(localParticipant));
@@ -929,7 +929,7 @@ public class CustomTwilioVideoView extends View
                     localParticipant.publishTrack(localDataTrack);
                 }
 
-                for (RemoteParticipant participant: participants) {
+                for (RemoteParticipant participant : participants) {
                     addParticipant(room, participant);
                 }
             }
@@ -1036,7 +1036,7 @@ public class CustomTwilioVideoView extends View
          */
         remoteParticipant.setListener(mediaListener());
 
-        for (final RemoteDataTrackPublication remoteDataTrackPublication: remoteParticipant.getRemoteDataTracks()) {
+        for (final RemoteDataTrackPublication remoteDataTrackPublication : remoteParticipant.getRemoteDataTracks()) {
             /*
              * Data track messages are received on the thread that calls setListener. Post
              * the
@@ -1305,8 +1305,8 @@ public class CustomTwilioVideoView extends View
     public static void registerPrimaryVideoView(PatchedVideoView v, String trackSid) {
         if (room != null) {
 
-            for (RemoteParticipant participant: room.getRemoteParticipants()) {
-                for (RemoteVideoTrackPublication publication: participant.getRemoteVideoTracks()) {
+            for (RemoteParticipant participant : room.getRemoteParticipants()) {
+                for (RemoteVideoTrackPublication publication : participant.getRemoteVideoTracks()) {
                     RemoteVideoTrack track = publication.getRemoteVideoTrack();
                     if (track == null) {
                         continue;
