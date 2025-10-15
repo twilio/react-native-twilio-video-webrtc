@@ -50,8 +50,8 @@ const propTypes = {
   onVideoChanged: PropTypes.func,
 
   /**
-   * Callback that is called when screen share permission received.
-   * @param {{screenShareEnabled: boolean}}
+   * Called when screen sharing state changes
+   * @param {{ screenShareEnabled:boolean }} 
    */
   onScreenShareChanged: PropTypes.func,
 
@@ -318,11 +318,11 @@ class CustomTwilioVideoView extends Component {
     this.runCommand(nativeEvents.toggleVideo, [enabled]);
     return Promise.resolve(enabled);
   }
-/**
- * Toggle screen sharing
- * @param {boolean} enabled - Whether screen sharing is enabled
- */
-  toggleScreenSharing (enabled) {
+  /**
+   * Toggle screen sharing
+   * @param {boolean} enabled - Whether screen sharing is enabled
+   */
+  toggleScreenSharing(enabled) {
     this.runCommand(nativeEvents.toggleScreenSharing, [enabled])
   }
 
