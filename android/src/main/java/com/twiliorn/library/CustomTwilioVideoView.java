@@ -254,7 +254,7 @@ public class CustomTwilioVideoView extends View
                     startScreenCapture();
                 }
             }
-        }
+        };
     };
 
     public CustomTwilioVideoView(ThemedReactContext context) {
@@ -472,7 +472,6 @@ public class CustomTwilioVideoView extends View
             if (screenSharePreviewView != null) {
                 screenVideoTrack.removeSink(screenSharePreviewView);
             }
-            screenVideoTrack.enable(false);
             screenVideoTrack.release();
             screenVideoTrack = null;
         }
@@ -724,7 +723,6 @@ public class CustomTwilioVideoView extends View
             if (screenSharePreviewView != null) {
                 screenVideoTrack.removeSink(screenSharePreviewView);
             }
-            screenVideoTrack.enable(false);
             screenVideoTrack.release();
             screenVideoTrack = null;
         }
@@ -826,7 +824,6 @@ public class CustomTwilioVideoView extends View
         }
     }
 
-
     private void startScreenCapture() {
         if (android.os.Build.VERSION.SDK_INT >= 29) {
             screenCapturerManager.startForeground();
@@ -836,8 +833,7 @@ public class CustomTwilioVideoView extends View
         if (screenVideoTrack != null) return;
 
         // Create dedicated screen-capture track
-        VideoFormat screenFormat = new VideoFormat(new VideoDimensions(1280, 720), 60);
-        screenVideoTrack = LocalVideoTrack.create(getContext(), true, screenCapturer, screenFormat);
+        screenVideoTrack = LocalVideoTrack.create(getContext(), true, screenCapturer);
 
         // Attach preview sink
         if (screenSharePreviewView != null && screenVideoTrack != null) {
@@ -871,7 +867,6 @@ public class CustomTwilioVideoView extends View
             if (screenSharePreviewView != null) {
                 screenVideoTrack.removeSink(screenSharePreviewView);
             }
-            screenVideoTrack.enable(false);
             screenVideoTrack.release();
             screenVideoTrack = null;
             screenCapturer = null;
@@ -1385,15 +1380,11 @@ public class CustomTwilioVideoView extends View
             @Override
             public void onVideoTrackPublished(LocalParticipant localParticipant,
                                               LocalVideoTrackPublication localVideoTrackPublication) {
-                // Don't notify JS about local participant's video tracks being published
-                // The local video is already shown in the preview views (camera and/or screen)
-                // Creating participant tiles for local tracks would create duplicate/unnecessary views
             }
 
             @Override
             public void onVideoTrackPublicationFailed(LocalParticipant localParticipant,
                                                       LocalVideoTrack localVideoTrack, TwilioException twilioException) {
-                // Not triggered in SDK >=7.0, keep for completeness
             }
 
             @Override
@@ -1503,6 +1494,7 @@ public class CustomTwilioVideoView extends View
         if (localVideoTrack != null) {
             localVideoTrack.addSink(v);
         }
+        setThumbnailMirror();
     }
 
     public static void registerScreenShareVideoView(PatchedVideoView v) {
