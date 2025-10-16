@@ -772,7 +772,7 @@ public class CustomTwilioVideoView extends View
 
     public void toggleVideo(boolean enabled) {
         isVideoEnabled = enabled;
-
+        boolean trackWasJustCreated = false;
         if (cameraCapturer == null && enabled) {
             String fallbackCameraType = cameraType == null ? CustomTwilioVideoView.FRONT_CAMERA_TYPE : cameraType;
             boolean createVideoStatus = createLocalVideo(true, fallbackCameraType);
@@ -780,12 +780,14 @@ public class CustomTwilioVideoView extends View
                 Log.d("RNTwilioVideo", "Failed to create local video");
                 return;
             }
+            trackWasJustCreated = true;
         }
-
         if (localVideoTrack != null) {
-            // Enable or disable the existing local video track without publishing/unpublishing it
             localVideoTrack.enable(enabled);
-
+            // If we just created a new track and we're in a room, publish it
+            if (trackWasJustCreated && localParticipant != null) {
+                localParticipant.publishTrack(localVideoTrack);
+            }
             WritableMap event = new WritableNativeMap();
             event.putBoolean("videoEnabled", enabled);
             pushEvent(CustomTwilioVideoView.this, ON_VIDEO_CHANGED, event);

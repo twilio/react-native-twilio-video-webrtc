@@ -214,6 +214,8 @@ const Example = () => {
                 <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
 
+                    <ToggleRow label="Connect with video enabled" value={isVideoEnabled} onValueChange={setIsVideoEnabled} />
+                    <ToggleRow label="Connect with audio enabled" value={isAudioEnabled} onValueChange={setIsAudioEnabled} />
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
@@ -229,6 +231,7 @@ const Example = () => {
                     <View style={styles.headerContainer}>
                         <Text style={{ fontSize: 12 }}>Room Name: {roomDetails.roomName}</Text>
                         <Text style={{ fontSize: 12 }}>Room Sid: {roomDetails.roomSid}</Text>
+                        <Text style={{ fontSize: 12 }}>Status: {status}</Text>
                     </View>
 
                     <View style={styles.callContainer}>
