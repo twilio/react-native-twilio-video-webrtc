@@ -1,5 +1,4 @@
-Components
-----------
+## Components
 
 ## Data Types
 
@@ -12,11 +11,7 @@ Components
 #### Callbacks
 
 | Property                          | Parameters                                                                                                                                             | Description                                                                                                                       |
-|:----------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
-| onCameraSwitched                  | `{isBackCamera: boolean}`                                                                                                                              | Callback that is called when camera source changes                                                                                |
-| onVideoChanged                    | `{videoEnabled: boolean}`                                                                                                                              | Callback that is called when video is toggled                                                                                     |
-| onScreenShareChanged              | `{screenShareEnabled: boolean}`                                                                                                                        | Callback that is called when screen sharing state changes                                                                         |
-| onAudioChanged                    | `{audioEnabled: boolean}`                                                                                                                              | Callback that is called when audio is toggled                                                                                     |
+| :-------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
 | onRoomDidConnect                  | `{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}`                                                      | Called when the room has connected                                                                                                |
 | onRoomDidFailToConnect            | `{roomName: string, roomSid: string, error: string}`                                                                                                   | Callback that is called when connecting to room fails                                                                             |
 | onRoomDidDisconnect               | `{roomName: string, roomSid: string, participant?: string, error?: string}`                                                                            | Callback that is called when user is disconnected from room                                                                       |
@@ -37,11 +32,15 @@ Components
 | onNetworkQualityLevelsChanged     | `{participant: Participant, isLocalUser: boolean, quality: number}`                                                                                    | Callback that is called when network quality levels are changed (only if enableNetworkQualityReporting in connect is set to true) |
 | onDominantSpeakerDidChange        | `{roomName: string, roomSid: string, participant: Participant}`                                                                                        | Called when dominant speaker changes                                                                                              |
 | onLocalParticipantSupportedCodecs | `{supportedCodecs: string[]}`                                                                                                                          | Always called on android after connecting to the room                                                                             |
+| onCameraSwitched                  | `{isBackCamera: boolean}`                                                                                                                              | Callback that is called when camera source changes                                                                                |
+| onVideoChanged                    | `{videoEnabled: boolean}`                                                                                                                              | Callback that is called when video is toggled                                                                                     |
+| onScreenShareChanged              | `{screenShareEnabled: boolean}`                                                                                                                        | Callback that is called when screen sharing state changes                                                                         |
+| onAudioChanged                    | `{audioEnabled: boolean}`                                                                                                                              | Callback that is called when audio is toggled                                                                                     |
 
 #### Functions
 
 | Function                     | Parameters                                                                                                                                                                                                                                                                                             | Description                                              |
-|:-----------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------|
+| :--------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
 | connect                      | `{roomName: string, accessToken: string, cameraType?: 'front' \| 'back', enableAudio?: boolean, enableVideo?: boolean, enableRemoteAudio?: boolean, enableNetworkQualityReporting?: boolean, dominantSpeakerEnabled?: boolean, maintainVideoTrackInBackground?: boolean, encodingParameters?: object}` | Connect to a Twilio Video room                           |
 | disconnect                   | `none`                                                                                                                                                                                                                                                                                                 | Disconnect from the current room                         |
 | flipCamera                   | `none`                                                                                                                                                                                                                                                                                                 | Switch between front and back camera                     |
@@ -60,14 +59,14 @@ Components
 | disableOpenSLES              | `none`                                                                                                                                                                                                                                                                                                 | Disable OpenSL ES audio                                  |
 | toggleSoundSetup             | `speaker: boolean`                                                                                                                                                                                                                                                                                     | Toggle audio setup between speaker and headset           |
 
------
+---
 
 ### TwilioVideo ([src/TwilioVideo.ios.js](../src/TwilioVideo.ios.js))
 
 #### Callbacks
 
 | Property                        | Parameters                                                                                                                                             | Description                                                                                                                                 |
-|:--------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------|
+| :------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
 | onRoomDidConnect                | `{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}`                                                      | Called when the room has connected                                                                                                          |
 | onRoomDidDisconnect             | `{roomName: string, roomSid: string, participant?: string, error?: string}`                                                                            | Called when the room has disconnected                                                                                                       |
 | onRoomDidFailToConnect          | `{roomName: string, roomSid: string, error: string}`                                                                                                   | Called when connection with room failed                                                                                                     |
@@ -96,7 +95,7 @@ Components
 #### Functions
 
 | Function                     | Parameters                                                                                                                                                                                                                      | Description                                              |
-|:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------|
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------- |
 | connect                      | `{roomName: string, accessToken: string, cameraType?: 'front' \| 'back', enableAudio?: boolean, enableVideo?: boolean, encodingParameters?: object, enableNetworkQualityReporting?: boolean, dominantSpeakerEnabled?: boolean}` | Connect to a Twilio Video room                           |
 | disconnect                   | `none`                                                                                                                                                                                                                          | Disconnect from the current room                         |
 | flipCamera                   | `none`                                                                                                                                                                                                                          | Switch between front and back camera                     |
@@ -114,43 +113,42 @@ Components
 | toggleScreenSharing          | `enabled: boolean`                                                                                                                                                                                                              | Enable or disable screen sharing                         |
 | toggleSoundSetup             | `speaker: boolean`                                                                                                                                                                                                              | Toggle audio setup between speaker and headset           |
 
------
+---
 
 ### TwilioVideoPreview ([src/TwilioVideoLocalView.android.js](../src/TwilioVideoLocalView.android.js))
 
 #### Props
 
 | Property    | Type               | Description                                                                                                                  |
-|:------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------|
+| :---------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------------- |
 | scaleType   | enum('fit','fill') | How the video stream should be scaled to fit its container                                                                   |
 | applyZOrder | bool               | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views |
 
 #### Callbacks
 
 | Property                 | Parameters                                          | Description                                 |
-|:-------------------------|:----------------------------------------------------|:--------------------------------------------|
+| :----------------------- | :-------------------------------------------------- | :------------------------------------------ |
 | onFrameDimensionsChanged | `{height: number, width: number, rotation: number}` | Callback when video frame dimensions change |
 
------
+---
 
 ### TwilioVideoLocalView ([src/TwilioVideoLocalView.ios.js](../src/TwilioVideoLocalView.ios.js))
 
 #### Props
 
 | Property  | Type               | Description                                                |
-|:----------|:-------------------|:-----------------------------------------------------------|
+| :-------- | :----------------- | :--------------------------------------------------------- |
 | enabled   | bool               | **Required:** Indicate if video feed is enabled            |
 | scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container |
 
------
-
+---
 
 ### TwilioRemotePreview ([src/TwilioVideoParticipantView.android.js](../src/TwilioVideoParticipantView.android.js))
 
 #### Props
 
 | Property        | Type                           | Description                                                                                                                                          |
-|:----------------|:-------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| :-------------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
 | trackIdentifier | shape({videoTrackSid: string}) | The participant's video track you want to render in the view                                                                                         |
 | trackSid        | string                         | Legacy prop for video track sid (use trackIdentifier instead)                                                                                        |
 | scaleType       | enum('fit','fill')             | How the video stream should be scaled to fit its container                                                                                           |
@@ -159,41 +157,41 @@ Components
 #### Callbacks
 
 | Property                 | Parameters                                          | Description                                 |
-|:-------------------------|:----------------------------------------------------|:--------------------------------------------|
+| :----------------------- | :-------------------------------------------------- | :------------------------------------------ |
 | onFrameDimensionsChanged | `{height: number, width: number, rotation: number}` | Callback when video frame dimensions change |
 
------
+---
 
 ### TwilioVideoParticipantView ([src/TwilioVideoParticipantView.ios.js](../src/TwilioVideoParticipantView.ios.js))
 
 #### Props
 
 | Property        | Type                                                   | Description                                                            |
-|:----------------|:-------------------------------------------------------|:-----------------------------------------------------------------------|
+| :-------------- | :----------------------------------------------------- | :--------------------------------------------------------------------- |
 | trackIdentifier | shape({participantSid: string, videoTrackSid: string}) | The participant sid and video track sid you want to render in the view |
 | scaleType       | enum('fit','fill')                                     | How the video stream should be scaled to fit its container             |
 
------
+---
 
 ### TwilioVideoScreenShareView ([src/TwilioVideoScreenShareView.android.js](../src/TwilioVideoScreenShareView.android.js))
 
 #### Props
 
 | Property    | Type               | Description                                                                                                                  |
-|:------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------|
+| :---------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------------- |
 | enabled     | bool               | **Required:** Indicate if screen share feed is enabled                                                                       |
 | scaleType   | enum('fit','fill') | How the video stream should be scaled to fit its container                                                                   |
 | applyZOrder | bool               | Whether to apply Z ordering to this view. Setting this to true will cause this view to appear above other Twilio Video views |
 
------
+---
 
 ### TwilioVideoScreenShareView ([src/TwilioVideoScreenShareView.ios.js](../src/TwilioVideoScreenShareView.ios.js))
 
 #### Props
 
 | Property  | Type               | Description                                                |
-|:----------|:-------------------|:-----------------------------------------------------------|
+| :-------- | :----------------- | :--------------------------------------------------------- |
 | enabled   | bool               | **Required:** Indicate if screen share feed is enabled     |
 | scaleType | enum('fit','fill') | How the video stream should be scaled to fit its container |
 
------
+---
