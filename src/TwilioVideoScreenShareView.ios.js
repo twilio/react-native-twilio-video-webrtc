@@ -2,7 +2,7 @@
  * Component for Twilio Video screen share preview.
  *
  * Authors:
- *   Jonathan Chang <slycoder@gmail.com>
+ *   Zhani Muceku <zhani.muceku@testdevlab.com>
  */
 
 import { requireNativeComponent, View } from "react-native";

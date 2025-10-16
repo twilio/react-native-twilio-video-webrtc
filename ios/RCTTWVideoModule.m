@@ -107,7 +107,6 @@ RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents {
     return @[
         roomDidConnect,
-        screenShareChanged,
         roomDidDisconnect,
         roomDidFailToConnect,
         roomParticipantDidConnect,
@@ -129,7 +128,9 @@ RCT_EXPORT_MODULE();
         cameraInterruptionEnded,
         statsReceived,
         networkQualityLevelsChanged,
-        dominantSpeakerDidChange
+        dominantSpeakerDidChange,
+        screenShareChanged,
+
     ];
 }
 
@@ -390,6 +391,7 @@ RCT_EXPORT_METHOD(flipCamera) {
                          }];
     }
 }
+
 RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
     if (enabled) {
         // Create screen source/track if needed
