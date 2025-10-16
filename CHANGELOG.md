@@ -22,6 +22,7 @@
 - Updated `expo-module-scripts` to `^4.1.10`.
 - Updated `gulp` to `^5.0.1`.
 - Updated `gulp-load-plugins` to `^2.0.8`.
+- Added `tsconfig.json` for TypeScript configuration of the Expo config plugin.
 
 **Documentation:**
 
@@ -40,13 +41,19 @@
 - Fixed an issue where the iOS native `connect` method was incorrectly handling BOOL types, which caused crashes when establishing a connection.
 - Resolved a bug in the native Android component where a string reference was improperly passed, resulting in runtime errors.
 - Removed unused `disableOpenSLES` method from `CustomTwilioVideoView`.
+  <<<<<<< HEAD
+  =======
 - Fixed a bug on Android where a video track could not be published to a room with `enableVideo: false`
+  > > > > > > > master
 
 ### Platform Specific Notes
 
 #### Android
 
 - Native SDK bumped to `7.9.0`.
+  <<<<<<< HEAD
+- # Expo builds: Migrated from Android Support Library to AndroidX.
+  > > > > > > > master
 
 #### iOS
 
