@@ -51,7 +51,7 @@ const propTypes = {
 
   /**
    * Called when screen sharing state changes
-   * @param {{ screenShareEnabled:boolean }} 
+   * @param {{screenShareEnabled: boolean}} 
    */
   onScreenShareChanged: PropTypes.func,
 
