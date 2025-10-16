@@ -64,6 +64,20 @@ const Example = () => {
     const _log = (line: string) =>
         setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
 
+    const resetStates = () => {
+        setVideoTracks(new Map());
+        setIsSharing(false);
+        setStatus("disconnected");
+        setIsAudioEnabled(true);
+        setIsVideoEnabled(true);
+        setRemoteAudioEnabled(true);
+        setNetworkQualityEnabled(false);
+        setDominantSpeakerEnabled(false);
+        setEnableH264Codec(false);
+        setLogs([]);
+        setRoomDetails({ roomName: "", roomSid: "" });
+    };
+
     const _requestAudioPermission = () => {
         return PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -108,7 +122,6 @@ const Example = () => {
                 enableNetworkQualityReporting: networkQualityEnabled,
                 dominantSpeakerEnabled,
                 encodingParameters: { enableH264Codec },
-                maintainVideoTrackInBackground: true,
             });
         } catch (err) {
             console.log("🚀 ~ _onConnectButtonPress ~ err:", err)
@@ -119,16 +132,6 @@ const Example = () => {
 
     const _onEndButtonPress = () => {
         twilioRef.current?.disconnect();
-        setVideoTracks(new Map());
-        setIsSharing(false);
-        setStatus("disconnected");
-        setIsAudioEnabled(true);
-        setIsVideoEnabled(true);
-        setRemoteAudioEnabled(true);
-        setNetworkQualityEnabled(false);
-        setDominantSpeakerEnabled(false);
-        setEnableH264Codec(false);
-        setLogs([]);
     };
 
     const _onMuteButtonPress = () => {
@@ -181,7 +184,7 @@ const Example = () => {
     };
 
     const _onRoomDidDisconnect = () => {
-        setStatus("disconnected");
+        resetStates();
     };
 
     const _onRoomDidFailToConnect = () => {
