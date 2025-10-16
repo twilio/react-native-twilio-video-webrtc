@@ -187,7 +187,7 @@ export default class TwilioVideo extends Component {
 
     /**
      * Called when screen sharing state changes
-     * @param {{ screenShareEnabled }} screen share status
+     * @param {{screenShareEnabled: boolean}} screen share status
      */
     onScreenShareChanged: PropTypes.func,
     
