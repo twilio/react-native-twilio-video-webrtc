@@ -388,8 +388,7 @@ public class CustomTwilioVideoView extends View
              * If the local video track was released when the app was put in the background,
              * recreate.
              */
-            if (localVideoTrack == null && cameraCapturer != null) {
-
+            if (cameraCapturer != null && localVideoTrack == null) {
                 localVideoTrack = LocalVideoTrack.create(getContext(), isVideoEnabled, cameraCapturer, buildVideoFormat());
             }
             /*

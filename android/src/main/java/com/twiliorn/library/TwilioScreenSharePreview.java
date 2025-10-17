@@ -1,6 +1,5 @@
 /**
  * Component for Twilio Video screen share preview.
- * <p>
  * Authors:
  * Zhani Muceku <zhani.muceku@testdevlab.com>
  */

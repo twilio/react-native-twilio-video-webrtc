@@ -1,6 +1,5 @@
 //
 //  RCTTWScreenShareViewManager.m
-//  Black
 //
 //  Created for screen sharing support
 //

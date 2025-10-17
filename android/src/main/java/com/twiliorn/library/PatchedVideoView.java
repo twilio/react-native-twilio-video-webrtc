@@ -1,6 +1,5 @@
 /**
  * Component for patching black screen bug coming from Twilio VideoView
- * <p>
  * Authors:
  * Aaron Alaniz (@aaalaniz) <aaron.a.alaniz@gmail.com>
  */

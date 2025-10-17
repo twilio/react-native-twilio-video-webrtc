@@ -1,6 +1,5 @@
 //
 //  RCTTWScreenShareViewManager.h
-//  Black
 //
 //  Created for screen sharing support
 //
