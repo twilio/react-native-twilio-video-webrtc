@@ -35,6 +35,7 @@
 ### Features
 
 - Added ability to **mute remote participants** (this functionality was previously missing on iOS).
+- Added screenshare functionality on both iOS and Android.
 
 ### Fixes
 
@@ -54,5 +55,6 @@
 
 - Native SDK bumped to `5.10`.
 - Remote participant mute support added (previously missing on iOS).
+- Screensharing on iOS only supports in-app sharing.
 
 ---
