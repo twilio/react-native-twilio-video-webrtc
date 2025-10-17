@@ -182,7 +182,6 @@ export default class TwilioVideo extends Component {
     if (this.props.autoInitializeCamera !== false) {
       this._startLocalVideo();
     }
-    this._startLocalAudio();
   }
 
   componentWillUnmount() {
