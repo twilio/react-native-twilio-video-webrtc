@@ -42,7 +42,7 @@
 - Resolved a bug in the native Android component where a string reference was improperly passed, resulting in runtime errors.
 - Removed unused `disableOpenSLES` method from `CustomTwilioVideoView`.
 - Fixed a bug on Android where a video track could not be published to a room with `enableVideo: false`
-- Fixed audio track always being published bug
+- Fixed an inconsistency between `enableVideo: false` and `enableAudio: false` connect parameters. With `enableAudio: false` a disabled audio track will not be intially published to the room, matching the behaviour of `enableVideo: false`
 
 ### Platform Specific Notes
 
