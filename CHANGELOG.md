@@ -35,7 +35,7 @@
 ### Features
 
 - Added ability to **mute remote participants** (this functionality was previously missing on iOS).
-- Added screenshare functionality on both iOS and Android.
+- Added screenshare functionality on both iOS and Android. Screensharing can be enabled in a room with `toggleScreenSharing(true)` and disabled with `toggleScreenSharing(false)`
 
 ### Fixes
 
@@ -55,6 +55,9 @@
 
 - Native SDK bumped to `5.10`.
 - Remote participant mute support added (previously missing on iOS).
-- Screensharing on iOS only supports in-app sharing.
+
+### Known issues
+
+- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
 
 ---
