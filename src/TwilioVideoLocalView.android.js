@@ -1,5 +1,5 @@
 /**
- * Component for Twilio Video local views.
+ * Component for Twilio Video camera preview.
  *
  * Authors:
  *   Jonathan Chang <slycoder@gmail.com>
@@ -37,17 +37,17 @@ const propTypes = {
   onFrameDimensionsChanged: PropTypes.func,
 };
 
-class TwilioVideoPreview extends React.Component {
+class TwilioVideoLocalView extends React.Component {
   render() {
     return <NativeTwilioVideoPreview {...this.props} />;
   }
 }
 
-TwilioVideoPreview.propTypes = propTypes;
+TwilioVideoLocalView.propTypes = propTypes;
 
 const NativeTwilioVideoPreview = requireNativeComponent(
   "RNTwilioVideoPreview",
-  TwilioVideoPreview
+  TwilioVideoLocalView
 );
 
-module.exports = TwilioVideoPreview;
+module.exports = TwilioVideoLocalView;

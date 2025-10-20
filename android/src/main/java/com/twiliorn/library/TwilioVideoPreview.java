@@ -1,12 +1,12 @@
 /**
- * Component for Twilio Video local views.
+ * Component for Twilio Video camera preview.
  * <p>
  * Authors:
  * Jonathan Chang <slycoder@gmail.com>
  */
 
 package com.twiliorn.library;
-import com.facebook.react.bridge.WritableMap;
+
 import com.facebook.react.uimanager.ThemedReactContext;
 
 public class TwilioVideoPreview extends RNVideoViewGroup {

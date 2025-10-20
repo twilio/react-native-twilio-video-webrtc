@@ -32,6 +32,17 @@ declare module "react-native-twilio-video-webrtc" {
     applyZOrder?: boolean | undefined;
   }
 
+  interface TwilioVideoScreenShareViewProps extends ViewProps {
+    enabled: boolean;
+    ref?: React.Ref<any>;
+    scaleType?: scaleType;
+    /**
+     * Whether to apply Z ordering to this view.  Setting this to true will cause
+     * this view to appear above other Twilio Video views. 
+     */
+    applyZOrder?: boolean | undefined;
+  }
+
   interface Participant {
     sid: string;
     identity: string;
@@ -100,6 +111,12 @@ declare module "react-native-twilio-video-webrtc" {
 
   export type LocalParticipantSupportedCodecsCb = (d: LocalParticipantSupportedCodecsCbEventArgs) => void;
 
+  export type ScreenShareChangedEventArgs = {
+    screenShareEnabled: boolean;
+  }
+
+  export type ScreenShareChangedCb = (e: ScreenShareChangedEventArgs) => void;
+
   export type TwilioVideoProps = ViewProps & {
     onCameraDidStart?: () => void;
     onCameraDidStopRunning?: (err: any) => void;
@@ -122,6 +139,7 @@ declare module "react-native-twilio-video-webrtc" {
     onRoomParticipantDidDisconnect?: ParticipantEventCb;
     onNetworkQualityLevelsChanged?: NetworkLevelChangeEventCb;
     onLocalParticipantSupportedCodecs?: LocalParticipantSupportedCodecsCb;
+    onScreenShareChanged?: ScreenShareChangedCb;
 
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;
@@ -182,9 +200,13 @@ declare module "react-native-twilio-video-webrtc" {
     TwilioVideoLocalViewProps
   > {}
 
+  class TwilioVideoScreenShareView extends React.Component<
+    TwilioVideoScreenShareViewProps
+  > {}
+
   class TwilioVideoParticipantView extends React.Component<
     TwilioVideoParticipantViewProps
   > {}
 
-  export { TwilioVideoLocalView, TwilioVideoParticipantView, TwilioVideo };
+  export { TwilioVideoLocalView, TwilioVideoScreenShareView, TwilioVideoParticipantView, TwilioVideo };
 }

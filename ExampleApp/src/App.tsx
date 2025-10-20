@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import {
     TwilioVideoLocalView,
+    TwilioVideoScreenShareView,
     TwilioVideoParticipantView,
     TwilioVideo,
 } from "react-native-twilio-video-webrtc";
@@ -53,6 +54,7 @@ const Example = () => {
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
+    const [isSharing, setIsSharing] = useState(false);
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
@@ -61,6 +63,20 @@ const Example = () => {
     const twilioRef = useRef<any>(null);
     const _log = (line: string) =>
         setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
+
+    const resetStates = () => {
+        setVideoTracks(new Map());
+        setIsSharing(false);
+        setStatus("disconnected");
+        setIsAudioEnabled(true);
+        setIsVideoEnabled(true);
+        setRemoteAudioEnabled(true);
+        setNetworkQualityEnabled(false);
+        setDominantSpeakerEnabled(false);
+        setEnableH264Codec(false);
+        setLogs([]);
+        setRoomDetails({ roomName: "", roomSid: "" });
+    };
 
     const _requestAudioPermission = () => {
         return PermissionsAndroid.request(
@@ -116,7 +132,6 @@ const Example = () => {
 
     const _onEndButtonPress = () => {
         twilioRef.current?.disconnect();
-        setVideoTracks(new Map());
     };
 
     const _onMuteButtonPress = () => {
@@ -147,6 +162,15 @@ const Example = () => {
         _log("(you) sent: Hello from RN");
     };
 
+    const _onShareButtonPress = () => {
+        twilioRef.current?.toggleScreenSharing(!isSharing);
+    };
+
+    const _onScreenShareChanged = (event: any) => {
+        setIsSharing(event.screenShareEnabled);
+        _log(`Screen Share ${event.screenShareEnabled ? 'Started' : 'Stopped'}`);
+    };
+
 
 
     const _onRoomDidConnect = (event: any) => {
@@ -160,7 +184,7 @@ const Example = () => {
     };
 
     const _onRoomDidDisconnect = () => {
-        setStatus("disconnected");
+        resetStates();
     };
 
     const _onRoomDidFailToConnect = () => {
@@ -225,6 +249,7 @@ const Example = () => {
                             </View>
                         )}
                         <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
+                        {isSharing ? <TwilioVideoScreenShareView enabled={true} style={styles.localVideo} /> : null}
                         <LogPanel logs={logs} scrollRef={scrollRef} />
                         <ControlBar>
                             <OptionButton label="End" onPress={_onEndButtonPress} />
@@ -234,6 +259,7 @@ const Example = () => {
                             <OptionButton label={remoteAudioEnabled ? "Mute Remote" : "Unmute Remote"} onPress={_onToggleRemoteAudioPress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
                             <OptionButton label="Ping" onPress={_onSendStringPress} />
+                            <OptionButton label={isSharing ? "Stop Sharing" : "Start Sharing"} onPress={_onShareButtonPress} />
                         </ControlBar>
                     </View>
                 </View>
@@ -246,6 +272,7 @@ const Example = () => {
                 onRoomDidFailToConnect={_onRoomDidFailToConnect}
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
+                onScreenShareChanged={_onScreenShareChanged}
                 onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
                 onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
                 onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}

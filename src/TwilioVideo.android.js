@@ -50,6 +50,12 @@ const propTypes = {
   onVideoChanged: PropTypes.func,
 
   /**
+   * Called when screen sharing state changes
+   * @param {{screenShareEnabled: boolean}} 
+   */
+  onScreenShareChanged: PropTypes.func,
+
+  /**
     * Callback that is called when audio is toggled.
     *
     * @param {{audioEnabled: boolean}}
@@ -205,6 +211,7 @@ const nativeEvents = {
   publishVideo: 13,
   publishAudio: 14,
   setRemoteAudioPlayback: 15,
+  toggleScreenSharing: 16,
 };
 
 class CustomTwilioVideoView extends Component {
@@ -311,6 +318,13 @@ class CustomTwilioVideoView extends Component {
     this.runCommand(nativeEvents.toggleVideo, [enabled]);
     return Promise.resolve(enabled);
   }
+  /**
+   * Toggle screen sharing
+   * @param {boolean} enabled - Whether screen sharing is enabled
+   */
+  toggleScreenSharing(enabled) {
+    this.runCommand(nativeEvents.toggleScreenSharing, [enabled])
+  }
 
   /**
    * Enable or disable local audio
@@ -397,6 +411,7 @@ class CustomTwilioVideoView extends Component {
     return [
       "onCameraSwitched",
       "onVideoChanged",
+      "onScreenShareChanged",
       "onAudioChanged",
       "onRoomDidConnect",
       "onRoomDidFailToConnect",
