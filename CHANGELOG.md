@@ -44,6 +44,7 @@
 - Removed unused `disableOpenSLES` method from `CustomTwilioVideoView`.
 - Fixed a bug on Android where a video track could not be published to a room with `enableVideo: false`
 - Fixed an inconsistency between `enableVideo: false` and `enableAudio: false` connect parameters. With `enableAudio: false` a disabled audio track will not be intially published to the room, matching the behaviour of `enableVideo: false`
+- Fixed track cleanup issue on iOS where audio tracks were not properly unpublished when users disconnect, causing tracks to appear as disabled instead of being removed from the room
 
 ### Platform Specific Notes
 
