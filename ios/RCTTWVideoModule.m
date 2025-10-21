@@ -96,6 +96,7 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
 RCT_EXPORT_MODULE();
 
 - (void)dealloc {
+    [self clearAudioInstance];
     [self clearCameraInstance];
     [self clearScreenInstance];
 }
@@ -294,7 +295,7 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
                  enabled : (BOOL) enabled setLocalAudioEnabledWithResolver : (
                          RCTPromiseResolveBlock)
                          resolve rejecter : (RCTPromiseRejectBlock) reject) {
-    [self.localAudioTrack setEnabled:enabled];
+    [self _toggleAudioTrack:enabled];
 
     resolve(@(enabled));
 }
@@ -358,6 +359,39 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
         return enabled;
     }
     return false;
+}
+
+#pragma mark - Local Audio Handling
+
+// Create audio track
+- (void)_createAudioTrack {
+    if (self.localAudioTrack == nil) {
+        self.localAudioTrack = [TVILocalAudioTrack trackWithOptions:nil
+                                                            enabled:YES
+                                                               name:@"microphone"];
+    }
+}
+
+// Toggle audio track (create if needed, enable/disable existing)
+- (void)_toggleAudioTrack:(bool)enabled {
+    if (enabled) {
+        if (self.localAudioTrack) {
+            // Track exists, just enable it
+            [self.localAudioTrack setEnabled:YES];
+        } else {
+            // Track doesn't exist, create, enable and publish it
+            [self _createAudioTrack];
+            if (self.room && self.room.state == TVIRoomStateConnected) {
+                [self.room.localParticipant publishAudioTrack:self.localAudioTrack];
+            }
+        }
+    } else {
+        if (self.localAudioTrack) {
+            // Track exists, just disable it
+            [self.localAudioTrack setEnabled:NO];
+        }
+        // If track doesn't exist, do nothing
+    }
 }
 
 RCT_REMAP_METHOD(setLocalVideoEnabled,
@@ -615,8 +649,10 @@ RCT_EXPORT_METHOD(
                                         dominantSpeakerEnabled cameraType : (NSString *)
                                                 cameraType) {
     [self _setLocalVideoEnabled:enableVideo cameraType:cameraType];
-    if (self.localAudioTrack) {
-        [self.localAudioTrack setEnabled:enableAudio];
+
+    // For audio: only create track if enabled during connect
+    if (enableAudio) {
+        [self _createAudioTrack];
     }
 
     TVIConnectOptions *connectOptions = [TVIConnectOptions
@@ -678,6 +714,7 @@ RCT_EXPORT_METHOD(sendString : (nonnull NSString *) message) {
 }
 
 RCT_EXPORT_METHOD(disconnect) {
+    [self clearAudioInstance];
     [self clearCameraInstance];
     [self clearScreenInstance];
     [self.room disconnect];
@@ -700,10 +737,24 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)clearCameraInstance {
     // We are done with camera
+    if (self.localVideoTrack != nil && self.room != nil) {
+        // Unpublish the video track before releasing it
+        [[self.room localParticipant] unpublishVideoTrack:self.localVideoTrack];
+    }
     if (self.camera) {
         [self.camera stopCapture];
         self.camera = nil;
     }
+    self.localVideoTrack = nil;
+}
+
+- (void)clearAudioInstance {
+    // We are done with audio
+    if (self.localAudioTrack != nil && self.room != nil) {
+        // Unpublish the audio track before releasing it
+        [[self.room localParticipant] unpublishAudioTrack:self.localAudioTrack];
+    }
+    self.localAudioTrack = nil;
 }
 
 #pragma mark - Common

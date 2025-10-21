@@ -520,7 +520,9 @@ public class CustomTwilioVideoView extends View
         this.enableH264Codec = enableH264Codec;
 
         // Share your microphone
-        localAudioTrack = LocalAudioTrack.create(getContext(), enableAudio);
+        if (enableAudio) {
+            localAudioTrack = LocalAudioTrack.create(getContext(), enableAudio);
+        }
 
         if (cameraCapturer == null && enableVideo) {
             boolean createVideoStatus = createLocalVideo(enableVideo, cameraType);
@@ -892,13 +894,25 @@ public class CustomTwilioVideoView extends View
     }
 
     public void toggleAudio(boolean enabled) {
-        if (localAudioTrack != null) {
-            localAudioTrack.enable(enabled);
-
-            WritableMap event = new WritableNativeMap();
-            event.putBoolean("audioEnabled", enabled);
-            pushEvent(CustomTwilioVideoView.this, ON_AUDIO_CHANGED, event);
+        if (enabled) {
+            if (localAudioTrack != null) {
+                localAudioTrack.enable(true);
+            } else {
+                // Create a new local audio track as enabled and publish it
+                localAudioTrack = LocalAudioTrack.create(getContext(), true);
+                publishLocalAudio(true);
+            }
+        } else {
+            if (localAudioTrack != null) {
+                localAudioTrack.enable(false);
+            } else {
+                // If localAudioTrack doesn't exist and enabled is false, do nothing
+                return;
+            }
         }
+        WritableMap event = new WritableNativeMap();
+        event.putBoolean("audioEnabled", enabled);
+        pushEvent(CustomTwilioVideoView.this, ON_AUDIO_CHANGED, event);
     }
 
     public void toggleBluetoothHeadset(boolean enabled) {
@@ -1092,7 +1106,6 @@ public class CustomTwilioVideoView extends View
 
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECTED, event);
 
-                // There is not .publish it's publishTrack
                 if (localDataTrack != null) {
                     localParticipant.publishTrack(localDataTrack);
                 }
