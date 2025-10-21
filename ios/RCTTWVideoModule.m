@@ -96,6 +96,7 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
 RCT_EXPORT_MODULE();
 
 - (void)dealloc {
+    [self clearAudioInstance];
     [self clearCameraInstance];
     [self clearScreenInstance];
 }
@@ -713,6 +714,7 @@ RCT_EXPORT_METHOD(sendString : (nonnull NSString *) message) {
 }
 
 RCT_EXPORT_METHOD(disconnect) {
+    [self clearAudioInstance];
     [self clearCameraInstance];
     [self clearScreenInstance];
     [self.room disconnect];
@@ -735,10 +737,24 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)clearCameraInstance {
     // We are done with camera
+    if (self.localVideoTrack != nil && self.room != nil) {
+        // Unpublish the video track before releasing it
+        [[self.room localParticipant] unpublishVideoTrack:self.localVideoTrack];
+    }
     if (self.camera) {
         [self.camera stopCapture];
         self.camera = nil;
     }
+    self.localVideoTrack = nil;
+}
+
+- (void)clearAudioInstance {
+    // We are done with audio
+    if (self.localAudioTrack != nil && self.room != nil) {
+        // Unpublish the audio track before releasing it
+        [[self.room localParticipant] unpublishAudioTrack:self.localAudioTrack];
+    }
+    self.localAudioTrack = nil;
 }
 
 #pragma mark - Common
