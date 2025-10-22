@@ -73,5 +73,6 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
+- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only) 
 
 ---
