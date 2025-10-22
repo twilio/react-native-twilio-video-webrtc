@@ -305,9 +305,9 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
     return [self _setLocalVideoEnabled:enabled cameraType:@"front"];
 }
 
-- (bool)_setLocalVideoEnabled:(bool)enabled cameraType:(NSString *)cameraType {
 
-    if (enabled && self.camera == nil) {
+- (void)_createVideoTrack:(NSString *)cameraType {
+    if (self.localVideoTrack == nil) {
         TVICameraSourceOptions *options = [TVICameraSourceOptions
                 optionsWithBlock:^(TVICameraSourceOptionsBuilder *_Nonnull builder) {
 
@@ -315,50 +315,66 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
         self.camera = [[TVICameraSource alloc] initWithOptions:options
                                                       delegate:self];
         if (self.camera == nil) {
-            return false;
+            return;
         }
+
         self.localVideoTrack = [TVILocalVideoTrack trackWithSource:self.camera
-                                                           enabled:NO
+                                                           enabled:YES
                                                               name:@"camera"];
+
         // Reconnect the local video view if it exists
         if (self.localVideoView != nil) {
             [self.localVideoTrack addRenderer:self.localVideoView];
             [self updateLocalViewMirroring:self.localVideoView];
         }
+
+        // Start camera capture for the track to work
+        [self startCameraCapture:cameraType];
+    } else {
+        // Track exists but might be disabled, enable it and start capture
+        [self.localVideoTrack setEnabled:YES];
+
+        // Reconnect the local video view if it exists
+        if (self.localVideoView != nil) {
+            [self.localVideoTrack addRenderer:self.localVideoView];
+            [self updateLocalViewMirroring:self.localVideoView];
+        }
+
+        // Start camera capture for the track to work
+        [self startCameraCapture:cameraType];
     }
+}
 
-    if (self.camera != nil && self.localVideoTrack != nil) {
-        if (enabled) {
-            [self.localVideoTrack setEnabled:enabled];
-            TVILocalParticipant *localParticipant = self.room.localParticipant;
-            [localParticipant publishVideoTrack:self.localVideoTrack];
 
-            // Ensure the local renderer is attached in case it was removed earlier.
-            if (self.localVideoView != nil &&
-                ![self.localVideoTrack.renderers containsObject:self.localVideoView]) {
-                [self.localVideoTrack addRenderer:self.localVideoView];
-                [self updateLocalViewMirroring:self.localVideoView];
+// Toggle video track (like _toggleAudioTrack)
+- (bool)_setLocalVideoEnabled:(bool)enabled cameraType:(NSString *)cameraType {
+    if (enabled) {
+        if (self.localVideoTrack) {
+            // Track exists, just enable it
+            [self.localVideoTrack setEnabled:YES];
+            if (self.room && self.room.state == TVIRoomStateConnected) {
+                [self.room.localParticipant publishVideoTrack:self.localVideoTrack];
             }
-
             [self startCameraCapture:cameraType];
         } else {
-            [self.localVideoTrack setEnabled:enabled];
-            TVILocalParticipant *localParticipant = self.room.localParticipant;
-            [localParticipant unpublishVideoTrack:self.localVideoTrack];
-
-            // Detach any existing renderers before stopping capture and releasing the
-            // track.
-            if (self.localVideoView != nil) {
-                [self.localVideoTrack removeRenderer:self.localVideoView];
+            // Track doesn't exist, create, enable and publish it
+            [self _createVideoTrack:cameraType];
+            if (self.localVideoTrack) {
+                [self.localVideoTrack setEnabled:YES];
+                if (self.room && self.room.state == TVIRoomStateConnected) {
+                    [self.room.localParticipant publishVideoTrack:self.localVideoTrack];
+                }
+                [self startCameraCapture:cameraType];
             }
-
-            [self.camera stopCapture];
-            self.localVideoTrack = nil;
-            self.camera = nil;
         }
-        return enabled;
+    } else {
+        if (self.localVideoTrack) {
+            // Track exists, just disable it
+            [self.localVideoTrack setEnabled:NO];
+        }
+        // If track doesn't exist, do nothing
     }
-    return false;
+    return enabled;
 }
 
 #pragma mark - Local Audio Handling
@@ -648,7 +664,10 @@ RCT_EXPORT_METHOD(
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
                                         dominantSpeakerEnabled cameraType : (NSString *)
                                                 cameraType) {
-    [self _setLocalVideoEnabled:enableVideo cameraType:cameraType];
+    // Only create video track if enabled during connect
+    if (enableVideo) {
+        [self _createVideoTrack:cameraType];
+    }
 
     // For audio: only create track if enabled during connect
     if (enableAudio) {
