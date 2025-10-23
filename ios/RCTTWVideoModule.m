@@ -892,15 +892,22 @@ RCT_EXPORT_METHOD(disconnect) {
     self.localDataTrack = nil;
     self.room = nil;
 
-    NSMutableDictionary *body =
-            [@{@"roomName": room.name, @"roomSid": room.sid} mutableCopy];
+    NSMutableDictionary *body = [@{
+        @"roomName": room.name ?: @"",
+        @"roomSid": room.sid ?: @""
+    } mutableCopy];
 
     if (error) {
-        [body addEntriesFromDictionary:@{@"error": error.localizedDescription}];
+        [body addEntriesFromDictionary:@{
+            @"error": error.localizedDescription ?: @"",
+            @"code": @(error.code),
+            @"errorExplanation": error.localizedFailureReason ?: error.localizedDescription ?: @""
+        }];
     }
 
     [self sendEventCheckingListenerWithName:roomDidFailToConnect body:body];
 }
+
 
 - (void)room:(TVIRoom *)room
         participantDidConnect:(TVIRemoteParticipant *)participant {

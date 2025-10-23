@@ -186,7 +186,17 @@ const Example = () => {
 
     const _onRoomDidFailToConnect = (event: any) => {
         setStatus("disconnected");
-        const errorMsg = event?.error || "Failed to connect to room";
+        
+        let errorMsg = event?.error || "Failed to connect to room";
+        
+        if (event?.code) {
+            errorMsg += `\n\nError Code: ${event.code}`;
+        }
+        
+        if (event?.errorExplanation) {
+            errorMsg += `\n\nDetails: ${event.errorExplanation}`;
+        }
+        
         setErrorMessage(errorMsg);
     };
 

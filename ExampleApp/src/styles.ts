@@ -118,8 +118,8 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 20,
         margin: 20,
-        minWidth: 280,
-        maxWidth: 320,
+        minWidth: 300,
+        maxWidth: 350,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -140,7 +140,7 @@ export const styles = StyleSheet.create({
 
     modalMessage: {
         fontSize: 14,
-        textAlign: "center",
+        textAlign: "left",
         marginBottom: 20,
         color: "#666",
         lineHeight: 20,
