@@ -32,6 +32,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_R
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTED;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -158,7 +160,9 @@ public class CustomTwilioVideoView extends View
                 Events.ON_NETWORK_QUALITY_LEVELS_CHANGED,
                 Events.ON_DOMINANT_SPEAKER_CHANGED,
                 Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS,
-                Events.ON_SCREEN_SHARE_CHANGED})
+                Events.ON_SCREEN_SHARE_CHANGED,
+                Events.ON_RECONNECTING,
+                Events.ON_RECONNECTED})
     public @interface Events {
         String ON_CAMERA_SWITCHED = "onCameraSwitched";
         String ON_VIDEO_CHANGED = "onVideoChanged";
@@ -184,6 +188,8 @@ public class CustomTwilioVideoView extends View
         String ON_DOMINANT_SPEAKER_CHANGED = "onDominantSpeakerDidChange";
         String ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS = "onLocalParticipantSupportedCodecs";
         String ON_SCREEN_SHARE_CHANGED = "onScreenShareChanged";
+        String ON_RECONNECTING = "onRoomIsReconnecting";
+        String ON_RECONNECTED = "onRoomDidReconnect";
     }
 
     private final ThemedReactContext themedReactContext;
@@ -1126,10 +1132,19 @@ public class CustomTwilioVideoView extends View
 
             @Override
             public void onReconnecting(@NonNull Room room, @NonNull TwilioException twilioException) {
+                WritableMap event = new WritableNativeMap();
+                event.putString("roomName", room.getName());
+                event.putString("roomSid", room.getSid());
+                event.putString("error", twilioException.getMessage());
+                pushEvent(CustomTwilioVideoView.this, ON_RECONNECTING, event);
             }
 
             @Override
             public void onReconnected(@NonNull Room room) {
+                WritableMap event = new WritableNativeMap();
+                event.putString("roomName", room.getName());
+                event.putString("roomSid", room.getSid());
+                pushEvent(CustomTwilioVideoView.this, ON_RECONNECTED, event);
             }
 
             @Override
