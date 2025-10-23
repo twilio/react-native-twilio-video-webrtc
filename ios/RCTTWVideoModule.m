@@ -17,6 +17,8 @@ static NSString *roomDidFailToConnect = @"roomDidFailToConnect";
 static NSString *roomParticipantDidConnect = @"roomParticipantDidConnect";
 static NSString *roomParticipantDidDisconnect = @"roomParticipantDidDisconnect";
 static NSString *dominantSpeakerDidChange = @"onDominantSpeakerDidChange";
+static NSString *roomIsReconnecting = @"roomIsReconnecting";
+static NSString *roomDidReconnect = @"roomDidReconnect";
 
 static NSString *participantAddedVideoTrack = @"participantAddedVideoTrack";
 static NSString *participantRemovedVideoTrack = @"participantRemovedVideoTrack";
@@ -110,6 +112,8 @@ RCT_EXPORT_MODULE();
         roomDidConnect,
         roomDidDisconnect,
         roomDidFailToConnect,
+        roomIsReconnecting,
+        roomDidReconnect,
         roomParticipantDidConnect,
         roomParticipantDidDisconnect,
         participantAddedVideoTrack,
@@ -921,6 +925,23 @@ RCT_EXPORT_METHOD(disconnect) {
                                            @"roomName": room.name,
                                            @"roomSid": room.sid,
                                            @"participant": [participant toJSON]
+                                       }];
+}
+
+- (void)room:(TVIRoom *)room isReconnectingWithError:(nonnull NSError *)error {
+    [self sendEventCheckingListenerWithName:roomIsReconnecting
+                                       body:@{
+                                           @"roomName": room.name ?: @"",
+                                           @"roomSid": room.sid ?: @"",
+                                           @"error": error.localizedDescription ?: @""
+                                       }];
+}
+
+- (void)didReconnectToRoom:(nonnull TVIRoom *)room {
+    [self sendEventCheckingListenerWithName:roomDidReconnect
+                                       body:@{
+                                           @"roomName": room.name ?: @"",
+                                           @"roomSid": room.sid ?: @""
                                        }];
 }
 

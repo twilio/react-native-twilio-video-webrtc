@@ -63,6 +63,20 @@ const propTypes = {
   onAudioChanged: PropTypes.func,
 
   /**
+    * Callback that is called when room is reconnecting.
+    *
+    * @param {{roomName: string, roomSid: string, error: string}}
+    */
+  onRoomIsReconnecting: PropTypes.func,
+
+  /**
+    * Callback that is called when room did reconnect.
+    * 
+    * @param {{roomName: string, roomSid: string}}
+  */
+  onRoomDidReconnect: PropTypes.func,
+
+  /**
     * Callback that is called when user is connected to a room.
     *
     * @param {{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}}
@@ -433,6 +447,8 @@ class CustomTwilioVideoView extends Component {
       "onNetworkQualityLevelsChanged",
       "onDominantSpeakerDidChange",
       "onLocalParticipantSupportedCodecs",
+      "onRoomIsReconnecting",
+      "onRoomDidReconnect",
     ].reduce((wrappedEvents, eventName) => {
       if (this.props[eventName]) {
         return {

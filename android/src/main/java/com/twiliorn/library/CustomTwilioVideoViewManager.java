@@ -29,6 +29,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_E
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_REMOVED_AUDIO_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_REMOVED_DATA_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_REMOVED_VIDEO_TRACK;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
@@ -186,6 +188,10 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_STATS_RECEIVED, MapBuilder.of("registrationName", ON_STATS_RECEIVED),
                 ON_NETWORK_QUALITY_LEVELS_CHANGED, MapBuilder.of("registrationName", ON_NETWORK_QUALITY_LEVELS_CHANGED),
                 ON_DOMINANT_SPEAKER_CHANGED, MapBuilder.of("registrationName", ON_DOMINANT_SPEAKER_CHANGED)));
+
+        map.putAll(MapBuilder.of(
+                ON_RECONNECTING, MapBuilder.of("registrationName", ON_RECONNECTING),
+                ON_RECONNECTED, MapBuilder.of("registrationName", ON_RECONNECTED)));
 
         return map;
     }

@@ -190,7 +190,19 @@ export default class TwilioVideo extends Component {
      * @param {{screenShareEnabled: boolean}} screen share status
      */
     onScreenShareChanged: PropTypes.func,
-    
+    /**
+     * Callback that is called when room is reconnecting
+     *
+     * @param {{roomName: string, roomSid: string, error: string}}
+     */
+    onRoomIsReconnecting: PropTypes.func,
+    /**
+     * Callback that is called when room did reconnect
+     *
+     * @param {{roomName: string, roomSid: string}}
+     */
+    onRoomDidReconnect: PropTypes.func,
+
     /**
      * Whether video should be automatically initialized upon mounting
      * of this component. Defaults to true. If set to false, any use of the
@@ -522,6 +534,16 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("screenShareChanged", (data) => {
         if (this.props.onScreenShareChanged) {
           this.props.onScreenShareChanged(data);
+        }
+      }),
+      this._eventEmitter.addListener("roomIsReconnecting", (data) => {
+        if (this.props.onRoomIsReconnecting) {
+          this.props.onRoomIsReconnecting(data);
+        }
+      }),
+      this._eventEmitter.addListener("roomDidReconnect", (data) => {
+        if (this.props.onRoomDidReconnect) {
+          this.props.onRoomDidReconnect(data);
         }
       }),
     ];
