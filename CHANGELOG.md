@@ -46,7 +46,7 @@
 - Fixed an inconsistency between `enableVideo: false` and `enableAudio: false` connect parameters. With `enableAudio: false` a disabled audio track will not be intially published to the room, matching the behaviour of `enableVideo: false`
 - Fixed track cleanup issue on iOS where audio tracks were not properly unpublished when users disconnect, causing tracks to appear as disabled instead of being removed from the room
 - Fixed autoInitializeCamera prop being treated as true when undefined
-
+- Fixed an iOS crash caused by local tracks not being cleared after a failed connection attempt
 
 ### Potential Breaking Changes
 
@@ -73,6 +73,6 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
-- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only) 
+- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only)
 
 ---

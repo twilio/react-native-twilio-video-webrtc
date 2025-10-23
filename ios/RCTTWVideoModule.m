@@ -876,6 +876,10 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)room:(TVIRoom *)room didDisconnectWithError:(nullable NSError *)error {
     self.localDataTrack = nil;
+    // Ensure any lingering local media is cleaned up
+    [self clearAudioInstance];
+    [self clearCameraInstance];
+    [self clearScreenInstance];
     self.room = nil;
 
     NSMutableDictionary *body =
@@ -890,6 +894,10 @@ RCT_EXPORT_METHOD(disconnect) {
 - (void)room:(TVIRoom *)room
         didFailToConnectWithError:(nonnull NSError *)error {
     self.localDataTrack = nil;
+    // Ensure any lingering local media is cleaned up 
+    [self clearAudioInstance];
+    [self clearCameraInstance];
+    [self clearScreenInstance];
     self.room = nil;
 
     NSMutableDictionary *body = [@{
