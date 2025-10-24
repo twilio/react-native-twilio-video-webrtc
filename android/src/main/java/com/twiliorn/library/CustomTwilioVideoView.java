@@ -1121,6 +1121,8 @@ public class CustomTwilioVideoView extends View
                 event.putString("roomName", room.getName());
                 event.putString("roomSid", room.getSid());
                 event.putString("error", e.getMessage());
+                event.putString("code", Integer.toString(e.getCode()));
+                event.putString("errorExplanation", e.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECT_FAILURE, event);
             }
 

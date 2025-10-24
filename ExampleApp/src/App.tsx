@@ -7,6 +7,7 @@ import {
     Platform,
     Switch,
     ScrollView,
+    Modal,
 } from "react-native";
 import {
     TwilioVideoLocalView,
@@ -59,6 +60,7 @@ const Example = () => {
     const [videoTracks, setVideoTracks] = useState(new Map());
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [logs, setLogs] = useState<string[]>([]);
+    const [errorMessage, setErrorMessage] = useState("");
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
     const _log = (line: string) =>
@@ -113,20 +115,15 @@ const Example = () => {
             await request(PERMISSIONS.IOS.MICROPHONE);
         }
 
-        try {
-            twilioRef.current?.connect({
-                accessToken: token,
-                enableAudio: isAudioEnabled,
-                enableVideo: isVideoEnabled,
-                enableRemoteAudio: remoteAudioEnabled,
-                enableNetworkQualityReporting: networkQualityEnabled,
-                dominantSpeakerEnabled,
-                encodingParameters: { enableH264Codec },
-            });
-        } catch (err) {
-            console.log("🚀 ~ _onConnectButtonPress ~ err:", err)
-            // no-op
-        }
+        twilioRef.current?.connect({
+            accessToken: token,
+            enableAudio: isAudioEnabled,
+            enableVideo: isVideoEnabled,
+            enableRemoteAudio: remoteAudioEnabled,
+            enableNetworkQualityReporting: networkQualityEnabled,
+            dominantSpeakerEnabled,
+            encodingParameters: { enableH264Codec },
+        });
         setStatus("connecting");
     };
 
@@ -187,8 +184,20 @@ const Example = () => {
         resetStates();
     };
 
-    const _onRoomDidFailToConnect = () => {
+    const _onRoomDidFailToConnect = (event: any) => {
         setStatus("disconnected");
+        
+        let errorMsg = event?.error || "Failed to connect to room";
+        
+        if (event?.code) {
+            errorMsg += `\n\nError Code: ${event.code}`;
+        }
+        
+        if (event?.errorExplanation) {
+            errorMsg += `\n\nDetails: ${event.errorExplanation}`;
+        }
+        
+        setErrorMessage(errorMsg);
     };
 
     const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
@@ -278,6 +287,26 @@ const Example = () => {
                 onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
                 onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
             />
+            
+            <Modal
+                visible={!!errorMessage}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setErrorMessage("")}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalTitle}>Connection Error</Text>
+                        <Text style={styles.modalMessage}>{errorMessage}</Text>
+                        <TouchableOpacity 
+                            style={styles.modalButton} 
+                            onPress={() => setErrorMessage("")}
+                        >
+                            <Text style={styles.modalButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView >
     );
 };

@@ -105,4 +105,58 @@ export const styles = StyleSheet.create({
         fontSize: 10,
         color: "#ccc",
     },
+
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    modalContainer: {
+        backgroundColor: "white",
+        borderRadius: 12,
+        padding: 20,
+        margin: 20,
+        minWidth: 300,
+        maxWidth: 350,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 12,
+        color: "#333",
+    },
+
+    modalMessage: {
+        fontSize: 14,
+        textAlign: "left",
+        marginBottom: 20,
+        color: "#666",
+        lineHeight: 20,
+    },
+
+    modalButton: {
+        backgroundColor: "#007AFF",
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        alignSelf: "center",
+    },
+
+    modalButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "600",
+    },
 });

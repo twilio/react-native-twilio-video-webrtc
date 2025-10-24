@@ -876,6 +876,10 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)room:(TVIRoom *)room didDisconnectWithError:(nullable NSError *)error {
     self.localDataTrack = nil;
+    // Ensure any lingering local media is cleaned up
+    [self clearAudioInstance];
+    [self clearCameraInstance];
+    [self clearScreenInstance];
     self.room = nil;
 
     NSMutableDictionary *body =
@@ -890,17 +894,28 @@ RCT_EXPORT_METHOD(disconnect) {
 - (void)room:(TVIRoom *)room
         didFailToConnectWithError:(nonnull NSError *)error {
     self.localDataTrack = nil;
+    // Ensure any lingering local media is cleaned up 
+    [self clearAudioInstance];
+    [self clearCameraInstance];
+    [self clearScreenInstance];
     self.room = nil;
 
-    NSMutableDictionary *body =
-            [@{@"roomName": room.name, @"roomSid": room.sid} mutableCopy];
+    NSMutableDictionary *body = [@{
+        @"roomName": room.name ?: @"",
+        @"roomSid": room.sid ?: @""
+    } mutableCopy];
 
     if (error) {
-        [body addEntriesFromDictionary:@{@"error": error.localizedDescription}];
+        [body addEntriesFromDictionary:@{
+            @"error": error.localizedDescription ?: @"",
+            @"code": @(error.code),
+            @"errorExplanation": error.localizedFailureReason ?: error.localizedDescription ?: @""
+        }];
     }
 
     [self sendEventCheckingListenerWithName:roomDidFailToConnect body:body];
 }
+
 
 - (void)room:(TVIRoom *)room
         participantDidConnect:(TVIRemoteParticipant *)participant {
