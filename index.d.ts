@@ -117,6 +117,12 @@ declare module "react-native-twilio-video-webrtc" {
 
   export type ScreenShareChangedCb = (e: ScreenShareChangedEventArgs) => void;
 
+  export type ReconnectingEventArgs = RoomEventCommonArgs & {
+    error: any;
+  };
+  export type ReconnectingEventCb = (e: ReconnectingEventArgs) => void;
+  export type ReconnectedEventCb = (e: RoomEventCommonArgs) => void;
+
   export type TwilioVideoProps = ViewProps & {
     onCameraDidStart?: () => void;
     onCameraDidStopRunning?: (err: any) => void;
@@ -140,6 +146,8 @@ declare module "react-native-twilio-video-webrtc" {
     onNetworkQualityLevelsChanged?: NetworkLevelChangeEventCb;
     onLocalParticipantSupportedCodecs?: LocalParticipantSupportedCodecsCb;
     onScreenShareChanged?: ScreenShareChangedCb;
+    onRoomDidReconnect?: ReconnectedEventCb;
+    onRoomIsReconnecting?: ReconnectingEventCb;
 
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;

@@ -36,6 +36,7 @@
 
 - Added ability to **mute remote participants** (this functionality was previously missing on iOS).
 - Added screenshare functionality on both iOS and Android. Screensharing can be enabled in a room with `toggleScreenSharing(true)` and disabled with `toggleScreenSharing(false)`
+- Added new callbacks **onRoomIsReconnecting** and **onRoomDidReconnect** (Android & iOS) to detect signalling interruptions and successful reconnections.
 
 ### Fixes
 

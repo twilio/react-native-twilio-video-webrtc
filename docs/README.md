@@ -36,6 +36,8 @@
 | onVideoChanged                    | `{videoEnabled: boolean}`                                                                                                                              | Callback that is called when video is toggled                                                                                     |
 | onScreenShareChanged              | `{screenShareEnabled: boolean}`                                                                                                                        | Callback that is called when screen sharing state changes                                                                         |
 | onAudioChanged                    | `{audioEnabled: boolean}`                                                                                                                              | Callback that is called when audio is toggled                                                                                     |
+| onRoomIsReconnecting              | `{roomName: string, roomSid: string, error: string}`                                                                                                   | Called when the room connection is interrupted and SDK is attempting to reconnect                                                |
+| onRoomDidReconnect                | `{roomName: string, roomSid: string}`                                                                                                                  | Called after the room connection has been re-established                                                                         |
 
 #### Functions
 
@@ -91,6 +93,8 @@
 | onNetworkQualityLevelsChanged   | `{participant: Participant, isLocalUser: boolean, quality: number}`                                                                                    | Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to true when connecting) |
 | onDominantSpeakerDidChange      | `{roomName: string, roomSid: string, participant: Participant}`                                                                                        | Called when dominant speaker changes                                                                                                        |
 | onScreenShareChanged            | `{screenShareEnabled: boolean}`                                                                                                                        | Called when screen sharing state changes                                                                                                    |
+| onRoomIsReconnecting            | `{roomName: string, roomSid: string, error: string}`                                                                                                   | Called when the room connection is interrupted and SDK is attempting to reconnect                                                           |
+| onRoomDidReconnect              | `{roomName: string, roomSid: string}`                                                                                                                  | Called after the room connection has been re-established                                                                                    |
 
 #### Functions
 

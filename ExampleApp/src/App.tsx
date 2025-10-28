@@ -286,6 +286,8 @@ const Example = () => {
                 onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
                 onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
                 onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
+                onRoomIsReconnecting={e => _log(`Room Is Reconnecting ${e.roomName} ${e.error}`)}
+                onRoomDidReconnect={e => _log(`Room Did Reconnect ${e.roomName}`)}
             />
             
             <Modal
