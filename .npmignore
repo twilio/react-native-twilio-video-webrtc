@@ -1,5 +1,9 @@
-Example/
-.idea
-.circleci
-.gradle
-.github
+ExampleApp/
+**/build/
+**/__tests__/
+docs/
+.git*
+*.xcworkspace
+*.xcodeproj
+*.gradle
+
