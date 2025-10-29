@@ -117,6 +117,12 @@ declare module "react-native-twilio-video-webrtc" {
 
   export type ScreenShareChangedCb = (e: ScreenShareChangedEventArgs) => void;
 
+  export type DataChangedEventArgs = {
+    dataEnabled: boolean;
+  }
+  
+  export type DataChangedCb = (e: DataChangedEventArgs) => void;
+
   export type ReconnectingEventArgs = RoomEventCommonArgs & {
     error: any;
   };
@@ -148,6 +154,7 @@ declare module "react-native-twilio-video-webrtc" {
     onScreenShareChanged?: ScreenShareChangedCb;
     onRoomDidReconnect?: ReconnectedEventCb;
     onRoomIsReconnecting?: ReconnectingEventCb;
+    onDataChanged?: DataChangedCb;
 
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;
@@ -163,6 +170,7 @@ declare module "react-native-twilio-video-webrtc" {
     dominantSpeakerEnabled?: boolean;
     enableAudio?: boolean;
     enableVideo?: boolean;
+    enableDataTrack?: boolean;
     encodingParameters?: {
       enableH264Codec?: boolean;
       // if audioBitrate OR videoBitrate is provided, you must provide both
@@ -179,6 +187,7 @@ declare module "react-native-twilio-video-webrtc" {
     dominantSpeakerEnabled?: boolean;
     enableAudio?: boolean;
     enableVideo?: boolean;
+    enableDataTrack?: boolean;
     enableRemoteAudio?: boolean;
     encodingParameters?: {
       enableH264Codec?: boolean;
@@ -190,6 +199,7 @@ declare module "react-native-twilio-video-webrtc" {
   class TwilioVideo extends React.Component<TwilioVideoProps> {
     setLocalVideoEnabled: (enabled: boolean) => Promise<boolean>;
     setLocalAudioEnabled: (enabled: boolean) => Promise<boolean>;
+    setLocalDataTrackEnabled: (enabled: boolean) => Promise<boolean>;
     setRemoteAudioEnabled: (enabled: boolean) => Promise<boolean>;
     setBluetoothHeadsetConnected: (enabled: boolean) => Promise<boolean>;
     connect: (options: iOSConnectParams | androidConnectParams) => void;
