@@ -34,6 +34,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
@@ -62,6 +63,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     private static final int PUBLISH_AUDIO = 14;
     private static final int SET_REMOTE_AUDIO_PLAYBACK = 15;
     private static final int TOGGLE_SCREEN_SHARING = 16;
+    private static final int TOGGLE_DATA_TRACK = 17;
 
     @Override
     public String getName() {
@@ -88,6 +90,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 String cameraType = args.getString(8);
                 ReadableMap encodingParameters = args.getMap(9);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
+                boolean enableDataTrack = args.getBoolean(10);
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
@@ -98,7 +101,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         dominantSpeakerEnabled,
                         maintainVideoTrackInBackground,
                         cameraType,
-                        enableH264Codec);
+                        enableH264Codec,
+                        enableDataTrack);
                 break;
             case DISCONNECT:
                 view.disconnect();
@@ -151,6 +155,10 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 Boolean enabled = args.getBoolean(1);
                 view.setRemoteAudioPlayback(participantSid, enabled);
                 break;
+            case TOGGLE_DATA_TRACK:
+                Boolean dataEnabled = args.getBoolean(0);
+                view.toggleDataTrack(dataEnabled);
+                break;
         }
     }
 
@@ -191,7 +199,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
 
         map.putAll(MapBuilder.of(
                 ON_RECONNECTING, MapBuilder.of("registrationName", ON_RECONNECTING),
-                ON_RECONNECTED, MapBuilder.of("registrationName", ON_RECONNECTED)));
+                ON_RECONNECTED, MapBuilder.of("registrationName", ON_RECONNECTED),
+                ON_DATA_CHANGED, MapBuilder.of("registrationName", ON_DATA_CHANGED)));
 
         return map;
     }
@@ -210,6 +219,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 .put("toggleBluetoothHeadset", TOGGLE_BLUETOOTH_HEADSET)
                 .put("sendString", SEND_STRING)
                 .put("toggleScreenSharing", TOGGLE_SCREEN_SHARING)
+                .put("toggleDataTrack", TOGGLE_DATA_TRACK)
                 .build();
     }
 }

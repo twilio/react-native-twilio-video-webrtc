@@ -40,6 +40,7 @@ static NSString *cameraInterruptionEnded = @"cameraInterruptionEnded";
 static NSString *cameraDidStopRunning = @"cameraDidStopRunning";
 static NSString *statsReceived = @"statsReceived";
 static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
+static NSString *dataChanged = @"dataChanged";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
@@ -100,6 +101,7 @@ RCT_EXPORT_MODULE();
 - (void)dealloc {
     [self clearAudioInstance];
     [self clearCameraInstance];
+    [self clearDataInstance];
     [self clearScreenInstance];
 }
 
@@ -135,6 +137,7 @@ RCT_EXPORT_MODULE();
         networkQualityLevelsChanged,
         dominantSpeakerDidChange,
         screenShareChanged,
+        dataChanged,
 
     ];
 }
@@ -304,6 +307,15 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
     resolve(@(enabled));
 }
 
+RCT_REMAP_METHOD(setLocalDataTrackEnabled,
+                 enabled : (BOOL) enabled setLocalDataTrackEnabledWithResolver : (
+                         RCTPromiseResolveBlock)
+                         resolve rejecter : (RCTPromiseRejectBlock) reject) {
+    [self _toggleDataTrack:enabled];
+
+    resolve(@(enabled));
+}
+
 // set a default for setting local video enabled
 - (bool)_setLocalVideoEnabled:(bool)enabled {
     return [self _setLocalVideoEnabled:enabled cameraType:@"front"];
@@ -412,6 +424,47 @@ RCT_REMAP_METHOD(setLocalAudioEnabled,
         }
         // If track doesn't exist, do nothing
     }
+}
+
+#pragma mark - Local Data Track Handling
+
+// Create data track
+- (void)_createDataTrack {
+    if (self.localDataTrack == nil) {
+        self.localDataTrack = [TVILocalDataTrack track];
+    }
+}
+
+// Toggle data track (create if needed, publish/unpublish)
+- (void)_toggleDataTrack:(bool)enabled {
+    if (enabled) {
+        if (self.localDataTrack) {
+            // Track exists, just publish if in room
+            if (self.room && self.room.state == TVIRoomStateConnected) {
+                [self.room.localParticipant publishDataTrack:self.localDataTrack];
+            }
+        } else {
+            // Track doesn't exist, create and publish it
+            [self _createDataTrack];
+            if (self.localDataTrack && self.room && self.room.state == TVIRoomStateConnected) {
+                [self.room.localParticipant publishDataTrack:self.localDataTrack];
+            }
+        }
+    } else {
+        if (self.localDataTrack) {
+            // Unpublish first if in room
+            if (self.room && self.room.state == TVIRoomStateConnected) {
+                [self.room.localParticipant unpublishDataTrack:self.localDataTrack];
+            }
+            // Then release the track
+            self.localDataTrack = nil;
+        }
+        // If track doesn't exist, do nothing
+    }
+    
+    // Emit data changed event
+    [self sendEventCheckingListenerWithName:dataChanged
+                                       body:@{@"dataEnabled": @(enabled)}];
 }
 
 RCT_REMAP_METHOD(setLocalVideoEnabled,
@@ -667,7 +720,7 @@ RCT_EXPORT_METHOD(
                         encodingParameters enableNetworkQualityReporting : (BOOL)
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
                                         dominantSpeakerEnabled cameraType : (NSString *)
-                                                cameraType) {
+                                                cameraType enableDataTrack : (BOOL) enableDataTrack) {
     // Only create video track if enabled during connect
     if (enableVideo) {
         [self _createVideoTrack:cameraType];
@@ -676,6 +729,11 @@ RCT_EXPORT_METHOD(
     // For audio: only create track if enabled during connect
     if (enableAudio) {
         [self _createAudioTrack];
+    }
+
+    // Create data track if enabled during connect
+    if (enableDataTrack) {
+        [self _createDataTrack];
     }
 
     TVIConnectOptions *connectOptions = [TVIConnectOptions
@@ -688,8 +746,6 @@ RCT_EXPORT_METHOD(
                          if (self.localAudioTrack) {
                              builder.audioTracks = @[self.localAudioTrack];
                          }
-
-                         self.localDataTrack = [TVILocalDataTrack track];
 
                          if (self.localDataTrack) {
                              builder.dataTracks = @[self.localDataTrack];
@@ -733,12 +789,15 @@ RCT_EXPORT_METHOD(
 }
 
 RCT_EXPORT_METHOD(sendString : (nonnull NSString *) message) {
-    [self.localDataTrack sendString:message];
+    if (self.localDataTrack) {
+        [self.localDataTrack sendString:message];
+    }
 }
 
 RCT_EXPORT_METHOD(disconnect) {
     [self clearAudioInstance];
     [self clearCameraInstance];
+    [self clearDataInstance];
     [self clearScreenInstance];
     [self.room disconnect];
 }
@@ -778,6 +837,15 @@ RCT_EXPORT_METHOD(disconnect) {
         [[self.room localParticipant] unpublishAudioTrack:self.localAudioTrack];
     }
     self.localAudioTrack = nil;
+}
+
+- (void)clearDataInstance {
+    // We are done with data track
+    if (self.localDataTrack != nil && self.room != nil) {
+        // Unpublish the data track before releasing it
+        [[self.room localParticipant] unpublishDataTrack:self.localDataTrack];
+    }
+    self.localDataTrack = nil;
 }
 
 #pragma mark - Common
@@ -879,10 +947,10 @@ RCT_EXPORT_METHOD(disconnect) {
 }
 
 - (void)room:(TVIRoom *)room didDisconnectWithError:(nullable NSError *)error {
-    self.localDataTrack = nil;
     // Ensure any lingering local media is cleaned up
     [self clearAudioInstance];
     [self clearCameraInstance];
+    [self clearDataInstance];
     [self clearScreenInstance];
     self.room = nil;
 
@@ -897,10 +965,10 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)room:(TVIRoom *)room
         didFailToConnectWithError:(nonnull NSError *)error {
-    self.localDataTrack = nil;
     // Ensure any lingering local media is cleaned up 
     [self clearAudioInstance];
     [self clearCameraInstance];
+    [self clearDataInstance];
     [self clearScreenInstance];
     self.room = nil;
 

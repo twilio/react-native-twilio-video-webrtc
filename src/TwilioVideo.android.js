@@ -63,6 +63,13 @@ const propTypes = {
   onAudioChanged: PropTypes.func,
 
   /**
+    * Callback that is called when data track is toggled.
+    *
+    * @param {{dataEnabled: boolean}}
+    */
+  onDataChanged: PropTypes.func,
+
+  /**
     * Callback that is called when room is reconnecting.
     *
     * @param {{roomName: string, roomSid: string, error: string}}
@@ -226,6 +233,7 @@ const nativeEvents = {
   publishAudio: 14,
   setRemoteAudioPlayback: 15,
   toggleScreenSharing: 16,
+  toggleDataTrack: 17,
 };
 
 class CustomTwilioVideoView extends Component {
@@ -242,6 +250,7 @@ class CustomTwilioVideoView extends Component {
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    * @param {boolean} [params.maintainVideoTrackInBackground=false] - Whether to maintain video track in background
    * @param {Object} [params.encodingParameters={}] - Video encoding parameters
+   * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
    */
   connect({
     roomName,
@@ -254,6 +263,7 @@ class CustomTwilioVideoView extends Component {
     dominantSpeakerEnabled = false,
     maintainVideoTrackInBackground = false,
     encodingParameters = {},
+    enableDataTrack = false,
   }) {
     this.runCommand(nativeEvents.connectToRoom, [
       roomName,
@@ -266,6 +276,7 @@ class CustomTwilioVideoView extends Component {
       maintainVideoTrackInBackground,
       cameraType,
       encodingParameters,
+      enableDataTrack,
     ]);
   }
 
@@ -351,6 +362,16 @@ class CustomTwilioVideoView extends Component {
   }
 
   /**
+   * Enable or disable local data track
+   * @param {boolean} enabled - Whether to enable data track
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
+  setLocalDataTrackEnabled(enabled) {
+    this.runCommand(nativeEvents.toggleDataTrack, [enabled]);
+    return Promise.resolve(enabled);
+  }
+
+  /**
    * Enable or disable remote audio
    * @param {boolean} enabled - Whether to enable remote audio
    * @returns {Promise<boolean>} Promise that resolves with the enabled state
@@ -427,6 +448,7 @@ class CustomTwilioVideoView extends Component {
       "onVideoChanged",
       "onScreenShareChanged",
       "onAudioChanged",
+      "onDataChanged",
       "onRoomDidConnect",
       "onRoomDidFailToConnect",
       "onRoomDidDisconnect",
