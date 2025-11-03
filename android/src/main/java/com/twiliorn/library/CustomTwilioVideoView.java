@@ -34,6 +34,9 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTED;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -135,6 +138,7 @@ public class CustomTwilioVideoView extends View
     private boolean maintainVideoTrackInBackground = false;
     private String cameraType = "";
     private boolean enableH264Codec = false;
+    private boolean isDataEnabled = false;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
@@ -162,7 +166,8 @@ public class CustomTwilioVideoView extends View
                 Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS,
                 Events.ON_SCREEN_SHARE_CHANGED,
                 Events.ON_RECONNECTING,
-                Events.ON_RECONNECTED})
+                Events.ON_RECONNECTED,
+                Events.ON_DATA_CHANGED})
     public @interface Events {
         String ON_CAMERA_SWITCHED = "onCameraSwitched";
         String ON_VIDEO_CHANGED = "onVideoChanged";
@@ -190,6 +195,7 @@ public class CustomTwilioVideoView extends View
         String ON_SCREEN_SHARE_CHANGED = "onScreenShareChanged";
         String ON_RECONNECTING = "onRoomIsReconnecting";
         String ON_RECONNECTED = "onRoomDidReconnect";
+        String ON_DATA_CHANGED = "onDataChanged";
     }
 
     private final ThemedReactContext themedReactContext;
@@ -490,6 +496,14 @@ public class CustomTwilioVideoView extends View
             localAudioTrack = null;
         }
 
+        if (localDataTrack != null) {
+            if (localParticipant != null) {
+                localParticipant.unpublishTrack(localDataTrack);
+            }
+            localDataTrack.release();
+            localDataTrack = null;
+        }
+
         // Quit the data track message thread
         dataTrackMessageThread.quit();
     }
@@ -501,6 +515,7 @@ public class CustomTwilioVideoView extends View
         thumbnailVideoView = null;
         cameraCapturer = null;
         screenCapturer = null;
+        localDataTrack = null;
     }
 
     // ====== CONNECTING ===========================================================================
@@ -515,7 +530,8 @@ public class CustomTwilioVideoView extends View
             boolean dominantSpeakerEnabled,
             boolean maintainVideoTrackInBackground,
             String cameraType,
-            boolean enableH264Codec) {
+            boolean enableH264Codec,
+            boolean enableDataTrack) {
         this.roomName = roomName;
         this.accessToken = accessToken;
         this.enableRemoteAudio = enableRemoteAudio;
@@ -524,6 +540,7 @@ public class CustomTwilioVideoView extends View
         this.maintainVideoTrackInBackground = maintainVideoTrackInBackground;
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
+        this.isDataEnabled = enableDataTrack;
 
         // Share your microphone
         if (enableAudio) {
@@ -539,6 +556,11 @@ public class CustomTwilioVideoView extends View
             }
         } else {
             isVideoEnabled = false;
+        }
+
+        // Create data track if enabled
+        if (enableDataTrack) {
+            localDataTrack = LocalDataTrack.create(getContext());
         }
 
         setAudioFocus(enableAudio);
@@ -570,8 +592,6 @@ public class CustomTwilioVideoView extends View
         if (localVideoTrack != null) {
             connectOptionsBuilder.videoTracks(Collections.singletonList(localVideoTrack));
         }
-
-        localDataTrack = LocalDataTrack.create(getContext());
 
         if (localDataTrack != null) {
             connectOptionsBuilder.dataTracks(Collections.singletonList(localDataTrack));
@@ -739,6 +759,13 @@ public class CustomTwilioVideoView extends View
             }
             screenVideoTrack.release();
             screenVideoTrack = null;
+        }
+        if (localDataTrack != null) {
+            if (localParticipant != null) {
+                localParticipant.unpublishTrack(localDataTrack);
+            }
+            localDataTrack.release();
+            localDataTrack = null;
         }
         setAudioFocus(false);
         if (cameraCapturer != null) {
@@ -929,6 +956,35 @@ public class CustomTwilioVideoView extends View
         pushEvent(CustomTwilioVideoView.this, ON_AUDIO_CHANGED, event);
     }
 
+    public void toggleDataTrack(boolean enabled) {
+        isDataEnabled = enabled;
+        if (enabled) {
+            if (localDataTrack != null) {
+                // Track already exists, just publish if in room
+                publishLocalDataTrack(true);
+            } else {
+                // Create a new local data track and publish it
+                localDataTrack = LocalDataTrack.create(getContext());
+                if (localDataTrack != null) {
+                    publishLocalDataTrack(true);
+                }
+            }
+        } else {
+            if (localDataTrack != null) {
+                // Unpublish first, then release
+                publishLocalDataTrack(false);
+                localDataTrack.release();
+                localDataTrack = null;
+            } else {
+                // If localDataTrack doesn't exist and enabled is false, do nothing
+                return;
+            }
+        }
+        WritableMap event = new WritableNativeMap();
+        event.putBoolean("dataEnabled", enabled);
+        pushEvent(CustomTwilioVideoView.this, ON_DATA_CHANGED, event);
+    }
+
     public void toggleBluetoothHeadset(boolean enabled) {
         AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         if (enabled) {
@@ -982,6 +1038,16 @@ public class CustomTwilioVideoView extends View
                 localParticipant.publishTrack(localAudioTrack);
             } else {
                 localParticipant.unpublishTrack(localAudioTrack);
+            }
+        }
+    }
+
+    public void publishLocalDataTrack(boolean enabled) {
+        if (localParticipant != null && localDataTrack != null) {
+            if (enabled) {
+                localParticipant.publishTrack(localDataTrack);
+            } else {
+                localParticipant.unpublishTrack(localDataTrack);
             }
         }
     }

@@ -34,8 +34,12 @@ const ControlBar = ({ children }: { children: React.ReactNode }) => (
     <View style={styles.optionsContainer}>{children}</View>
 );
 
-const OptionButton = ({ label, onPress }: { label: string, onPress: () => void }) => (
-    <TouchableOpacity style={styles.optionButton} onPress={onPress}>
+const OptionButton = ({ label, onPress, disabled }: { label: string, onPress: () => void, disabled?: boolean }) => (
+    <TouchableOpacity 
+        style={[styles.optionButton, disabled && { opacity: 0.5 }]} 
+        onPress={disabled ? undefined : onPress}
+        disabled={disabled}
+    >
         <Text style={{ color: '#fff', fontSize: 12 }}>{label}</Text>
     </TouchableOpacity>
 );
@@ -51,6 +55,7 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
 const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+    const [isDataTrackEnabled, setIsDataTrackEnabled] = useState(false);
     const [remoteAudioEnabled, setRemoteAudioEnabled] = useState(true);
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
@@ -72,6 +77,7 @@ const Example = () => {
         setStatus("disconnected");
         setIsAudioEnabled(true);
         setIsVideoEnabled(true);
+        setIsDataTrackEnabled(false);
         setRemoteAudioEnabled(true);
         setNetworkQualityEnabled(false);
         setDominantSpeakerEnabled(false);
@@ -119,6 +125,7 @@ const Example = () => {
             accessToken: token,
             enableAudio: isAudioEnabled,
             enableVideo: isVideoEnabled,
+            enableDataTrack: isDataTrackEnabled,
             enableRemoteAudio: remoteAudioEnabled,
             enableNetworkQualityReporting: networkQualityEnabled,
             dominantSpeakerEnabled,
@@ -147,6 +154,15 @@ const Example = () => {
 
     const _onToggleRemoteAudioPress = () => {
         twilioRef.current?.setRemoteAudioEnabled(!remoteAudioEnabled).then((enabled: boolean) => setRemoteAudioEnabled(enabled));
+    };
+
+    const _onToggleDataTrackPress = () => {
+        twilioRef.current?.setLocalDataTrackEnabled(!isDataTrackEnabled).then((enabled: boolean) => setIsDataTrackEnabled(enabled));
+    };
+
+    const _onDataChanged = (event: any) => {
+        setIsDataTrackEnabled(event.dataEnabled);
+        _log(`Data Track ${event.dataEnabled ? 'Enabled' : 'Disabled'}`);
     };
 
     const _onGetStatsPress = () => {
@@ -238,6 +254,7 @@ const Example = () => {
 
                     <ToggleRow label="Connect with video enabled" value={isVideoEnabled} onValueChange={setIsVideoEnabled} />
                     <ToggleRow label="Connect with audio enabled" value={isAudioEnabled} onValueChange={setIsAudioEnabled} />
+                    <ToggleRow label="Connect with data track enabled" value={isDataTrackEnabled} onValueChange={setIsDataTrackEnabled} />
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
@@ -279,8 +296,9 @@ const Example = () => {
                             <OptionButton label="Flip" onPress={_onFlipButtonPress} />
                             <OptionButton label={isVideoEnabled ? "Disable Video" : "Enable Video"} onPress={_onToggleVideoPress} />
                             <OptionButton label={remoteAudioEnabled ? "Mute Remote" : "Unmute Remote"} onPress={_onToggleRemoteAudioPress} />
+                            <OptionButton label={isDataTrackEnabled ? "Disable Data" : "Enable Data"} onPress={_onToggleDataTrackPress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
-                            <OptionButton label="Ping" onPress={_onSendStringPress} />
+                            <OptionButton label="Ping" onPress={_onSendStringPress} disabled={!isDataTrackEnabled} />
                             <OptionButton label={isSharing ? "Stop Sharing" : "Start Sharing"} onPress={_onShareButtonPress} />
                         </ControlBar>
                     </View>
@@ -301,6 +319,7 @@ const Example = () => {
                 onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
                 onRoomIsReconnecting={_onRoomIsReconnecting}
                 onRoomDidReconnect={_onRoomDidReconnect}
+                onDataChanged={_onDataChanged}
             />
 
             <Modal

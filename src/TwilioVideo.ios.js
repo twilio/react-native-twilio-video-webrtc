@@ -143,6 +143,13 @@ export default class TwilioVideo extends Component {
     onDataTrackMessageReceived: PropTypes.func,
 
     /**
+     * Callback that is called when data track is toggled.
+     *
+     * @param {{dataEnabled: boolean}}
+     */
+    onDataChanged: PropTypes.func,
+
+    /**
      * Called when the camera has started
      */
     onCameraDidStart: PropTypes.func,
@@ -278,6 +285,15 @@ export default class TwilioVideo extends Component {
   }
 
   /**
+   * Enable or disable local data track
+   * @param {boolean} enabled - Whether to enable data track
+   * @returns {Promise<boolean>} Promise that resolves with the enabled state
+   */
+  setLocalDataTrackEnabled(enabled) {
+    return TWVideoModule.setLocalDataTrackEnabled(enabled);
+  }
+
+  /**
    * Switch between front and back camera
    */
   flipCamera() {
@@ -319,6 +335,7 @@ export default class TwilioVideo extends Component {
    * @param {Object} [params.encodingParameters=null] - Video encoding parameters
    * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
+   * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
    */
   connect({
     roomName,
@@ -329,6 +346,7 @@ export default class TwilioVideo extends Component {
     encodingParameters = null,
     enableNetworkQualityReporting = false,
     dominantSpeakerEnabled = false,
+    enableDataTrack = false,
   }) {
     TWVideoModule.connect(
       accessToken,
@@ -338,7 +356,8 @@ export default class TwilioVideo extends Component {
       encodingParameters,
       enableNetworkQualityReporting,
       dominantSpeakerEnabled,
-      cameraType
+      cameraType,
+      enableDataTrack
     );
   }
 
@@ -544,6 +563,11 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("roomDidReconnect", (data) => {
         if (this.props.onRoomDidReconnect) {
           this.props.onRoomDidReconnect(data);
+        }
+      }),
+      this._eventEmitter.addListener("dataChanged", (data) => {
+        if (this.props.onDataChanged) {
+          this.props.onDataChanged(data);
         }
       }),
     ];
