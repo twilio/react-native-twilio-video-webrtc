@@ -668,6 +668,12 @@ RCT_EXPORT_METHOD(
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
                                         dominantSpeakerEnabled cameraType : (NSString *)
                                                 cameraType) {
+    // Guard against missing access token
+    if (accessToken == nil || [accessToken length] == 0) {
+        NSMutableDictionary *body = [@{ @"error": @"Access token is required" } mutableCopy];
+        [self sendEventCheckingListenerWithName:roomDidFailToConnect body:body];
+        return;
+    }
     // Only create video track if enabled during connect
     if (enableVideo) {
         [self _createVideoTrack:cameraType];
