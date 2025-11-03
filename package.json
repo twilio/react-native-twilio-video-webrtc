@@ -34,8 +34,9 @@
     "react-native"
   ],
   "contributors": [
-    "Zhani Muceku <zhani.muceku@testdevlab.com>",
-    "Gaston Morixe <gaston@gastonmorixe.com>"
+    "Gaston Morixe <gaston@gastonmorixe.com>",
+    "Martin Fernandez <fmartin91@gmail.com>",
+    "Zhani Muceku <zhani.muceku@testdevlab.com>"
   ],
   "license": "MIT",
   "devDependencies": {
