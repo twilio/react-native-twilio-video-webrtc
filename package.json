@@ -10,15 +10,6 @@
   "main": "index.js",
   "react-native": "index.js",
   "types": "index.d.ts",
-  "files": [
-    "android",
-    "ios",
-    "src",
-    "plugin/build",
-    "index.js",
-    "index.d.ts",
-    "app.plugin.js"
-  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -33,12 +24,25 @@
   "keywords": [
     "react-native"
   ],
+  "authors": [
+    "Donal Toomey <dtoomey@twilio.com>"
+  ],
   "contributors": [
     "Gaston Morixe <gaston@gastonmorixe.com>",
     "Martin Fernandez <fmartin91@gmail.com>",
     "Zhani Muceku <zhani.muceku@testdevlab.com>"
   ],
   "license": "MIT",
+  "files": [
+    "ios",
+    "android",
+    "src/",
+    "index.js",
+    "index.d.ts",
+    "react-native-twilio-video-webrtc.podspec",
+    "plugin/build",
+    "app.plugin.js"
+  ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
     "del": "^6.0.0",
