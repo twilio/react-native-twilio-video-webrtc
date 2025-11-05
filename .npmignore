@@ -5,5 +5,4 @@ docs/
 .git*
 *.xcworkspace
 *.xcodeproj
-*.gradle
 
