@@ -53,7 +53,7 @@ twilio login   # one-time, opens browser for auth
 
 twilio plugins:install @twilio-labs/plugin-token
 
-twilio token:video --identity=<your-username>
+twilio token:video --identity=<your-username> --room-name=<your-room-name>
 ```
 
 Copy the JWT that is printed and paste it into `access-token.ts`.
