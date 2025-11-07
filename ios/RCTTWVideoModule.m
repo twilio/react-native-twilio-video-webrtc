@@ -461,7 +461,7 @@ RCT_REMAP_METHOD(setLocalDataTrackEnabled,
         }
         // If track doesn't exist, do nothing
     }
-    
+
     // Emit data changed event
     [self sendEventCheckingListenerWithName:dataChanged
                                        body:@{@"dataEnabled": @(enabled)}];
@@ -759,7 +759,7 @@ RCT_EXPORT_METHOD(
                          builder.preferredVideoCodecs = @[[TVIVp8Codec new]];
                          if ([encodingParameters[@"enableH264Codec"] boolValue]) {
                              builder.preferredVideoCodecs =
-                                     @[[TVIVp8Codec new], [TVIH264Codec new]];
+                                     @[[TVIH264Codec new]];
                          }
 
                          if (encodingParameters[@"audioBitrate"] ||
@@ -965,7 +965,7 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)room:(TVIRoom *)room
         didFailToConnectWithError:(nonnull NSError *)error {
-    // Ensure any lingering local media is cleaned up 
+    // Ensure any lingering local media is cleaned up
     [self clearAudioInstance];
     [self clearCameraInstance];
     [self clearDataInstance];
@@ -981,7 +981,8 @@ RCT_EXPORT_METHOD(disconnect) {
         [body addEntriesFromDictionary:@{
             @"error": error.localizedDescription ?: @"",
             @"code": @(error.code),
-            @"errorExplanation": error.localizedFailureReason ?: error.localizedDescription ?: @""
+            @"errorExplanation": error.localizedFailureReason ?: error.localizedDescription ?
+                                                                                            : @""
         }];
     }
 
