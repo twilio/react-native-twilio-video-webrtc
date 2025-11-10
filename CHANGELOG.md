@@ -77,6 +77,6 @@
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
 - `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only)
-- Android screenshare can become unresponsive when `react-native-reanimated` components are present; avoid including such components in the screen being shared.
+- Android screenshare can become unresponsive when `react-native-reanimated` components are present; avoid including such components in the same view as the screen share component.
 
 ---
