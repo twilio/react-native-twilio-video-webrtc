@@ -766,7 +766,7 @@ RCT_EXPORT_METHOD(
                          builder.preferredVideoCodecs = @[[TVIVp8Codec new]];
                          if ([encodingParameters[@"enableH264Codec"] boolValue]) {
                              builder.preferredVideoCodecs =
-                                     @[[TVIVp8Codec new], [TVIH264Codec new]];
+                                     @[[TVIH264Codec new]];
                          }
 
                          if (encodingParameters[@"audioBitrate"] ||

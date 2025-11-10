@@ -76,6 +76,7 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
+- Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used
 - `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only)
 - Android screenshare can become unresponsive when `react-native-reanimated` components are present; avoid including such components in the same view as the screen share component.
 
