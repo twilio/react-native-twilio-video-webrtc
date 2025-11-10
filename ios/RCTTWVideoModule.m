@@ -461,7 +461,7 @@ RCT_REMAP_METHOD(setLocalDataTrackEnabled,
         }
         // If track doesn't exist, do nothing
     }
-    
+
     // Emit data changed event
     [self sendEventCheckingListenerWithName:dataChanged
                                        body:@{@"dataEnabled": @(enabled)}];
@@ -721,6 +721,13 @@ RCT_EXPORT_METHOD(
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
                                         dominantSpeakerEnabled cameraType : (NSString *)
                                                 cameraType enableDataTrack : (BOOL) enableDataTrack) {
+
+    if (accessToken == nil || [accessToken length] == 0) {
+        NSMutableDictionary *body = [@{@"error": @"Access token is required"} mutableCopy];
+        [self sendEventCheckingListenerWithName:roomDidFailToConnect body:body];
+        return;
+    }
+
     // Only create video track if enabled during connect
     if (enableVideo) {
         [self _createVideoTrack:cameraType];
@@ -965,7 +972,7 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)room:(TVIRoom *)room
         didFailToConnectWithError:(nonnull NSError *)error {
-    // Ensure any lingering local media is cleaned up 
+    // Ensure any lingering local media is cleaned up
     [self clearAudioInstance];
     [self clearCameraInstance];
     [self clearDataInstance];
@@ -981,7 +988,8 @@ RCT_EXPORT_METHOD(disconnect) {
         [body addEntriesFromDictionary:@{
             @"error": error.localizedDescription ?: @"",
             @"code": @(error.code),
-            @"errorExplanation": error.localizedFailureReason ?: error.localizedDescription ?: @""
+            @"errorExplanation": error.localizedFailureReason ?: error.localizedDescription ?
+                                                                                            : @""
         }];
     }
 

@@ -196,24 +196,27 @@ const Example = () => {
         setStatus("connected");
     };
 
-    const _onRoomDidDisconnect = () => {
+    const _onRoomDidDisconnect = (event: any) => {
+        if (event.error) {
+            setErrorMessage(_formatErrorMessage(event));
+        }
         resetStates();
     };
 
     const _onRoomDidFailToConnect = (event: any) => {
         setStatus("disconnected");
+        setErrorMessage(_formatErrorMessage(event));
+    };
 
-        let errorMsg = event?.error || "Failed to connect to room";
-
+    const _formatErrorMessage = (event: any) => {
+        let errorMsg = event?.error || "Something went wrong";
         if (event?.code) {
             errorMsg += `\n\nError Code: ${event.code}`;
         }
-
         if (event?.errorExplanation) {
             errorMsg += `\n\nDetails: ${event.errorExplanation}`;
         }
-
-        setErrorMessage(errorMsg);
+        return errorMsg;
     };
 
     const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
@@ -231,6 +234,16 @@ const Example = () => {
             originalVideoTracks.delete(track.trackSid);
             return new Map(originalVideoTracks);
         });
+    };
+
+    const _onRoomIsReconnecting = (event: any) => {
+        setStatus("reconnecting");
+        _log(`Room Is Reconnecting ${event.roomName} ${event.error}`);
+    };
+
+    const _onRoomDidReconnect = (event: any) => {
+        setStatus("connected");
+        _log(`Room Did Reconnect ${event.roomName}`);
     };
 
     return (
@@ -252,7 +265,7 @@ const Example = () => {
                 </ScrollView>
             )}
 
-            {(status === "connected" || status === "connecting") && (
+            {(status === "connected" || status === "connecting" || status === "reconnecting") && (
                 <View style={styles.connectedWrapper}>
                     <View style={styles.headerContainer}>
                         <Text style={{ fontSize: 12 }}>Room Name: {roomDetails.roomName}</Text>
@@ -304,9 +317,9 @@ const Example = () => {
                 onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
                 onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
                 onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
+                onRoomIsReconnecting={_onRoomIsReconnecting}
+                onRoomDidReconnect={_onRoomDidReconnect}
                 onDataChanged={_onDataChanged}
-                onRoomIsReconnecting={e => _log(`Room Is Reconnecting ${e.roomName} ${e.error}`)}
-                onRoomDidReconnect={e => _log(`Room Did Reconnect ${e.roomName}`)}
             />
 
             <Modal
