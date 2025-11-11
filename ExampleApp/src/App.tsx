@@ -14,7 +14,7 @@ import {
     TwilioVideoScreenShareView,
     TwilioVideoParticipantView,
     TwilioVideo,
-} from "react-native-twilio-video-webrtc";
+} from "@twilio/video-react-native-sdk";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import { styles } from "./styles";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";

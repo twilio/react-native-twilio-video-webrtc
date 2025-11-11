@@ -1,7 +1,7 @@
 import { ViewProps, StyleProp, ViewStyle } from 'react-native';
-import 'react-native-twilio-video-webrtc';
+import '@twilio/video-react-native-sdk';
 
-declare module 'react-native-twilio-video-webrtc' {
+declare module '@twilio/video-react-native-sdk' {
   interface TrackIdentifier {
     participantSid: string;
     videoTrackSid: string;

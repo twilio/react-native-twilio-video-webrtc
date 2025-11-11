@@ -112,6 +112,5 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-    implementation project(':react-native-twilio-video-webrtc')
 
 }
