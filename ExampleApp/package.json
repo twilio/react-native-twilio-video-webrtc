@@ -15,7 +15,7 @@
     "react-native": "0.81.0",
     "react-native-permissions": "^5.4.2",
     "react-native-safe-area-context": "^5.5.2",
-    "react-native-twilio-video-webrtc": "file:.."
+    "@twilio/video-react-native-sdk": "file:.."
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

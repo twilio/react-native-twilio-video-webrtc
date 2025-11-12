@@ -19,7 +19,7 @@ A sample React Native application that demonstrates how to join a Twilio Program
 
 ```bash
 # clone the repository
-$ git clone https://github.com/zhanim-tdl/react-native-twilio-video-webrtc.git
+$ git clone https://github.com/twilio/react-native-twilio-video-webrtc.git
 $ cd react-native-twilio-video-webrtc/ExampleApp
 
 # install JS dependencies
@@ -94,6 +94,6 @@ This opens the iOS simulator and runs the app. Ensure that the `ExampleApp` sche
 
 • React Native Documentation – <https://reactnative.dev>  
 • Twilio Programmable Video Docs – <https://www.twilio.com/docs/video>  
-• react-native-twilio-video-webrtc Documentation – <https://github.com/twilio/react-native-twilio-video-webrtc/tree/master/docs>
+• @twilio/video-react-native-sdk Documentation – <https://github.com/twilio/react-native-twilio-video-webrtc/tree/master/docs>
 
 Happy coding! 🎉

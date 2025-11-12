@@ -40,7 +40,7 @@
     "src/",
     "index.js",
     "index.d.ts",
-    "react-native-twilio-video-webrtc.podspec",
+    "twilio-video-react-native-sdk.podspec",
     "plugin/build",
     "app.plugin.js"
   ],

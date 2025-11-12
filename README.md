@@ -3,7 +3,7 @@
 This is a Twilio-maintained fork of [blackuy/react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc). This React Native SDK allows you to add real-time video calling to your React Native apps. If you are new to Twilio Video, check out the developer documentation [here](https://www.twilio.com/docs/video).
 
 [![GitHub License](https://img.shields.io/github/license/twilio/react-native-twilio-video-webrtc)](https://github.com/twilio/react-native-twilio-video-webrtc/blob/master/LICENSE)
-[![NPM version](https://img.shields.io/npm/v/react-native-twilio-video-webrtc)](https://www.npmjs.com/package/react-native-twilio-video-webrtc)
+[![NPM version](https://img.shields.io/npm/v/@twilio/video-react-native-sdk)](https://www.npmjs.com/package/@twilio/video-react-native-sdk)
 
 Platforms:
 
@@ -12,18 +12,18 @@ Platforms:
 
 ### Install Node Package
 
-[![NPM version](https://img.shields.io/npm/v/react-native-twilio-video-webrtc)](https://www.npmjs.com/package/react-native-twilio-video-webrtc)
+[![NPM version](https://img.shields.io/npm/v/@twilio/video-react-native-sdk)](https://www.npmjs.com/package/@twilio/video-react-native-sdk)
 
 #### Option A: yarn
 
 ```shell
-yarn add react-native-twilio-video-webrtc
+yarn add @twilio/video-react-native-sdk
 ```
 
 #### Option B: npm
 
 ```shell
-npm install react-native-twilio-video-webrtc
+npm install @twilio/video-react-native-sdk
 ```
 
 ### Usage with Expo
@@ -35,7 +35,7 @@ To use this library with [`Expo`](https://expo.dev) we recommend using our confi
   "name": "my app",
   "plugins": [
     [
-      "react-native-twilio-video-webrtc",
+      "@twilio/video-react-native-sdk",
       {
         "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
         "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
@@ -83,7 +83,7 @@ import {
   TwilioVideo,
   TwilioVideoLocalView,
   TwilioVideoParticipantView,
-} from "react-native-twilio-video-webrtc";
+} from "@twilio/video-react-native-sdk";
 ```
 
 - `TwilioVideo` / is responsible for connecting to rooms, events delivery and camera/audio.

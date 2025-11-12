@@ -27,8 +27,6 @@ end
 target 'ExampleApp' do
   use_frameworks!
   config = use_native_modules!
-pod 'react-native-twilio-video-webrtc',
-    :path => '../node_modules/react-native-twilio-video-webrtc'
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
