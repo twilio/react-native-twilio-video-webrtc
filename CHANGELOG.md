@@ -28,6 +28,10 @@
 
 - Updated [documentation](./docs/README.md) to reflect new APIs and installation steps.
 
+**Package:**
+
+- Updated the npm package name from react-native-twilio-video-webrtc to @twilio/video-react-native-sdk
+
 #### Example App
 
 - Revamped the [example](./ExampleApp/) app. The new example app is rebuilt on the updated stack and showcases all SDK features (calls, remote mute, etc.).
@@ -37,7 +41,7 @@
 - Added ability to **mute remote participants** (this functionality was previously missing on iOS).
 - Added screenshare functionality on both iOS and Android. Screensharing can be enabled in a room with `toggleScreenSharing(true)` and disabled with `toggleScreenSharing(false)`
 - Added new callbacks **onRoomIsReconnecting** and **onRoomDidReconnect** (Android & iOS) to detect signalling interruptions and successful reconnections.
-- Made **data track optional** on both iOS and Android. Data track now behaves like audio and video tracks.
+- **Data track is now optional** on both iOS and Android. It is managed similarly to audio and video tracks: use the `enableData` option to control whether the data track is published when connecting, and `setLocalDataTrackEnabled` to enable or disable the data track during a call.
 
 
 ### Fixes
