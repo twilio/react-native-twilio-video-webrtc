@@ -46,7 +46,7 @@
   ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
-    "del": "^6.0.0",
+    "del": "^8.0.0",
     "doctoc": "2.2.1",
     "expo": "^54.0.0-preview.12",
     "expo-build-properties": "^0.14.8",
