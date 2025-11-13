@@ -59,22 +59,34 @@ public class RNVideoViewGroup extends ViewGroup {
 
                     @Override
                     public void onFrameResolutionChanged(int vw, int vh, int rotation) {
-                        synchronized (layoutSync) {
-                            if (rotation == 90 || rotation == 270) {
-                                videoHeight = vw;
-                                videoWidth = vh;
-                            } else {
-                                videoHeight = vh;
-                                videoWidth = vw;
+                        // Calculate the dimensions first (on the renderer thread)
+                        final int calcHeight;
+                        final int calcWidth;
+
+                        if (rotation == 90 || rotation == 270) {
+                            calcHeight = vw;
+                            calcWidth = vh;
+                        } else {
+                            calcHeight = vh;
+                            calcWidth = vw;
+                        }
+
+                        // Post the UI‐thread update so we don't hold the lock while a layout pass runs
+                        RNVideoViewGroup.this.post(() -> {
+                            synchronized (layoutSync) {
+                                videoHeight = calcHeight;
+                                videoWidth = calcWidth;
                             }
-                            RNVideoViewGroup.this.forceLayout();
+
+                            // Trigger a new layout pass from the UI thread
+                            RNVideoViewGroup.this.requestLayout();
 
                             WritableMap event = new WritableNativeMap();
                             event.putInt("height", vh);
                             event.putInt("width", vw);
                             event.putInt("rotation", rotation);
                             pushEvent(RNVideoViewGroup.this, ON_FRAME_DIMENSIONS_CHANGED, event);
-                        }
+                        });
                     }
                 }
         );
