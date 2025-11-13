@@ -1,3 +1,11 @@
+## 3.3.1 (In Progress)
+
+### Fixes
+
+- Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates run on the UI thread.
+
+---
+
 ## 3.3.0
 
 ### Changes
@@ -54,7 +62,6 @@
 - Fixed track cleanup issue on iOS where audio tracks were not properly unpublished when users disconnect, causing tracks to appear as disabled instead of being removed from the room
 - Fixed autoInitializeCamera prop being treated as true when undefined
 - Fixed an iOS crash caused by local tracks not being cleared after a failed connection attempt
-- Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates run on the UI thread.
 
 ### Potential Breaking Changes
 
@@ -83,5 +90,6 @@
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
 - Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used
 - `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only)
+- Android screenshare can become unresponsive when `react-native-reanimated` components are present; avoid including such components in the same view as the screen share component.
 
 ---
