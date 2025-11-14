@@ -2,7 +2,7 @@
 
 ### Fixes
 
-- Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates run on the UI thread.
+- Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates are a posted asynchronously on the UI thread.
 
 ### Known issues
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
