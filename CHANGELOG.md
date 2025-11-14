@@ -1,5 +1,9 @@
 ## 3.3.1 (In Progress)
 
+### Changes
+
+- Updated React and React Native peer dependencies to allow compatible version ranges
+
 ### Fixes
 
 - Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates are a posted asynchronously on the UI thread.
