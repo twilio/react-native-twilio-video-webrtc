@@ -13,6 +13,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_SWITCH
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECT_FAILURE;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATATRACK_MESSAGE_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DISCONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
@@ -34,9 +35,6 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTED;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
