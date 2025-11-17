@@ -31,6 +31,23 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_R
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_REMOVED_VIDEO_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STARTED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STOPPED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_AUDIO_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_VIDEO_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_DATA_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
@@ -201,6 +218,33 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_RECONNECTING, MapBuilder.of("registrationName", ON_RECONNECTING),
                 ON_RECONNECTED, MapBuilder.of("registrationName", ON_RECONNECTED),
                 ON_DATA_CHANGED, MapBuilder.of("registrationName", ON_DATA_CHANGED)));
+
+        map.putAll(MapBuilder.of(
+                ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
+                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED),
+                ON_LOCAL_AUDIO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_LOCAL_AUDIO_TRACK_PUBLISHED),
+                ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED),
+                ON_LOCAL_VIDEO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_LOCAL_VIDEO_TRACK_PUBLISHED),
+                ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED)));
+
+        map.putAll(MapBuilder.of(
+                ON_LOCAL_DATA_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_LOCAL_DATA_TRACK_PUBLISHED),
+                ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED)));
+
+        map.putAll(MapBuilder.of(
+                ON_REMOTE_AUDIO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_AUDIO_TRACK_PUBLISHED),
+                ON_REMOTE_AUDIO_TRACK_UNPUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_AUDIO_TRACK_UNPUBLISHED),
+                ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED),
+                ON_REMOTE_VIDEO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_PUBLISHED),
+                ON_REMOTE_VIDEO_TRACK_UNPUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_UNPUBLISHED),
+                ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED)));
+
+        map.putAll(MapBuilder.of(
+                ON_REMOTE_DATA_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_PUBLISHED),
+                ON_REMOTE_DATA_TRACK_UNPUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_UNPUBLISHED)));
+
+        map.putAll(MapBuilder.of(
+                ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED)));
 
         return map;
     }

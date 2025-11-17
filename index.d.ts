@@ -61,6 +61,16 @@ declare module "@twilio/video-react-native-sdk" {
 
   export type TrackEventCb = (t: TrackEventCbArgs) => void;
 
+  export type TrackErrorEventArgs = {
+    participant: Participant;
+    track?: Track;
+    error: string;
+    code?: string;
+    errorExplanation?: string;
+  };
+
+  export type TrackErrorEventCb = (args: TrackErrorEventArgs) => void;
+
   export interface DataTrackEventCbArgs {
     message: string;
     trackSid: string;
@@ -155,6 +165,23 @@ declare module "@twilio/video-react-native-sdk" {
     onRoomDidReconnect?: ReconnectedEventCb;
     onRoomIsReconnecting?: ReconnectingEventCb;
     onDataChanged?: DataChangedCb;
+    onRecordingStarted?: (event: RoomEventCommonArgs) => void;
+    onRecordingStopped?: (event: RoomEventCommonArgs) => void;
+    onLocalAudioTrackPublished?: TrackEventCb;
+    onLocalAudioTrackPublicationFailed?: TrackErrorEventCb;
+    onLocalVideoTrackPublished?: TrackEventCb;
+    onLocalVideoTrackPublicationFailed?: TrackErrorEventCb;
+    onLocalDataTrackPublished?: TrackEventCb;
+    onLocalDataTrackPublicationFailed?: TrackErrorEventCb;
+    onRemoteAudioTrackPublished?: TrackEventCb;
+    onRemoteAudioTrackUnpublished?: TrackEventCb;
+    onRemoteAudioTrackSubscriptionFailed?: TrackErrorEventCb;
+    onRemoteVideoTrackPublished?: TrackEventCb;
+    onRemoteVideoTrackUnpublished?: TrackEventCb;
+    onRemoteVideoTrackSubscriptionFailed?: TrackErrorEventCb;
+    onRemoteDataTrackPublished?: TrackEventCb;
+    onRemoteDataTrackUnpublished?: TrackEventCb;
+    onRemoteDataTrackSubscriptionFailed?: TrackErrorEventCb;
 
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;

@@ -33,7 +33,10 @@ public class ScreenCapturerManager {
                 }
 
                 @Override
-                public void onServiceDisconnected(ComponentName arg0) {}
+                public void onServiceDisconnected(ComponentName arg0) {
+                    mService = null;
+                    currentState = State.UNBIND_SERVICE;
+                }
             };
 
     /** An enum describing the possible states of a ScreenCapturerManager. */

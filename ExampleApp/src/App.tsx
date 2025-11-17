@@ -219,6 +219,99 @@ const Example = () => {
         return errorMsg;
     };
 
+    const describeParticipant = (participant?: any) => participant?.identity || participant?.sid || "unknown participant";
+    const describeTrack = (track?: any) => track?.trackName || track?.trackSid || "unknown track";
+    const describeRoom = (event: any) => {
+        if (event?.roomName) {
+            return `${event.roomName}${event?.roomSid ? ` (${event.roomSid})` : ""}`;
+        }
+        return event?.roomSid || "unknown room";
+    };
+    const describeError = (event: any) => {
+        let details = event?.error || "Unknown error";
+        if (event?.code) {
+            details += ` (code ${event.code})`;
+        }
+        if (event?.errorExplanation) {
+            details += ` - ${event.errorExplanation}`;
+        }
+        return details;
+    };
+    const logTrackEvent = (prefix: string, participant?: any, track?: any) => {
+        _log(`${prefix}: ${describeParticipant(participant)} -> ${describeTrack(track)}`);
+    };
+    const logTrackErrorEvent = (prefix: string, event: any) => {
+        _log(`${prefix}: ${describeParticipant(event?.participant)} -> ${describeTrack(event?.track)} | ${describeError(event)}`);
+    };
+
+    const _onRecordingStarted = (event: any) => {
+        _log(`Recording started for ${describeRoom(event)}`);
+    };
+
+    const _onRecordingStopped = (event: any) => {
+        _log(`Recording stopped for ${describeRoom(event)}`);
+    };
+
+    const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Local audio track published", participant, track);
+    };
+
+    const _onLocalAudioTrackPublicationFailed = (event: any) => {
+        logTrackErrorEvent("Local audio track publication failed", event);
+    };
+
+    const _onLocalVideoTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Local video track published", participant, track);
+    };
+
+    const _onLocalVideoTrackPublicationFailed = (event: any) => {
+        logTrackErrorEvent("Local video track publication failed", event);
+    };
+
+    const _onLocalDataTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Local data track published", participant, track);
+    };
+
+    const _onLocalDataTrackPublicationFailed = (event: any) => {
+        logTrackErrorEvent("Local data track publication failed", event);
+    };
+
+    const _onRemoteAudioTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote audio track published", participant, track);
+    };
+
+    const _onRemoteAudioTrackUnpublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote audio track unpublished", participant, track);
+    };
+
+    const _onRemoteAudioTrackSubscriptionFailed = (event: any) => {
+        logTrackErrorEvent("Remote audio track subscription failed", event);
+    };
+
+    const _onRemoteVideoTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote video track published", participant, track);
+    };
+
+    const _onRemoteVideoTrackUnpublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote video track unpublished", participant, track);
+    };
+
+    const _onRemoteVideoTrackSubscriptionFailed = (event: any) => {
+        logTrackErrorEvent("Remote video track subscription failed", event);
+    };
+
+    const _onRemoteDataTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote data track published", participant, track);
+    };
+
+    const _onRemoteDataTrackUnpublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote data track unpublished", participant, track);
+    };
+
+    const _onRemoteDataTrackSubscriptionFailed = (event: any) => {
+        logTrackErrorEvent("Remote data track subscription failed", event);
+    };
+
     const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
         setVideoTracks((originalVideoTracks: Map<string, any>) => {
             originalVideoTracks.set(track.trackSid, {
@@ -313,13 +406,30 @@ const Example = () => {
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
-                onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
-                onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
-                onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
-                onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
+                onStatsReceived={(data: any) => _log(`Stats ${JSON.stringify(data)}...`)}
+                onNetworkQualityLevelsChanged={(e: any) => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
+                onDominantSpeakerDidChange={(e: any) => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
+                onDataTrackMessageReceived={(e: any) => _log(`Data Track Message ${e.message}`)}
                 onRoomIsReconnecting={_onRoomIsReconnecting}
                 onRoomDidReconnect={_onRoomDidReconnect}
                 onDataChanged={_onDataChanged}
+                onRecordingStarted={_onRecordingStarted}
+                onRecordingStopped={_onRecordingStopped}
+                onLocalAudioTrackPublished={_onLocalAudioTrackPublished}
+                onLocalAudioTrackPublicationFailed={_onLocalAudioTrackPublicationFailed}
+                onLocalVideoTrackPublished={_onLocalVideoTrackPublished}
+                onLocalVideoTrackPublicationFailed={_onLocalVideoTrackPublicationFailed}
+                onLocalDataTrackPublished={_onLocalDataTrackPublished}
+                onLocalDataTrackPublicationFailed={_onLocalDataTrackPublicationFailed}
+                onRemoteAudioTrackPublished={_onRemoteAudioTrackPublished}
+                onRemoteAudioTrackUnpublished={_onRemoteAudioTrackUnpublished}
+                onRemoteAudioTrackSubscriptionFailed={_onRemoteAudioTrackSubscriptionFailed}
+                onRemoteVideoTrackPublished={_onRemoteVideoTrackPublished}
+                onRemoteVideoTrackUnpublished={_onRemoteVideoTrackUnpublished}
+                onRemoteVideoTrackSubscriptionFailed={_onRemoteVideoTrackSubscriptionFailed}
+                onRemoteDataTrackPublished={_onRemoteDataTrackPublished}
+                onRemoteDataTrackUnpublished={_onRemoteDataTrackUnpublished}
+                onRemoteDataTrackSubscriptionFailed={_onRemoteDataTrackSubscriptionFailed}
             />
 
             <Modal
