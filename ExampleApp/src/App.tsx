@@ -17,7 +17,7 @@ import {
 } from "@twilio/video-react-native-sdk";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import { styles } from "./styles";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { token } from "./access-token";
 
 // Only keep the latest 50 log lines so the list doesn’t grow without bound, preventing extra memory use and lag.
@@ -35,8 +35,8 @@ const ControlBar = ({ children }: { children: React.ReactNode }) => (
 );
 
 const OptionButton = ({ label, onPress, disabled }: { label: string, onPress: () => void, disabled?: boolean }) => (
-    <TouchableOpacity 
-        style={[styles.optionButton, disabled && { opacity: 0.5 }]} 
+    <TouchableOpacity
+        style={[styles.optionButton, disabled && { opacity: 0.5 }]}
         onPress={disabled ? undefined : onPress}
         disabled={disabled}
     >
@@ -68,6 +68,7 @@ const Example = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
+    const insets = useSafeAreaInsets();
     const _log = (line: string) =>
         setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
 
@@ -340,7 +341,7 @@ const Example = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{...styles.container, paddingBottom: insets.bottom}} >
             {status === "disconnected" && (
                 <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
