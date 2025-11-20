@@ -66,6 +66,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -831,6 +832,22 @@ public class CustomTwilioVideoView extends View
     public void sendString(String message) {
         if (localDataTrack != null) {
             localDataTrack.send(message);
+        }
+    }
+
+    public void sendBinary(String base64Payload) {
+        if (localDataTrack == null || base64Payload == null) {
+            return;
+        }
+        try {
+            byte[] bytes = Base64.decode(base64Payload, Base64.DEFAULT);
+            if (bytes == null) {
+                return;
+            }
+            ByteBuffer buffer = ByteBuffer.wrap(bytes);
+            localDataTrack.send(buffer);
+        } catch (Exception exception) {
+            Log.e(TAG, "Failed to decode base64 binary payload", exception);
         }
     }
 
@@ -1664,9 +1681,8 @@ public class CustomTwilioVideoView extends View
         return event;
     }
 
-    private WritableMap buildDataTrackEvent(RemoteDataTrack remoteDataTrack, String message) {
+    private WritableMap buildDataTrackEvent(RemoteDataTrack remoteDataTrack) {
         WritableMap event = new WritableNativeMap();
-        event.putString("message", message);
         event.putString("trackSid", remoteDataTrack.getSid());
         return event;
     }
@@ -1724,11 +1740,19 @@ public class CustomTwilioVideoView extends View
         return new RemoteDataTrack.Listener() {
             @Override
             public void onMessage(RemoteDataTrack remoteDataTrack, ByteBuffer byteBuffer) {
+                byte[] bytes = new byte[byteBuffer.remaining()];
+                byteBuffer.get(bytes);
+                WritableMap event = buildDataTrackEvent(remoteDataTrack);
+                event.putString("payloadBase64", Base64.encodeToString(bytes, Base64.NO_WRAP));
+                event.putBoolean("isBinary", true);
+                pushEvent(CustomTwilioVideoView.this, ON_DATATRACK_MESSAGE_RECEIVED, event);
             }
 
             @Override
             public void onMessage(RemoteDataTrack remoteDataTrack, String message) {
-                WritableMap event = buildDataTrackEvent(remoteDataTrack, message);
+                WritableMap event = buildDataTrackEvent(remoteDataTrack);
+                event.putString("message", message);
+                event.putBoolean("isBinary", false);
                 pushEvent(CustomTwilioVideoView.this, ON_DATATRACK_MESSAGE_RECEIVED, event);
             }
         };

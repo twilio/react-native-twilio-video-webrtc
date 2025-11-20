@@ -72,8 +72,10 @@ declare module "@twilio/video-react-native-sdk" {
   export type TrackErrorEventCb = (args: TrackErrorEventArgs) => void;
 
   export interface DataTrackEventCbArgs {
-    message: string;
     trackSid: string;
+    message?: string;
+    payloadBase64?: string;
+    isBinary?: boolean;
   }
 
   export type DataTrackEventCb = (t: DataTrackEventCbArgs) => void;
@@ -239,6 +241,7 @@ declare module "@twilio/video-react-native-sdk" {
     publishLocalVideo: () => void;
     unpublishLocalVideo: () => void;
     sendString: (message: string) => void;
+    sendBinary: (base64Payload: string) => void;
   }
 
   class TwilioVideoLocalView extends React.Component<

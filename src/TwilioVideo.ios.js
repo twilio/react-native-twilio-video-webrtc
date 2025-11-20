@@ -523,6 +523,14 @@ export default class TwilioVideo extends Component {
     TWVideoModule.sendString(message);
   }
 
+  /**
+   * Send a Base64-encoded binary payload via data track
+   * @param {string} base64Payload
+   */
+  sendBinary(base64Payload) {
+    TWVideoModule.sendBinary(base64Payload);
+  }
+
   _startLocalVideo() {
     TWVideoModule.startLocalVideo();
   }

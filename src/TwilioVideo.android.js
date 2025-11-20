@@ -336,6 +336,7 @@ const nativeEvents = {
   setRemoteAudioPlayback: 15,
   toggleScreenSharing: 16,
   toggleDataTrack: 17,
+  sendBinary: 18,
 };
 
 class CustomTwilioVideoView extends Component {
@@ -388,6 +389,14 @@ class CustomTwilioVideoView extends Component {
    */
   sendString(message) {
     this.runCommand(nativeEvents.sendString, [message]);
+  }
+
+  /**
+   * Send a Base64-encoded binary payload via data track
+   * @param {string} base64Payload
+   */
+  sendBinary(base64Payload) {
+    this.runCommand(nativeEvents.sendBinary, [base64Payload]);
   }
 
   /**

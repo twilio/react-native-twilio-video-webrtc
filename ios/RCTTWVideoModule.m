@@ -835,6 +835,19 @@ RCT_EXPORT_METHOD(sendString : (nonnull NSString *) message) {
     }
 }
 
+RCT_EXPORT_METHOD(sendBinary : (nonnull NSString *)base64Payload) {
+    if (self.localDataTrack == nil || base64Payload == nil) {
+        return;
+    }
+    NSData *data =
+            [[NSData alloc] initWithBase64EncodedString:base64Payload options:0];
+    if (data == nil) {
+        NSLog(@"[RCTTWVideoModule] Invalid Base64 payload passed to sendBinary");
+        return;
+    }
+    [self.localDataTrack sendData:data];
+}
+
 RCT_EXPORT_METHOD(disconnect) {
     [self clearAudioInstance];
     [self clearCameraInstance];
@@ -1260,17 +1273,25 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)remoteDataTrack:(nonnull TVIRemoteDataTrack *)remoteDataTrack
         didReceiveString:(nonnull NSString *)message {
-    [self sendEventCheckingListenerWithName:dataTrackMessageReceived
-                                       body:@{
-                                           @"message": message,
-                                           @"trackSid": remoteDataTrack.sid
-                                       }];
+    NSMutableDictionary *body = [@{
+        @"message": message ?: @"",
+        @"trackSid": remoteDataTrack.sid ?: @"",
+        @"isBinary": @NO
+    } mutableCopy];
+    [self sendEventCheckingListenerWithName:dataTrackMessageReceived body:body];
 }
 
 - (void)remoteDataTrack:(nonnull TVIRemoteDataTrack *)remoteDataTrack
          didReceiveData:(nonnull NSData *)message {
-    // TODO: Handle didReceiveData
-    NSLog(@"DataTrack didReceiveData");
+    if (message == nil) {
+        return;
+    }
+    NSMutableDictionary *body = [@{
+        @"trackSid": remoteDataTrack.sid ?: @"",
+        @"payloadBase64": [message base64EncodedStringWithOptions:0],
+        @"isBinary": @YES
+    } mutableCopy];
+    [self sendEventCheckingListenerWithName:dataTrackMessageReceived body:body];
 }
 
 #pragma mark - TVILocalParticipantDelegate

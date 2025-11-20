@@ -52,6 +52,12 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
     </View>
 ));
 
+const SAMPLE_BINARY_BASE64 = "AQIDBA=="; // 0x01 0x02 0x03 0x04
+
+const handleStatsReceived = (data: any, logger: (msg: string) => void) => {
+    logger(`Stats ${JSON.stringify(data)}...`);
+};
+
 const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -176,6 +182,11 @@ const Example = () => {
         _log("(you) sent: Hello from RN");
     };
 
+    const _onSendBinaryPress = () => {
+        twilioRef.current?.sendBinary(SAMPLE_BINARY_BASE64);
+        _log("(you) sent binary payload (4 bytes)");
+    };
+
     const _onShareButtonPress = () => {
         twilioRef.current?.toggleScreenSharing(!isSharing);
     };
@@ -251,6 +262,23 @@ const Example = () => {
 
     const _onRecordingStopped = (event: any) => {
         _log(`Recording stopped for ${describeRoom(event)}`);
+    };
+
+    const _onNetworkQualityLevelsChanged = (event: any) => {
+        const participantName = describeParticipant(event?.participant) || "local";
+        _log(`Network Quality ${participantName} -> ${event?.quality}`);
+    };
+
+    const _onDominantSpeakerDidChange = (event: any) => {
+        _log(`Dominant Speaker -> ${event?.participant?.identity || "none"}`);
+    };
+
+    const _onDataTrackMessageReceived = (event: any) => {
+        if (event?.isBinary) {
+            _log(`Data Track Binary (track ${event.trackSid}) payload=${event.payloadBase64?.slice(0, 16) || ""}...`);
+        } else {
+            _log(`Data Track Message ${event?.message}`);
+        }
     };
 
     const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
@@ -341,7 +369,7 @@ const Example = () => {
     };
 
     return (
-        <SafeAreaView style={{...styles.container, paddingBottom: insets.bottom}} >
+        <SafeAreaView style={{ ...styles.container, paddingBottom: insets.bottom }} >
             {status === "disconnected" && (
                 <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
@@ -393,6 +421,7 @@ const Example = () => {
                             <OptionButton label={isDataTrackEnabled ? "Disable Data" : "Enable Data"} onPress={_onToggleDataTrackPress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
                             <OptionButton label="Ping" onPress={_onSendStringPress} disabled={!isDataTrackEnabled} />
+                            <OptionButton label="Send Binary" onPress={_onSendBinaryPress} disabled={!isDataTrackEnabled} />
                             <OptionButton label={isSharing ? "Stop Sharing" : "Start Sharing"} onPress={_onShareButtonPress} />
                         </ControlBar>
                     </View>
@@ -407,10 +436,10 @@ const Example = () => {
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
-                onStatsReceived={(data: any) => _log(`Stats ${JSON.stringify(data)}...`)}
-                onNetworkQualityLevelsChanged={(e: any) => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
-                onDominantSpeakerDidChange={(e: any) => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
-                onDataTrackMessageReceived={(e: any) => _log(`Data Track Message ${e.message}`)}
+                onStatsReceived={(data: any) => handleStatsReceived(data, _log)}
+                onNetworkQualityLevelsChanged={_onNetworkQualityLevelsChanged}
+                onDominantSpeakerDidChange={_onDominantSpeakerDidChange}
+                onDataTrackMessageReceived={_onDataTrackMessageReceived}
                 onRoomIsReconnecting={_onRoomIsReconnecting}
                 onRoomDidReconnect={_onRoomDidReconnect}
                 onDataChanged={_onDataChanged}

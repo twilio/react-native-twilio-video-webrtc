@@ -3,10 +3,21 @@
 ### Changes
 
 - Updated React and React Native peer dependencies to allow compatible version ranges
+- Added parity callbacks for the full recording lifecycle plus local/remote track publish, unpublish, and subscription failure events across Android and iOS (docs, PropTypes, and TypeScript updated). Newly exported callbacks:
+  - `onRecordingStarted`, `onRecordingStopped`
+  - `onLocalAudioTrackPublished`, `onLocalAudioTrackPublicationFailed`
+  - `onLocalVideoTrackPublished`, `onLocalVideoTrackPublicationFailed`
+  - `onLocalDataTrackPublished`, `onLocalDataTrackPublicationFailed`
+  - `onRemoteAudioTrackPublished`, `onRemoteAudioTrackUnpublished`, `onRemoteAudioTrackSubscriptionFailed`
+  - `onRemoteVideoTrackPublished`, `onRemoteVideoTrackUnpublished`, `onRemoteVideoTrackSubscriptionFailed`
+  - `onRemoteDataTrackPublished`, `onRemoteDataTrackUnpublished`, `onRemoteDataTrackSubscriptionFailed`
+- Added `sendBinary` APIs (Android/iOS native + JS bridge) and Example App controls for sending Base64-encoded payloads over the data track
+- Added binary payload support to `onDataTrackMessageReceived`, emitting `payloadBase64` and `isBinary` for non-string messages
 
 ### Fixes
 
 - Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates are a posted asynchronously on the UI thread.
+- Fixed missing data in Android/iOS data track events by standardizing payloads and documenting the new structure
 
 ### Known issues
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
