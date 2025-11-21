@@ -184,7 +184,22 @@ const Example = () => {
         _log(`Screen Share ${event.screenShareEnabled ? 'Started' : 'Stopped'}`);
     };
 
+    const _onCameraSwitched = (event: any) => {
+        _log(`Camera switched -> ${event?.isBackCamera ? "back" : "front"}`);
+    };
 
+    const _onVideoChanged = (event: any) => {
+        _log(`Video ${event?.videoEnabled ? "enabled" : "disabled"}`);
+    };
+
+    const _onAudioChanged = (event: any) => {
+        _log(`Audio ${event?.audioEnabled ? "enabled" : "disabled"}`);
+    };
+
+    const _onLocalParticipantSupportedCodecs = (event: any) => {
+        const codecs = Array.isArray(event?.supportedCodecs) ? event.supportedCodecs.join(", ") : "unknown";
+        _log(`Supported codecs -> ${codecs}`);
+    };
 
     const _onRoomDidConnect = (event: any) => {
         if (event.roomName) {
@@ -313,10 +328,14 @@ const Example = () => {
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
-                onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
-                onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
-                onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
-                onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
+                onCameraSwitched={_onCameraSwitched}
+                onVideoChanged={_onVideoChanged}
+                onAudioChanged={_onAudioChanged}
+                onStatsReceived={(data: any) => _log(`Stats ${JSON.stringify(data)}...`)}
+                onNetworkQualityLevelsChanged={(e: any) => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
+                onDominantSpeakerDidChange={(e: any) => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
+                onDataTrackMessageReceived={(e: any) => _log(`Data Track Message ${e.message}`)}
+                onLocalParticipantSupportedCodecs={_onLocalParticipantSupportedCodecs}
                 onRoomIsReconnecting={_onRoomIsReconnecting}
                 onRoomDidReconnect={_onRoomDidReconnect}
                 onDataChanged={_onDataChanged}

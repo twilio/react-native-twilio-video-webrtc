@@ -3,6 +3,7 @@
 ### Changes
 
 - Updated React and React Native peer dependencies to allow compatible version ranges
+- Added the previously Android-only callbacks to iOS (`onCameraSwitched`, `onVideoChanged`, `onAudioChanged`, `onLocalParticipantSupportedCodecs`) so both platforms now emit identical events
 
 ### Fixes
 

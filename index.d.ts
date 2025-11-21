@@ -133,6 +133,9 @@ declare module "@twilio/video-react-native-sdk" {
     onCameraDidStart?: () => void;
     onCameraDidStopRunning?: (err: any) => void;
     onCameraWasInterrupted?: () => void;
+    onCameraSwitched?: (args: { isBackCamera: boolean }) => void;
+    onVideoChanged?: (args: { videoEnabled: boolean }) => void;
+    onAudioChanged?: (args: { audioEnabled: boolean }) => void;
     onDominantSpeakerDidChange?: DominantSpeakerChangedCb;
     onParticipantAddedAudioTrack?: TrackEventCb;
     onParticipantAddedVideoTrack?: TrackEventCb;

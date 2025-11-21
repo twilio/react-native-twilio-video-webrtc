@@ -172,6 +172,27 @@ export default class TwilioVideo extends Component {
     onCameraDidStopRunning: PropTypes.func,
 
     /**
+     * Called when the camera source changes
+     *
+     * @param {{isBackCamera: boolean}}
+     */
+    onCameraSwitched: PropTypes.func,
+
+    /**
+     * Called when video is toggled
+     *
+     * @param {{videoEnabled: boolean}}
+     */
+    onVideoChanged: PropTypes.func,
+
+    /**
+     * Called when audio is toggled
+     *
+     * @param {{audioEnabled: boolean}}
+     */
+    onAudioChanged: PropTypes.func,
+
+    /**
      * Called when stats are received (after calling getStats)
      *
      * @param {{[peerConnectionId: string]: {remoteAudioTrackStats: any[], remoteVideoTrackStats: any[], localAudioTrackStats: any[], localVideoTrackStats: any[]}}}
@@ -520,6 +541,21 @@ export default class TwilioVideo extends Component {
           this.props.onCameraDidStart(data);
         }
       }),
+      this._eventEmitter.addListener("onCameraSwitched", (data) => {
+        if (this.props.onCameraSwitched) {
+          this.props.onCameraSwitched(data);
+        }
+      }),
+      this._eventEmitter.addListener("onVideoChanged", (data) => {
+        if (this.props.onVideoChanged) {
+          this.props.onVideoChanged(data);
+        }
+      }),
+      this._eventEmitter.addListener("onAudioChanged", (data) => {
+        if (this.props.onAudioChanged) {
+          this.props.onAudioChanged(data);
+        }
+      }),
       this._eventEmitter.addListener("cameraWasInterrupted", (data) => {
         if (this.props.onCameraWasInterrupted) {
           this.props.onCameraWasInterrupted(data);
@@ -543,6 +579,11 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("networkQualityLevelsChanged", (data) => {
         if (this.props.onNetworkQualityLevelsChanged) {
           this.props.onNetworkQualityLevelsChanged(data);
+        }
+      }),
+      this._eventEmitter.addListener("onLocalParticipantSupportedCodecs", (data) => {
+        if (this.props.onLocalParticipantSupportedCodecs) {
+          this.props.onLocalParticipantSupportedCodecs(data);
         }
       }),
       this._eventEmitter.addListener("onDominantSpeakerDidChange", (data) => {

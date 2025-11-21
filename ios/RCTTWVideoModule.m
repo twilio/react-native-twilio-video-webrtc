@@ -19,6 +19,10 @@ static NSString *roomParticipantDidDisconnect = @"roomParticipantDidDisconnect";
 static NSString *dominantSpeakerDidChange = @"onDominantSpeakerDidChange";
 static NSString *roomIsReconnecting = @"roomIsReconnecting";
 static NSString *roomDidReconnect = @"roomDidReconnect";
+static NSString *cameraSwitched = @"onCameraSwitched";
+static NSString *videoChanged = @"onVideoChanged";
+static NSString *audioChanged = @"onAudioChanged";
+static NSString *localParticipantSupportedCodecs = @"onLocalParticipantSupportedCodecs";
 
 static NSString *participantAddedVideoTrack = @"participantAddedVideoTrack";
 static NSString *participantRemovedVideoTrack = @"participantRemovedVideoTrack";
@@ -138,6 +142,10 @@ RCT_EXPORT_MODULE();
         dominantSpeakerDidChange,
         screenShareChanged,
         dataChanged,
+        cameraSwitched,
+        videoChanged,
+        audioChanged,
+        localParticipantSupportedCodecs,
 
     ];
 }
@@ -390,6 +398,8 @@ RCT_REMAP_METHOD(setLocalDataTrackEnabled,
         }
         // If track doesn't exist, do nothing
     }
+    [self sendEventCheckingListenerWithName:videoChanged
+                                       body:@{@"videoEnabled": @(enabled)}];
     return enabled;
 }
 
@@ -424,6 +434,9 @@ RCT_REMAP_METHOD(setLocalDataTrackEnabled,
         }
         // If track doesn't exist, do nothing
     }
+
+    [self sendEventCheckingListenerWithName:audioChanged
+                                       body:@{@"audioEnabled": @(enabled)}];
 }
 
 #pragma mark - Local Data Track Handling
@@ -494,6 +507,10 @@ RCT_EXPORT_METHOD(flipCamera) {
                                             .renderers) {
                                    renderer.mirror = mirror;
                                }
+                               [self sendEventCheckingListenerWithName:cameraSwitched
+                                                                  body:@{
+                                                                      @"isBackCamera": @(nextPosition == AVCaptureDevicePositionBack)
+                                                                  }];
                            }
                          }];
     }
@@ -743,6 +760,8 @@ RCT_EXPORT_METHOD(
         [self _createDataTrack];
     }
 
+    __block NSMutableArray<NSString *> *supportedCodecs = [NSMutableArray array];
+
     TVIConnectOptions *connectOptions = [TVIConnectOptions
             optionsWithToken:accessToken
                        block:^(TVIConnectOptionsBuilder *_Nonnull builder) {
@@ -763,10 +782,15 @@ RCT_EXPORT_METHOD(
 
                          builder.roomName = roomName;
 
-                         builder.preferredVideoCodecs = @[[TVIVp8Codec new]];
-                         if ([encodingParameters[@"enableH264Codec"] boolValue]) {
-                             builder.preferredVideoCodecs =
-                                     @[[TVIH264Codec new]];
+                         [supportedCodecs addObject:@"VP8"];
+                         BOOL enableH264 = [encodingParameters[@"enableH264Codec"] boolValue];
+                         if (enableH264) {
+                             TVIVideoCodec *h264Codec = [TVIH264Codec new];
+                             builder.preferredVideoCodecs = @[h264Codec];
+                             [supportedCodecs addObject:@"H264"];
+                         } else {
+                             TVIVideoCodec *vp8Codec = [TVIVp8Codec new];
+                             builder.preferredVideoCodecs = @[vp8Codec];
                          }
 
                          if (encodingParameters[@"audioBitrate"] ||
@@ -791,6 +815,11 @@ RCT_EXPORT_METHOD(
                                                             TVINetworkQualityVerbosityMinimal];
                          }
                        }];
+
+    if (supportedCodecs.count > 0) {
+        [self sendEventCheckingListenerWithName:localParticipantSupportedCodecs
+                                           body:@{@"supportedCodecs": [supportedCodecs copy]}];
+    }
 
     self.room = [TwilioVideoSDK connectWithOptions:connectOptions delegate:self];
 }
