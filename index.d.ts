@@ -16,9 +16,9 @@ declare module "@twilio/video-react-native-sdk" {
     scaleType?: scaleType;
     /**
      * Whether to apply Z ordering to this view.  Setting this to true will cause
-     * this view to appear above other Twilio Video views. 
+     * this view to appear above other Twilio Video views.
      */
-     applyZOrder?: boolean | undefined;
+    applyZOrder?: boolean | undefined;
   }
 
   interface TwilioVideoLocalViewProps extends ViewProps {
@@ -27,7 +27,7 @@ declare module "@twilio/video-react-native-sdk" {
     scaleType?: scaleType;
     /**
      * Whether to apply Z ordering to this view.  Setting this to true will cause
-     * this view to appear above other Twilio Video views. 
+     * this view to appear above other Twilio Video views.
      */
     applyZOrder?: boolean | undefined;
   }
@@ -38,7 +38,7 @@ declare module "@twilio/video-react-native-sdk" {
     scaleType?: scaleType;
     /**
      * Whether to apply Z ordering to this view.  Setting this to true will cause
-     * this view to appear above other Twilio Video views. 
+     * this view to appear above other Twilio Video views.
      */
     applyZOrder?: boolean | undefined;
   }
@@ -96,31 +96,37 @@ declare module "@twilio/video-react-native-sdk" {
   export type RoomErrorEventCb = (t: RoomErrorEventArgs) => void;
 
   export type ParticipantEventCb = (p: ParticipantEventArgs) => void;
-  
-  export type NetworkLevelChangeEventCb = (p: NetworkLevelChangeEventArgs) => void;
+
+  export type NetworkLevelChangeEventCb = (
+    p: NetworkLevelChangeEventArgs
+  ) => void;
 
   export type DominantSpeakerChangedEventArgs = RoomEventCommonArgs & {
     participant: Participant;
-  }
-  
-  export type DominantSpeakerChangedCb = (d: DominantSpeakerChangedEventArgs) => void;
+  };
+
+  export type DominantSpeakerChangedCb = (
+    d: DominantSpeakerChangedEventArgs
+  ) => void;
 
   export type LocalParticipantSupportedCodecsCbEventArgs = {
     supportedCodecs: Array<string>;
-  }
+  };
 
-  export type LocalParticipantSupportedCodecsCb = (d: LocalParticipantSupportedCodecsCbEventArgs) => void;
+  export type LocalParticipantSupportedCodecsCb = (
+    d: LocalParticipantSupportedCodecsCbEventArgs
+  ) => void;
 
   export type ScreenShareChangedEventArgs = {
     screenShareEnabled: boolean;
-  }
+  };
 
   export type ScreenShareChangedCb = (e: ScreenShareChangedEventArgs) => void;
 
   export type DataChangedEventArgs = {
     dataEnabled: boolean;
-  }
-  
+  };
+
   export type DataChangedCb = (e: DataChangedEventArgs) => void;
 
   export type ReconnectingEventArgs = RoomEventCommonArgs & {
@@ -131,8 +137,9 @@ declare module "@twilio/video-react-native-sdk" {
 
   export type TwilioVideoProps = ViewProps & {
     onCameraDidStart?: () => void;
-    onCameraDidStopRunning?: (err: any) => void;
-    onCameraWasInterrupted?: () => void;
+    onCameraWasInterrupted?: (args?: { reason?: string }) => void;
+    onCameraInterruptionEnded?: () => void;
+    onCameraDidStopRunning?: (args?: { error?: string }) => void;
     onCameraSwitched?: (args: { isBackCamera: boolean }) => void;
     onVideoChanged?: (args: { videoEnabled: boolean }) => void;
     onAudioChanged?: (args: { audioEnabled: boolean }) => void;
@@ -162,7 +169,7 @@ declare module "@twilio/video-react-native-sdk" {
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;
     // iOS only
-    autoInitializeCamera?: boolean;    
+    autoInitializeCamera?: boolean;
     ref?: React.Ref<any>;
   };
 
@@ -217,17 +224,16 @@ declare module "@twilio/video-react-native-sdk" {
     sendString: (message: string) => void;
   }
 
-  class TwilioVideoLocalView extends React.Component<
-    TwilioVideoLocalViewProps
-  > {}
+  class TwilioVideoLocalView extends React.Component<TwilioVideoLocalViewProps> {}
 
-  class TwilioVideoScreenShareView extends React.Component<
-    TwilioVideoScreenShareViewProps
-  > {}
+  class TwilioVideoScreenShareView extends React.Component<TwilioVideoScreenShareViewProps> {}
 
-  class TwilioVideoParticipantView extends React.Component<
-    TwilioVideoParticipantViewProps
-  > {}
+  class TwilioVideoParticipantView extends React.Component<TwilioVideoParticipantViewProps> {}
 
-  export { TwilioVideoLocalView, TwilioVideoScreenShareView, TwilioVideoParticipantView, TwilioVideo };
+  export {
+    TwilioVideoLocalView,
+    TwilioVideoScreenShareView,
+    TwilioVideoParticipantView,
+    TwilioVideo,
+  };
 }

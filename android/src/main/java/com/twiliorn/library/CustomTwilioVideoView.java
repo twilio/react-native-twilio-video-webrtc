@@ -9,7 +9,11 @@
 package com.twiliorn.library;
 
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_AUDIO_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_DID_START;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_DID_STOP_RUNNING;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_INTERRUPTION_ENDED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_SWITCHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_WAS_INTERRUPTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECT_FAILURE;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATATRACK_MESSAGE_RECEIVED;
@@ -137,9 +141,14 @@ public class CustomTwilioVideoView extends View
     private String cameraType = "";
     private boolean enableH264Codec = false;
     private boolean isDataEnabled = false;
+    private boolean cameraInterrupted = false;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
+                Events.ON_CAMERA_DID_START,
+                Events.ON_CAMERA_WAS_INTERRUPTED,
+                Events.ON_CAMERA_INTERRUPTION_ENDED,
+                Events.ON_CAMERA_DID_STOP_RUNNING,
                 Events.ON_VIDEO_CHANGED,
                 Events.ON_AUDIO_CHANGED,
                 Events.ON_CONNECTED,
@@ -168,6 +177,10 @@ public class CustomTwilioVideoView extends View
                 Events.ON_DATA_CHANGED})
     public @interface Events {
         String ON_CAMERA_SWITCHED = "onCameraSwitched";
+        String ON_CAMERA_DID_START = "onCameraDidStart";
+        String ON_CAMERA_WAS_INTERRUPTED = "onCameraWasInterrupted";
+        String ON_CAMERA_INTERRUPTION_ENDED = "onCameraInterruptionEnded";
+        String ON_CAMERA_DID_STOP_RUNNING = "onCameraDidStopRunning";
         String ON_VIDEO_CHANGED = "onVideoChanged";
         String ON_AUDIO_CHANGED = "onAudioChanged";
         String ON_CONNECTED = "onRoomDidConnect";
@@ -255,6 +268,7 @@ public class CustomTwilioVideoView extends View
                     screenCapturer = new ScreenCapturer(themedReactContext, resultCode, data, new ScreenCapturer.Listener() {
                         @Override
                         public void onFirstFrameAvailable() {
+                            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_DID_START, null);
                         }
                         @Override
                         public void onScreenCaptureError(String errorDescription) {
@@ -313,6 +327,8 @@ public class CustomTwilioVideoView extends View
                     new CameraCapturer.Listener() {
                         @Override
                         public void onFirstFrameAvailable() {
+                            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_DID_START, null);
+                            cameraInterrupted = false;
                         }
 
                         @Override
@@ -326,6 +342,9 @@ public class CustomTwilioVideoView extends View
                         @Override
                         public void onError(int i) {
                             Log.i("CustomTwilioVideoView", "Error getting camera");
+                            WritableMap event = new WritableNativeMap();
+                            event.putString("error", "Camera error: " + i);
+                            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_DID_STOP_RUNNING, event);
                         }
                     });
             return newCameraCapturer;
@@ -421,6 +440,10 @@ public class CustomTwilioVideoView extends View
                 }
             }
 
+        if (cameraInterrupted) {
+            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
+            cameraInterrupted = false;
+        }
             if (room != null) {
                 themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
             }
@@ -447,6 +470,11 @@ public class CustomTwilioVideoView extends View
 
             localVideoTrack.release();
             localVideoTrack = null;
+
+            cameraInterrupted = true;
+            WritableMap event = new WritableNativeMap();
+            event.putString("reason", "App backgrounded");
+            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_WAS_INTERRUPTED, event);
         }
     }
 

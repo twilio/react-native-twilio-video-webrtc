@@ -2,17 +2,18 @@
 
 ### Changes
 
-- Updated React and React Native peer dependencies to allow compatible version ranges
-- Added the previously Android-only callbacks to iOS (`onCameraSwitched`, `onVideoChanged`, `onAudioChanged`, `onLocalParticipantSupportedCodecs`) so both platforms now emit identical events
+- Updated React and React Native peer dependencies to allow compatible version ranges.
+- Added the previously Android-only callbacks to iOS (`onCameraSwitched`, `onVideoChanged`, `onAudioChanged`, `onLocalParticipantSupportedCodecs`) so both platforms now emit identical events.
+- Added camera lifecycle callbacks (`onCameraDidStart`, `onCameraWasInterrupted`, `onCameraInterruptionEnded`, `onCameraDidStopRunning`) on Android to be consistent with IOs.
 
 ### Fixes
 
 - Fixed an Android freeze triggered by `react-native-reanimated` animations interacting with Twilio video views by ensuring layout updates are a posted asynchronously on the UI thread.
 
 ### Known issues
-- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
-- Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used
-- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only)
+- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
+- Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used.
+- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only).
 
 ---
 
@@ -48,7 +49,7 @@
 
 **Package:**
 
-- Updated the npm package name from react-native-twilio-video-webrtc to @twilio/video-react-native-sdk
+- Updated the npm package name from react-native-twilio-video-webrtc to @twilio/video-react-native-sdk.
 
 #### Example App
 
@@ -67,21 +68,21 @@
 - Fixed an issue where the iOS native `connect` method was incorrectly handling BOOL types, which caused crashes when establishing a connection.
 - Resolved a bug in the native Android component where a string reference was improperly passed, resulting in runtime errors.
 - Removed unused `disableOpenSLES` method from `CustomTwilioVideoView`.
-- Fixed a bug on Android where a video track could not be published to a room with `enableVideo: false`
-- Fixed an inconsistency between `enableVideo: false` and `enableAudio: false` connect parameters. With `enableAudio: false` a disabled audio track will not be intially published to the room, matching the behaviour of `enableVideo: false`
-- Fixed track cleanup issue on iOS where audio tracks were not properly unpublished when users disconnect, causing tracks to appear as disabled instead of being removed from the room
-- Fixed autoInitializeCamera prop being treated as true when undefined
-- Fixed an iOS crash caused by local tracks not being cleared after a failed connection attempt
+- Fixed a bug on Android where a video track could not be published to a room with `enableVideo: false`.
+- Fixed an inconsistency between `enableVideo: false` and `enableAudio: false` connect parameters. With `enableAudio: false` a disabled audio track will not be intially published to the room, matching the behaviour of `enableVideo: false`.
+- Fixed track cleanup issue on iOS where audio tracks were not properly unpublished when users disconnect, causing tracks to appear as disabled instead of being removed from the room.
+- Fixed autoInitializeCamera prop being treated as true when undefined.
+- Fixed an iOS crash caused by local tracks not being cleared after a failed connection attempt.
 
 ### Potential Breaking Changes
 
 #### iOS Track Behavior Changes
 
 - **Audio and Video Track Disable Behavior**: The iOS implementation has been updated to match Android behavior. When disabling local audio or video tracks using `setLocalAudioEnabled(false)` or `setLocalVideoEnabled(false)`, tracks are now **only disabled** rather than being unpublished and destroyed. This means:
-  - Disabled tracks remain in the room as disabled tracks (matching Android behavior)
-  - Tracks can be re-enabled without recreation
-  - This change ensures consistent behavior across iOS and Android platforms
-  - **Impact**: Apps that relied on the previous iOS behavior where disabling tracks would completely remove them from the room may need to be updated
+  - Disabled tracks remain in the room as disabled tracks (matching Android behavior).
+  - Tracks can be re-enabled without recreation.
+  - This change ensures consistent behavior across iOS and Android platforms.
+  - **Impact**: Apps that relied on the previous iOS behavior where disabling tracks would completely remove them from the room may need to be updated.
 
 ### Platform Specific Notes
 
@@ -97,9 +98,9 @@
 
 ### Known issues
 
-- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded
-- Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used
-- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only)
+- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
+- Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used.
+- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only).
 - Android screenshare can become unresponsive when `react-native-reanimated` components are present; avoid including such components in the same view as the screen share component.
 
 ---

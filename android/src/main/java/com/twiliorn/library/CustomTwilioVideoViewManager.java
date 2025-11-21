@@ -9,10 +9,15 @@
 package com.twiliorn.library;
 
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_AUDIO_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_DID_START;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_DID_STOP_RUNNING;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_INTERRUPTION_ENDED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_SWITCHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_WAS_INTERRUPTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECT_FAILURE;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATATRACK_MESSAGE_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DISCONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
@@ -34,7 +39,6 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
@@ -173,6 +177,12 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_CONNECT_FAILURE, MapBuilder.of("registrationName", ON_CONNECT_FAILURE),
                 ON_DISCONNECTED, MapBuilder.of("registrationName", ON_DISCONNECTED),
                 ON_PARTICIPANT_CONNECTED, MapBuilder.of("registrationName", ON_PARTICIPANT_CONNECTED));
+
+        map.putAll(MapBuilder.of(
+                ON_CAMERA_DID_START, MapBuilder.of("registrationName", ON_CAMERA_DID_START),
+                ON_CAMERA_WAS_INTERRUPTED, MapBuilder.of("registrationName", ON_CAMERA_WAS_INTERRUPTED),
+                ON_CAMERA_INTERRUPTION_ENDED, MapBuilder.of("registrationName", ON_CAMERA_INTERRUPTION_ENDED),
+                ON_CAMERA_DID_STOP_RUNNING, MapBuilder.of("registrationName", ON_CAMERA_DID_STOP_RUNNING)));
 
         map.putAll(MapBuilder.of(
                 ON_PARTICIPANT_DISCONNECTED, MapBuilder.of("registrationName", ON_PARTICIPANT_DISCONNECTED),

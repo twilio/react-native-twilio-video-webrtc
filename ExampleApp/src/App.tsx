@@ -188,6 +188,22 @@ const Example = () => {
         _log(`Camera switched -> ${event?.isBackCamera ? "back" : "front"}`);
     };
 
+    const _onCameraDidStart = () => {
+        _log("Camera started");
+    };
+
+    const _onCameraWasInterrupted = (event: any) => {
+        _log(`Camera interrupted${event?.reason ? `: ${event.reason}` : ""}`);
+    };
+
+    const _onCameraInterruptionEnded = () => {
+        _log("Camera interruption ended");
+    };
+
+    const _onCameraDidStopRunning = (event: any) => {
+        _log(`Camera stopped${event?.error ? `: ${event.error}` : ""}`);
+    };
+
     const _onVideoChanged = (event: any) => {
         _log(`Video ${event?.videoEnabled ? "enabled" : "disabled"}`);
     };
@@ -329,6 +345,10 @@ const Example = () => {
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
                 onCameraSwitched={_onCameraSwitched}
+                onCameraDidStart={_onCameraDidStart}
+                onCameraWasInterrupted={_onCameraWasInterrupted}
+                onCameraInterruptionEnded={_onCameraInterruptionEnded}
+                onCameraDidStopRunning={_onCameraDidStopRunning}
                 onVideoChanged={_onVideoChanged}
                 onAudioChanged={_onAudioChanged}
                 onStatsReceived={(data: any) => _log(`Stats ${JSON.stringify(data)}...`)}

@@ -54,6 +54,24 @@ const propTypes = {
    * @param {{screenShareEnabled: boolean}} 
    */
   onScreenShareChanged: PropTypes.func,
+  /**
+   * Called when the camera starts streaming frames.
+   */
+  onCameraDidStart: PropTypes.func,
+  /**
+   * Called when the camera is interrupted (e.g. by another app or system policy).
+   */
+  onCameraWasInterrupted: PropTypes.func,
+  /**
+   * Called when a previous camera interruption has ended.
+   */
+  onCameraInterruptionEnded: PropTypes.func,
+  /**
+   * Called when the camera stops running due to an error.
+   *
+   * @param {{error: string}} The error message description
+   */
+  onCameraDidStopRunning: PropTypes.func,
 
   /**
     * Callback that is called when audio is toggled.
@@ -471,6 +489,10 @@ class CustomTwilioVideoView extends Component {
       "onLocalParticipantSupportedCodecs",
       "onRoomIsReconnecting",
       "onRoomDidReconnect",
+      "onCameraDidStart",
+      "onCameraWasInterrupted",
+      "onCameraInterruptionEnded",
+      "onCameraDidStopRunning",
     ].reduce((wrappedEvents, eventName) => {
       if (this.props[eventName]) {
         return {
