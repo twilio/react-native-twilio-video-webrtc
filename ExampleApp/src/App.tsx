@@ -54,9 +54,6 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
 
 const SAMPLE_BINARY_BASE64 = "AQIDBA=="; // 0x01 0x02 0x03 0x04
 
-const handleStatsReceived = (data: any, logger: (msg: string) => void) => {
-    logger(`Stats ${JSON.stringify(data)}...`);
-};
 
 const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -170,6 +167,10 @@ const Example = () => {
     const _onDataChanged = (event: any) => {
         setIsDataTrackEnabled(event.dataEnabled);
         _log(`Data Track ${event.dataEnabled ? 'Enabled' : 'Disabled'}`);
+    };
+
+    const _onStatsReceived = (data: any) => {
+        _log(`Stats ${JSON.stringify(data)}...`);
     };
 
     const _onGetStatsPress = () => {
@@ -436,7 +437,7 @@ const Example = () => {
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
-                onStatsReceived={(data: any) => handleStatsReceived(data, _log)}
+                onStatsReceived={_onStatsReceived}
                 onNetworkQualityLevelsChanged={_onNetworkQualityLevelsChanged}
                 onDominantSpeakerDidChange={_onDominantSpeakerDidChange}
                 onDataTrackMessageReceived={_onDataTrackMessageReceived}
