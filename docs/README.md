@@ -71,6 +71,12 @@
 
 ### TwilioVideo ([src/TwilioVideo.ios.js](../src/TwilioVideo.ios.js))
 
+#### Props
+
+| Property              | Type     | Description                                                                                      |
+| :-------------------- | :------- | :----------------------------------------------------------------------------------------------- |
+| autoInitializeCamera  | boolean  | iOS-only prop that auto-starts the camera; will be deprecated in a future release                |
+
 #### Callbacks
 
 | Property                        | Parameters                                                                                                                                             | Description                                                                                                                                 |

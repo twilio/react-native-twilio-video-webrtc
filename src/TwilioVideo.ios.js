@@ -235,6 +235,7 @@ export default class TwilioVideo extends Component {
      * Whether video should be automatically initialized upon mounting
      * of this component. Defaults to true. If set to false, any use of the
      * camera will require calling `_startLocalVideo`.
+     * **Will be deprecated in the future**
      */
     autoInitializeCamera: PropTypes.bool,
   };

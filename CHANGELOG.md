@@ -5,6 +5,7 @@
 - Updated React and React Native peer dependencies to allow compatible version ranges.
 - Added the previously Android-only callbacks to iOS (`onCameraSwitched`, `onVideoChanged`, `onAudioChanged`, `onLocalParticipantSupportedCodecs`) so both platforms now emit identical events.
 - Added camera lifecycle callbacks (`onCameraDidStart`, `onCameraWasInterrupted`, `onCameraInterruptionEnded`, `onCameraDidStopRunning`) on Android to be consistent with IOs.
+- Added comment on `autoInitializeCamera` to show future deprecation.
 
 ### Fixes
 

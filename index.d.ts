@@ -169,6 +169,7 @@ declare module "@twilio/video-react-native-sdk" {
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;
     // iOS only
+    // Will be deprecated in the future
     autoInitializeCamera?: boolean;
     ref?: React.Ref<any>;
   };
