@@ -50,6 +50,7 @@ static NSString *remoteVideoTrackSubscriptionFailed = @"remoteVideoTrackSubscrip
 static NSString *remoteDataTrackPublished = @"remoteDataTrackPublished";
 static NSString *remoteDataTrackUnpublished = @"remoteDataTrackUnpublished";
 static NSString *remoteDataTrackSubscriptionFailed = @"remoteDataTrackSubscriptionFailed";
+static NSString *const kRCTTWLocalDataTrackName = @"data";
 
 static NSString *cameraDidStart = @"cameraDidStart";
 static NSString *cameraWasInterrupted = @"cameraWasInterrupted";
@@ -465,7 +466,11 @@ RCT_REMAP_METHOD(setLocalDataTrackEnabled,
 // Create data track
 - (void)_createDataTrack {
     if (self.localDataTrack == nil) {
-        self.localDataTrack = [TVILocalDataTrack track];
+        TVIDataTrackOptions *options =
+                [TVIDataTrackOptions optionsWithBlock:^(TVIDataTrackOptionsBuilder *builder) {
+                    builder.name = kRCTTWLocalDataTrackName;
+                }];
+        self.localDataTrack = [TVILocalDataTrack trackWithOptions:options];
     }
 }
 

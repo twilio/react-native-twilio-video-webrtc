@@ -14,6 +14,7 @@
 - Added `sendBinary` APIs (Android/iOS native + JS bridge) and Example App controls for sending Base64-encoded payloads over the data track
 - Added binary payload support to `onDataTrackMessageReceived`, emitting `payloadBase64` and `isBinary` for non-string messages
 - Android now assigns human-readable track names (`camera`, `microphone`, `screen`) when creating local video, audio, and screen-share tracks so `trackName` in events matches iOS.
+- Android and iOS now label local data tracks as `data`, keeping the emitted `trackName` consistent across platforms.
 
 ### Fixes
 

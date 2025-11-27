@@ -87,6 +87,7 @@ import com.twilio.video.AudioTrackPublication;
 import com.twilio.video.BaseTrackStats;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
+import com.twilio.video.DataTrackOptions;
 import com.twilio.video.H264Codec;
 import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalAudioTrackPublication;
@@ -146,6 +147,7 @@ public class CustomTwilioVideoView extends View
     private static final String TRACK_NAME_CAMERA = "camera";
     private static final String TRACK_NAME_MICROPHONE = "microphone";
     private static final String TRACK_NAME_SCREEN = "screen";
+    private static final String TRACK_NAME_DATA = "data";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
     private boolean enableRemoteAudio = false;
     private boolean enableNetworkQualityReporting = false;
@@ -616,7 +618,9 @@ public class CustomTwilioVideoView extends View
 
         // Create data track if enabled
         if (enableDataTrack) {
-            localDataTrack = LocalDataTrack.create(getContext());
+            DataTrackOptions dataTrackOptions =
+                    new DataTrackOptions.Builder().name(TRACK_NAME_DATA).build();
+            localDataTrack = LocalDataTrack.create(getContext(), dataTrackOptions);
         }
 
         setAudioFocus(enableAudio);
@@ -1036,7 +1040,9 @@ public class CustomTwilioVideoView extends View
                 publishLocalDataTrack(true);
             } else {
                 // Create a new local data track and publish it
-                localDataTrack = LocalDataTrack.create(getContext());
+                DataTrackOptions dataTrackOptions =
+                        new DataTrackOptions.Builder().name(TRACK_NAME_DATA).build();
+                localDataTrack = LocalDataTrack.create(getContext(), dataTrackOptions);
                 if (localDataTrack != null) {
                     publishLocalDataTrack(true);
                 }
