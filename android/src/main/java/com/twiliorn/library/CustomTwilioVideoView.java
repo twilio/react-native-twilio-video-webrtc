@@ -143,6 +143,9 @@ public class CustomTwilioVideoView extends View
     private static final String DATA_TRACK_MESSAGE_THREAD_NAME = "DataTrackMessages";
     private static final String FRONT_CAMERA_TYPE = "front";
     private static final String BACK_CAMERA_TYPE = "back";
+    private static final String TRACK_NAME_CAMERA = "camera";
+    private static final String TRACK_NAME_MICROPHONE = "microphone";
+    private static final String TRACK_NAME_SCREEN = "screen";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
     private boolean enableRemoteAudio = false;
     private boolean enableNetworkQualityReporting = false;
@@ -430,7 +433,8 @@ public class CustomTwilioVideoView extends View
             return false;
         }
 
-        localVideoTrack = LocalVideoTrack.create(getContext(), enableVideo, cameraCapturer, buildVideoFormat());
+        localVideoTrack = LocalVideoTrack.create(
+                getContext(), enableVideo, cameraCapturer, buildVideoFormat(), TRACK_NAME_CAMERA);
         if (thumbnailVideoView != null && localVideoTrack != null) {
             localVideoTrack.addSink(thumbnailVideoView);
         }
@@ -451,13 +455,15 @@ public class CustomTwilioVideoView extends View
              * recreate.
              */
             if (cameraCapturer != null && localVideoTrack == null) {
-                localVideoTrack = LocalVideoTrack.create(getContext(), isVideoEnabled, cameraCapturer, buildVideoFormat());
+                localVideoTrack = LocalVideoTrack.create(
+                        getContext(), isVideoEnabled, cameraCapturer, buildVideoFormat(), TRACK_NAME_CAMERA);
             }
             /*
              * If the screen share track was released when the app was put in the background, recreate.
              */
             if (screenCapturer != null && screenVideoTrack == null) {
-                screenVideoTrack = LocalVideoTrack.create(getContext(), isScreenShareEnabled, screenCapturer);
+                screenVideoTrack = LocalVideoTrack.create(
+                        getContext(), isScreenShareEnabled, screenCapturer, TRACK_NAME_SCREEN);
             }
 
             if (localVideoTrack != null) {
@@ -594,7 +600,7 @@ public class CustomTwilioVideoView extends View
 
         // Share your microphone
         if (enableAudio) {
-            localAudioTrack = LocalAudioTrack.create(getContext(), enableAudio);
+            localAudioTrack = LocalAudioTrack.create(getContext(), enableAudio, TRACK_NAME_MICROPHONE);
         }
 
         if (cameraCapturer == null && enableVideo) {
@@ -942,7 +948,7 @@ public class CustomTwilioVideoView extends View
         if (screenVideoTrack != null) return;
 
         // Create dedicated screen-capture track
-        screenVideoTrack = LocalVideoTrack.create(getContext(), true, screenCapturer);
+        screenVideoTrack = LocalVideoTrack.create(getContext(), true, screenCapturer, TRACK_NAME_SCREEN);
 
         // Attach preview sink
         if (screenSharePreviewView != null && screenVideoTrack != null) {
@@ -1006,7 +1012,7 @@ public class CustomTwilioVideoView extends View
                 localAudioTrack.enable(true);
             } else {
                 // Create a new local audio track as enabled and publish it
-                localAudioTrack = LocalAudioTrack.create(getContext(), true);
+                localAudioTrack = LocalAudioTrack.create(getContext(), true, TRACK_NAME_MICROPHONE);
                 publishLocalAudio(true);
             }
         } else {
