@@ -1,6 +1,6 @@
 /**
  * Starts a screen capture service for media projection for API 29 (Android 10) level devices and above.
- * Based on the PR: https://github.com/twilio/video-quickstart-android/pull/469
+ * Based on https://github.com/twilio/video-quickstart-android
  */
 
 package com.twiliorn.library;
