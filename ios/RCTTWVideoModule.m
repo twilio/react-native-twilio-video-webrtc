@@ -930,9 +930,6 @@ RCT_EXPORT_METHOD(disconnect) {
     }
     body[@"code"] = [NSString stringWithFormat:@"%ld", (long)error.code];
     NSString *explanation = error.localizedFailureReason ?: error.localizedRecoverySuggestion;
-    if (explanation.length == 0) {
-        explanation = error.localizedDescription;
-    }
     if (explanation.length > 0) {
         body[@"errorExplanation"] = explanation;
     }
