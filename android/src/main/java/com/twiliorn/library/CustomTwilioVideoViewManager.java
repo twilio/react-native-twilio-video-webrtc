@@ -13,9 +13,16 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_SWITCH
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECT_FAILURE;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATATRACK_MESSAGE_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DISCONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_AUDIO_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_DATA_TRACK_PUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_VIDEO_TRACK_PUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_NETWORK_QUALITY_LEVELS_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_ADDED_AUDIO_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_ADDED_DATA_TRACK;
@@ -33,25 +40,18 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECONNECTING;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STARTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STOPPED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_AUDIO_TRACK_PUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_VIDEO_TRACK_PUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_DATA_TRACK_PUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_PUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_UNPUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_PUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_UNPUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_AUDIO_TRACK_UNPUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_PUBLISHED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_UNPUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_PUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_UNPUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATA_CHANGED;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
@@ -222,16 +222,15 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_RECONNECTING, MapBuilder.of("registrationName", ON_RECONNECTING),
                 ON_RECONNECTED, MapBuilder.of("registrationName", ON_RECONNECTED),
                 ON_DATA_CHANGED, MapBuilder.of("registrationName", ON_DATA_CHANGED)));
-
         map.putAll(MapBuilder.of(
                 ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
-                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED),
+                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)));
+
+        map.putAll(MapBuilder.of(
                 ON_LOCAL_AUDIO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_LOCAL_AUDIO_TRACK_PUBLISHED),
                 ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED),
                 ON_LOCAL_VIDEO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_LOCAL_VIDEO_TRACK_PUBLISHED),
-                ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED)));
-
-        map.putAll(MapBuilder.of(
+                ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED),
                 ON_LOCAL_DATA_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_LOCAL_DATA_TRACK_PUBLISHED),
                 ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED, MapBuilder.of("registrationName", ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED)));
 
@@ -241,14 +240,12 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED),
                 ON_REMOTE_VIDEO_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_PUBLISHED),
                 ON_REMOTE_VIDEO_TRACK_UNPUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_UNPUBLISHED),
-                ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED)));
-
-        map.putAll(MapBuilder.of(
                 ON_REMOTE_DATA_TRACK_PUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_PUBLISHED),
+                ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED),
                 ON_REMOTE_DATA_TRACK_UNPUBLISHED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_UNPUBLISHED)));
 
         map.putAll(MapBuilder.of(
-                ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED)));
+                ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED)));
 
         return map;
     }
