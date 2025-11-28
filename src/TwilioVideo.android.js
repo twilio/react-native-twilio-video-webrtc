@@ -102,6 +102,108 @@ const propTypes = {
   onRoomDidReconnect: PropTypes.func,
 
   /**
+   * Called when recording starts for the current room
+   * @param {{roomName: string, roomSid: string}}
+   */
+  onRecordingStarted: PropTypes.func,
+
+  /**
+   * Called when recording stops for the current room
+   * @param {{roomName: string, roomSid: string}}
+   */
+  onRecordingStopped: PropTypes.func,
+
+  /**
+   * Called when the local participant publishes an audio track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onLocalAudioTrackPublished: PropTypes.func,
+
+  /**
+   * Called when publishing the local audio track fails
+   * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+   */
+  onLocalAudioTrackPublicationFailed: PropTypes.func,
+
+  /**
+   * Called when the local participant publishes a video track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onLocalVideoTrackPublished: PropTypes.func,
+
+  /**
+   * Called when publishing the local video track fails
+   * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+   */
+  onLocalVideoTrackPublicationFailed: PropTypes.func,
+
+  /**
+   * Called when the local participant publishes a data track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onLocalDataTrackPublished: PropTypes.func,
+
+  /**
+   * Called when publishing the local data track fails
+   * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+   */
+  onLocalDataTrackPublicationFailed: PropTypes.func,
+
+  /**
+   * Called when a remote participant publishes an audio track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onRemoteAudioTrackPublished: PropTypes.func,
+
+  /**
+   * Called when a remote participant unpublishes an audio track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onRemoteAudioTrackUnpublished: PropTypes.func,
+
+  /**
+   * Called when subscribing to a remote audio track fails
+   * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+   */
+  onRemoteAudioTrackSubscriptionFailed: PropTypes.func,
+
+  /**
+   * Called when a remote participant publishes a video track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onRemoteVideoTrackPublished: PropTypes.func,
+
+  /**
+   * Called when a remote participant unpublishes a video track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onRemoteVideoTrackUnpublished: PropTypes.func,
+
+  /**
+   * Called when subscribing to a remote video track fails
+   * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+   */
+  onRemoteVideoTrackSubscriptionFailed: PropTypes.func,
+
+  /**
+   * Called when a remote participant publishes a data track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onRemoteDataTrackPublished: PropTypes.func,
+
+  /**
+   * Called when a remote participant unpublishes a data track
+   * @param {{participant: Participant, track: Track}}
+   */
+  onRemoteDataTrackUnpublished: PropTypes.func,
+
+  /**
+   * Called when subscribing to a remote data track fails
+   * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+   */
+  onRemoteDataTrackSubscriptionFailed: PropTypes.func,
+
+  /**
     * Callback that is called when user is connected to a room.
     *
     * @param {{roomName: string, roomSid: string, participants: Participant[], localParticipant: Participant}}
@@ -252,6 +354,7 @@ const nativeEvents = {
   setRemoteAudioPlayback: 15,
   toggleScreenSharing: 16,
   toggleDataTrack: 17,
+  sendBinary: 18,
 };
 
 class CustomTwilioVideoView extends Component {
@@ -304,6 +407,14 @@ class CustomTwilioVideoView extends Component {
    */
   sendString(message) {
     this.runCommand(nativeEvents.sendString, [message]);
+  }
+
+  /**
+   * Send a Base64-encoded binary payload via data track
+   * @param {string} base64Payload
+   */
+  sendBinary(base64Payload) {
+    this.runCommand(nativeEvents.sendBinary, [base64Payload]);
   }
 
   /**
@@ -493,6 +604,23 @@ class CustomTwilioVideoView extends Component {
       "onCameraWasInterrupted",
       "onCameraInterruptionEnded",
       "onCameraDidStopRunning",
+      "onRecordingStarted",
+      "onRecordingStopped",
+      "onLocalAudioTrackPublished",
+      "onLocalAudioTrackPublicationFailed",
+      "onLocalVideoTrackPublished",
+      "onLocalVideoTrackPublicationFailed",
+      "onLocalDataTrackPublished",
+      "onLocalDataTrackPublicationFailed",
+      "onRemoteAudioTrackPublished",
+      "onRemoteAudioTrackUnpublished",
+      "onRemoteAudioTrackSubscriptionFailed",
+      "onRemoteVideoTrackPublished",
+      "onRemoteVideoTrackUnpublished",
+      "onRemoteVideoTrackSubscriptionFailed",
+      "onRemoteDataTrackPublished",
+      "onRemoteDataTrackUnpublished",
+      "onRemoteDataTrackSubscriptionFailed",
     ].reduce((wrappedEvents, eventName) => {
       if (this.props[eventName]) {
         return {
