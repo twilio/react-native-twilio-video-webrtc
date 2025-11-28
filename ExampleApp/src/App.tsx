@@ -197,7 +197,38 @@ const Example = () => {
         _log(`Screen Share ${event.screenShareEnabled ? 'Started' : 'Stopped'}`);
     };
 
+    const _onCameraSwitched = (event: any) => {
+        _log(`Camera switched -> ${event?.isBackCamera ? "back" : "front"}`);
+    };
 
+    const _onCameraDidStart = () => {
+        _log("Camera started");
+    };
+
+    const _onCameraWasInterrupted = (event: any) => {
+        _log(`Camera interrupted${event?.reason ? `: ${event.reason}` : ""}`);
+    };
+
+    const _onCameraInterruptionEnded = () => {
+        _log("Camera interruption ended");
+    };
+
+    const _onCameraDidStopRunning = (event: any) => {
+        _log(`Camera stopped${event?.error ? `: ${event.error}` : ""}`);
+    };
+
+    const _onVideoChanged = (event: any) => {
+        _log(`Video ${event?.videoEnabled ? "enabled" : "disabled"}`);
+    };
+
+    const _onAudioChanged = (event: any) => {
+        _log(`Audio ${event?.audioEnabled ? "enabled" : "disabled"}`);
+    };
+
+    const _onLocalParticipantSupportedCodecs = (event: any) => {
+        const codecs = Array.isArray(event?.supportedCodecs) ? event.supportedCodecs.join(", ") : "unknown";
+        _log(`Supported codecs -> ${codecs}`);
+    };
 
     const _onRoomDidConnect = (event: any) => {
         if (event.roomName) {
@@ -437,6 +468,14 @@ const Example = () => {
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
+                onCameraSwitched={_onCameraSwitched}
+                onCameraDidStart={_onCameraDidStart}
+                onCameraWasInterrupted={_onCameraWasInterrupted}
+                onCameraInterruptionEnded={_onCameraInterruptionEnded}
+                onCameraDidStopRunning={_onCameraDidStopRunning}
+                onVideoChanged={_onVideoChanged}
+                onAudioChanged={_onAudioChanged}
+                onLocalParticipantSupportedCodecs={_onLocalParticipantSupportedCodecs}
                 onStatsReceived={_onStatsReceived}
                 onNetworkQualityLevelsChanged={_onNetworkQualityLevelsChanged}
                 onDominantSpeakerDidChange={_onDominantSpeakerDidChange}
