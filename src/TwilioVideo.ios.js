@@ -358,7 +358,7 @@ export default class TwilioVideo extends Component {
     /**
      * Whether video should be automatically initialized upon mounting
      * of this component. Defaults to false.
-    @deprecated Only available on iOS and will be removed in a future release
+     * @deprecated Only available on iOS and will be removed in a future release
      */
     autoInitializeCamera: PropTypes.bool,
   };
