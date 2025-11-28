@@ -28,6 +28,11 @@ const { TWVideoModule } = NativeModules;
  */
 
 export default class TwilioVideo extends Component {
+
+  static defaultProps = {
+    autoInitializeCamera: false,
+  };
+
   static propTypes = {
     ...View.propTypes,
     /**
@@ -352,8 +357,7 @@ export default class TwilioVideo extends Component {
 
     /**
      * Whether video should be automatically initialized upon mounting
-     * of this component. Defaults to true. If set to false, any use of the
-     * camera will require calling `_startLocalVideo`.
+     * of this component. Defaults to false.
     @deprecated Only available on iOS and will be removed in a future release
      */
     autoInitializeCamera: PropTypes.bool,

@@ -1,11 +1,10 @@
-## 3.4.0(In Progress)
+## 3.4.0 (In Progress)
 
 ### Changes
 
 - Updated React and React Native peer dependencies to allow compatible version ranges.
 - Added the previously Android-only callbacks to iOS (`onCameraSwitched`, `onVideoChanged`, `onAudioChanged`, `onLocalParticipantSupportedCodecs`) so both platforms now emit identical events.
 - Added camera lifecycle callbacks (`onCameraDidStart`, `onCameraWasInterrupted`, `onCameraInterruptionEnded`, `onCameraDidStopRunning`) on Android to be consistent with IOs.
-- Added comment on `autoInitializeCamera` to show future deprecation.
 - Added parity callbacks for the full recording lifecycle plus local/remote track publish, unpublish, and subscription failure events across Android and iOS (docs, PropTypes, and TypeScript updated). Newly exported callbacks:
   - `onRecordingStarted`, `onRecordingStopped`
   - `onLocalAudioTrackPublished`, `onLocalAudioTrackPublicationFailed`
@@ -18,6 +17,7 @@
 - Added binary payload support to `onDataTrackMessageReceived`, emitting `payloadBase64` and `isBinary` for non-string messages
 - Android now assigns human-readable track names (`camera`, `microphone`, `screen`) when creating local video, audio, and screen-share tracks so `trackName` in events matches iOS.
 - Android and iOS now label local data tracks as `data`, keeping the emitted `trackName` consistent across platforms.
+- Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 
 ### Fixes
 

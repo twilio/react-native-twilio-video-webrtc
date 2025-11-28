@@ -325,7 +325,6 @@ public class CustomTwilioVideoView extends View
                     screenCapturer = new ScreenCapturer(themedReactContext, resultCode, data, new ScreenCapturer.Listener() {
                         @Override
                         public void onFirstFrameAvailable() {
-                            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_DID_START, null);
                         }
                         @Override
                         public void onScreenCaptureError(String errorDescription) {
