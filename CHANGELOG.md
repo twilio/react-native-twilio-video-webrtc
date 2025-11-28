@@ -1,8 +1,20 @@
-## 3.3.1 (In Progress)
+## 3.4.0(In Progress)
 
 ### Changes
 
 - Updated React and React Native peer dependencies to allow compatible version ranges
+- Added parity callbacks for the full recording lifecycle plus local/remote track publish, unpublish, and subscription failure events across Android and iOS (docs, PropTypes, and TypeScript updated). Newly exported callbacks:
+  - `onRecordingStarted`, `onRecordingStopped`
+  - `onLocalAudioTrackPublished`, `onLocalAudioTrackPublicationFailed`
+  - `onLocalVideoTrackPublished`, `onLocalVideoTrackPublicationFailed`
+  - `onLocalDataTrackPublished`, `onLocalDataTrackPublicationFailed`
+  - `onRemoteAudioTrackPublished`, `onRemoteAudioTrackUnpublished`, `onRemoteAudioTrackSubscriptionFailed`
+  - `onRemoteVideoTrackPublished`, `onRemoteVideoTrackUnpublished`, `onRemoteVideoTrackSubscriptionFailed`
+  - `onRemoteDataTrackPublished`, `onRemoteDataTrackUnpublished`, `onRemoteDataTrackSubscriptionFailed`
+- Added `sendBinary` APIs (Android/iOS native + JS bridge) and Example App controls for sending Base64-encoded payloads over the data track
+- Added binary payload support to `onDataTrackMessageReceived`, emitting `payloadBase64` and `isBinary` for non-string messages
+- Android now assigns human-readable track names (`camera`, `microphone`, `screen`) when creating local video, audio, and screen-share tracks so `trackName` in events matches iOS.
+- Android and iOS now label local data tracks as `data`, keeping the emitted `trackName` consistent across platforms.
 
 ### Fixes
 

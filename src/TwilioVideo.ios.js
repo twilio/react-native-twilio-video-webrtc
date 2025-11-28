@@ -211,6 +211,125 @@ export default class TwilioVideo extends Component {
     onRoomDidReconnect: PropTypes.func,
 
     /**
+     * Called when recording starts for the current room
+     *
+     * @param {{roomName: string, roomSid: string}}
+     */
+    onRecordingStarted: PropTypes.func,
+
+    /**
+     * Called when recording stops for the current room
+     *
+     * @param {{roomName: string, roomSid: string}}
+     */
+    onRecordingStopped: PropTypes.func,
+
+    /**
+     * Called when the local participant publishes an audio track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onLocalAudioTrackPublished: PropTypes.func,
+
+    /**
+     * Called when publishing the local audio track fails
+     *
+     * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+     */
+    onLocalAudioTrackPublicationFailed: PropTypes.func,
+
+    /**
+     * Called when the local participant publishes a video track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onLocalVideoTrackPublished: PropTypes.func,
+
+    /**
+     * Called when publishing the local video track fails
+     *
+     * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+     */
+    onLocalVideoTrackPublicationFailed: PropTypes.func,
+
+    /**
+     * Called when the local participant publishes a data track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onLocalDataTrackPublished: PropTypes.func,
+
+    /**
+     * Called when publishing the local data track fails
+     *
+     * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+     */
+    onLocalDataTrackPublicationFailed: PropTypes.func,
+
+    /**
+     * Called when a remote participant publishes an audio track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onRemoteAudioTrackPublished: PropTypes.func,
+
+    /**
+     * Called when a remote participant unpublishes an audio track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onRemoteAudioTrackUnpublished: PropTypes.func,
+
+    /**
+     * Called when subscribing to a remote audio track fails
+     *
+     * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+     */
+    onRemoteAudioTrackSubscriptionFailed: PropTypes.func,
+
+    /**
+     * Called when a remote participant publishes a video track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onRemoteVideoTrackPublished: PropTypes.func,
+
+    /**
+     * Called when a remote participant unpublishes a video track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onRemoteVideoTrackUnpublished: PropTypes.func,
+
+    /**
+     * Called when subscribing to a remote video track fails
+     *
+     * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+     */
+    onRemoteVideoTrackSubscriptionFailed: PropTypes.func,
+
+    /**
+     * Called when a remote participant publishes a data track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onRemoteDataTrackPublished: PropTypes.func,
+
+    /**
+     * Called when a remote participant unpublishes a data track
+     *
+     * @param {{participant: Participant, track: Track}}
+     */
+    onRemoteDataTrackUnpublished: PropTypes.func,
+
+    /**
+     * Called when subscribing to a remote data track fails
+     *
+     * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+     */
+    onRemoteDataTrackSubscriptionFailed: PropTypes.func,
+
+    /**
      * Whether video should be automatically initialized upon mounting
      * of this component. Defaults to true. If set to false, any use of the
      * camera will require calling `_startLocalVideo`.
@@ -404,6 +523,14 @@ export default class TwilioVideo extends Component {
     TWVideoModule.sendString(message);
   }
 
+  /**
+   * Send a Base64-encoded binary payload via data track
+   * @param {string} base64Payload
+   */
+  sendBinary(base64Payload) {
+    TWVideoModule.sendBinary(base64Payload);
+  }
+
   _startLocalVideo() {
     TWVideoModule.startLocalVideo();
   }
@@ -563,6 +690,91 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("roomDidReconnect", (data) => {
         if (this.props.onRoomDidReconnect) {
           this.props.onRoomDidReconnect(data);
+        }
+      }),
+      this._eventEmitter.addListener("recordingStarted", (data) => {
+        if (this.props.onRecordingStarted) {
+          this.props.onRecordingStarted(data);
+        }
+      }),
+      this._eventEmitter.addListener("recordingStopped", (data) => {
+        if (this.props.onRecordingStopped) {
+          this.props.onRecordingStopped(data);
+        }
+      }),
+      this._eventEmitter.addListener("localAudioTrackPublished", (data) => {
+        if (this.props.onLocalAudioTrackPublished) {
+          this.props.onLocalAudioTrackPublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("localAudioTrackPublicationFailed", (data) => {
+        if (this.props.onLocalAudioTrackPublicationFailed) {
+          this.props.onLocalAudioTrackPublicationFailed(data);
+        }
+      }),
+      this._eventEmitter.addListener("localVideoTrackPublished", (data) => {
+        if (this.props.onLocalVideoTrackPublished) {
+          this.props.onLocalVideoTrackPublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("localVideoTrackPublicationFailed", (data) => {
+        if (this.props.onLocalVideoTrackPublicationFailed) {
+          this.props.onLocalVideoTrackPublicationFailed(data);
+        }
+      }),
+      this._eventEmitter.addListener("localDataTrackPublished", (data) => {
+        if (this.props.onLocalDataTrackPublished) {
+          this.props.onLocalDataTrackPublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("localDataTrackPublicationFailed", (data) => {
+        if (this.props.onLocalDataTrackPublicationFailed) {
+          this.props.onLocalDataTrackPublicationFailed(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteAudioTrackPublished", (data) => {
+        if (this.props.onRemoteAudioTrackPublished) {
+          this.props.onRemoteAudioTrackPublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteAudioTrackUnpublished", (data) => {
+        if (this.props.onRemoteAudioTrackUnpublished) {
+          this.props.onRemoteAudioTrackUnpublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteAudioTrackSubscriptionFailed", (data) => {
+        if (this.props.onRemoteAudioTrackSubscriptionFailed) {
+          this.props.onRemoteAudioTrackSubscriptionFailed(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteVideoTrackPublished", (data) => {
+        if (this.props.onRemoteVideoTrackPublished) {
+          this.props.onRemoteVideoTrackPublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteVideoTrackUnpublished", (data) => {
+        if (this.props.onRemoteVideoTrackUnpublished) {
+          this.props.onRemoteVideoTrackUnpublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteVideoTrackSubscriptionFailed", (data) => {
+        if (this.props.onRemoteVideoTrackSubscriptionFailed) {
+          this.props.onRemoteVideoTrackSubscriptionFailed(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteDataTrackPublished", (data) => {
+        if (this.props.onRemoteDataTrackPublished) {
+          this.props.onRemoteDataTrackPublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteDataTrackUnpublished", (data) => {
+        if (this.props.onRemoteDataTrackUnpublished) {
+          this.props.onRemoteDataTrackUnpublished(data);
+        }
+      }),
+      this._eventEmitter.addListener("remoteDataTrackSubscriptionFailed", (data) => {
+        if (this.props.onRemoteDataTrackSubscriptionFailed) {
+          this.props.onRemoteDataTrackSubscriptionFailed(data);
         }
       }),
       this._eventEmitter.addListener("dataChanged", (data) => {

@@ -17,7 +17,7 @@ import {
 } from "@twilio/video-react-native-sdk";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import { styles } from "./styles";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { token } from "./access-token";
 
 // Only keep the latest 50 log lines so the list doesn’t grow without bound, preventing extra memory use and lag.
@@ -35,8 +35,8 @@ const ControlBar = ({ children }: { children: React.ReactNode }) => (
 );
 
 const OptionButton = ({ label, onPress, disabled }: { label: string, onPress: () => void, disabled?: boolean }) => (
-    <TouchableOpacity 
-        style={[styles.optionButton, disabled && { opacity: 0.5 }]} 
+    <TouchableOpacity
+        style={[styles.optionButton, disabled && { opacity: 0.5 }]}
         onPress={disabled ? undefined : onPress}
         disabled={disabled}
     >
@@ -51,6 +51,9 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
         </ScrollView>
     </View>
 ));
+
+const SAMPLE_BINARY_BASE64 = "AQIDBA=="; // 0x01 0x02 0x03 0x04
+
 
 const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -68,6 +71,7 @@ const Example = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
+    const insets = useSafeAreaInsets();
     const _log = (line: string) =>
         setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
 
@@ -165,6 +169,10 @@ const Example = () => {
         _log(`Data Track ${event.dataEnabled ? 'Enabled' : 'Disabled'}`);
     };
 
+    const _onStatsReceived = (data: any) => {
+        _log(`Stats ${JSON.stringify(data)}...`);
+    };
+
     const _onGetStatsPress = () => {
         twilioRef.current?.getStats();
         _log("(you) requested stats");
@@ -173,6 +181,11 @@ const Example = () => {
     const _onSendStringPress = () => {
         twilioRef.current?.sendString("Hello from RN");
         _log("(you) sent: Hello from RN");
+    };
+
+    const _onSendBinaryPress = () => {
+        twilioRef.current?.sendBinary(SAMPLE_BINARY_BASE64);
+        _log("(you) sent binary payload (4 bytes)");
     };
 
     const _onShareButtonPress = () => {
@@ -219,6 +232,116 @@ const Example = () => {
         return errorMsg;
     };
 
+    const describeParticipant = (participant?: any) => participant?.identity || participant?.sid || "unknown participant";
+    const describeTrack = (track?: any) => track?.trackName || track?.trackSid || "unknown track";
+    const describeRoom = (event: any) => {
+        if (event?.roomName) {
+            return `${event.roomName}${event?.roomSid ? ` (${event.roomSid})` : ""}`;
+        }
+        return event?.roomSid || "unknown room";
+    };
+    const describeError = (event: any) => {
+        let details = event?.error || "Unknown error";
+        if (event?.code) {
+            details += ` (code ${event.code})`;
+        }
+        if (event?.errorExplanation) {
+            details += ` - ${event.errorExplanation}`;
+        }
+        return details;
+    };
+    const logTrackEvent = (prefix: string, participant?: any, track?: any) => {
+        _log(`${prefix}: ${describeParticipant(participant)} -> ${describeTrack(track)}`);
+    };
+    const logTrackErrorEvent = (prefix: string, event: any) => {
+        _log(`${prefix}: ${describeParticipant(event?.participant)} -> ${describeTrack(event?.track)} | ${describeError(event)}`);
+    };
+
+    const _onRecordingStarted = (event: any) => {
+        _log(`Recording started for ${describeRoom(event)}`);
+    };
+
+    const _onRecordingStopped = (event: any) => {
+        _log(`Recording stopped for ${describeRoom(event)}`);
+    };
+
+    const _onNetworkQualityLevelsChanged = (event: any) => {
+        const participantName = describeParticipant(event?.participant) || "local";
+        _log(`Network Quality ${participantName} -> ${event?.quality}`);
+    };
+
+    const _onDominantSpeakerDidChange = (event: any) => {
+        _log(`Dominant Speaker -> ${event?.participant?.identity || "none"}`);
+    };
+
+    const _onDataTrackMessageReceived = (event: any) => {
+        if (event?.isBinary) {
+            _log(`Data Track Binary (track ${event.trackSid}) payload=${event.payloadBase64?.slice(0, 16) || ""}...`);
+        } else {
+            _log(`Data Track Message ${event?.message}`);
+        }
+    };
+
+    const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Local audio track published", participant, track);
+    };
+
+    const _onLocalAudioTrackPublicationFailed = (event: any) => {
+        logTrackErrorEvent("Local audio track publication failed", event);
+    };
+
+    const _onLocalVideoTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Local video track published", participant, track);
+    };
+
+    const _onLocalVideoTrackPublicationFailed = (event: any) => {
+        logTrackErrorEvent("Local video track publication failed", event);
+    };
+
+    const _onLocalDataTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Local data track published", participant, track);
+    };
+
+    const _onLocalDataTrackPublicationFailed = (event: any) => {
+        logTrackErrorEvent("Local data track publication failed", event);
+    };
+
+    const _onRemoteAudioTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote audio track published", participant, track);
+    };
+
+    const _onRemoteAudioTrackUnpublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote audio track unpublished", participant, track);
+    };
+
+    const _onRemoteAudioTrackSubscriptionFailed = (event: any) => {
+        logTrackErrorEvent("Remote audio track subscription failed", event);
+    };
+
+    const _onRemoteVideoTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote video track published", participant, track);
+    };
+
+    const _onRemoteVideoTrackUnpublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote video track unpublished", participant, track);
+    };
+
+    const _onRemoteVideoTrackSubscriptionFailed = (event: any) => {
+        logTrackErrorEvent("Remote video track subscription failed", event);
+    };
+
+    const _onRemoteDataTrackPublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote data track published", participant, track);
+    };
+
+    const _onRemoteDataTrackUnpublished = ({ participant, track }: any) => {
+        logTrackEvent("Remote data track unpublished", participant, track);
+    };
+
+    const _onRemoteDataTrackSubscriptionFailed = (event: any) => {
+        logTrackErrorEvent("Remote data track subscription failed", event);
+    };
+
     const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
         setVideoTracks((originalVideoTracks: Map<string, any>) => {
             originalVideoTracks.set(track.trackSid, {
@@ -247,7 +370,7 @@ const Example = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{ ...styles.container, paddingBottom: insets.bottom }} >
             {status === "disconnected" && (
                 <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
@@ -299,6 +422,7 @@ const Example = () => {
                             <OptionButton label={isDataTrackEnabled ? "Disable Data" : "Enable Data"} onPress={_onToggleDataTrackPress} />
                             <OptionButton label="Stats" onPress={_onGetStatsPress} />
                             <OptionButton label="Ping" onPress={_onSendStringPress} disabled={!isDataTrackEnabled} />
+                            <OptionButton label="Send Binary" onPress={_onSendBinaryPress} disabled={!isDataTrackEnabled} />
                             <OptionButton label={isSharing ? "Stop Sharing" : "Start Sharing"} onPress={_onShareButtonPress} />
                         </ControlBar>
                     </View>
@@ -313,13 +437,30 @@ const Example = () => {
                 onParticipantAddedVideoTrack={_onParticipantAddedVideoTrack}
                 onParticipantRemovedVideoTrack={_onParticipantRemovedVideoTrack}
                 onScreenShareChanged={_onScreenShareChanged}
-                onStatsReceived={data => _log(`Stats ${JSON.stringify(data)}...`)}
-                onNetworkQualityLevelsChanged={e => _log(`Network Quality ${e.participant.identity || 'local'} -> ${e.quality}`)}
-                onDominantSpeakerDidChange={e => _log(`Dominant Speaker -> ${e.participant?.identity || 'none'}`)}
-                onDataTrackMessageReceived={e => _log(`Data Track Message ${e.message}`)}
+                onStatsReceived={_onStatsReceived}
+                onNetworkQualityLevelsChanged={_onNetworkQualityLevelsChanged}
+                onDominantSpeakerDidChange={_onDominantSpeakerDidChange}
+                onDataTrackMessageReceived={_onDataTrackMessageReceived}
                 onRoomIsReconnecting={_onRoomIsReconnecting}
                 onRoomDidReconnect={_onRoomDidReconnect}
                 onDataChanged={_onDataChanged}
+                onRecordingStarted={_onRecordingStarted}
+                onRecordingStopped={_onRecordingStopped}
+                onLocalAudioTrackPublished={_onLocalAudioTrackPublished}
+                onLocalAudioTrackPublicationFailed={_onLocalAudioTrackPublicationFailed}
+                onLocalVideoTrackPublished={_onLocalVideoTrackPublished}
+                onLocalVideoTrackPublicationFailed={_onLocalVideoTrackPublicationFailed}
+                onLocalDataTrackPublished={_onLocalDataTrackPublished}
+                onLocalDataTrackPublicationFailed={_onLocalDataTrackPublicationFailed}
+                onRemoteAudioTrackPublished={_onRemoteAudioTrackPublished}
+                onRemoteAudioTrackUnpublished={_onRemoteAudioTrackUnpublished}
+                onRemoteAudioTrackSubscriptionFailed={_onRemoteAudioTrackSubscriptionFailed}
+                onRemoteVideoTrackPublished={_onRemoteVideoTrackPublished}
+                onRemoteVideoTrackUnpublished={_onRemoteVideoTrackUnpublished}
+                onRemoteVideoTrackSubscriptionFailed={_onRemoteVideoTrackSubscriptionFailed}
+                onRemoteDataTrackPublished={_onRemoteDataTrackPublished}
+                onRemoteDataTrackUnpublished={_onRemoteDataTrackUnpublished}
+                onRemoteDataTrackSubscriptionFailed={_onRemoteDataTrackSubscriptionFailed}
             />
 
             <Modal
