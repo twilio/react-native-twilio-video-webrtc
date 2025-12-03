@@ -19,6 +19,7 @@
 - Android and iOS now label local data tracks as `data`, keeping the emitted `trackName` consistent across platforms.
 - Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 - Example App upgraded to React Native `0.82.1` and React `19.1.1`.
+- Added the room object on the event returned by the `onRoomDidConnect` callback.
 
 ### Fixes
 

@@ -964,6 +964,42 @@ RCT_EXPORT_METHOD(disconnect) {
     }
 }
 
+- (NSString *)stringForRoomState:(TVIRoomState)state {
+    switch (state) {
+    case TVIRoomStateConnecting:
+        return @"CONNECTING";
+    case TVIRoomStateConnected:
+        return @"CONNECTED";
+    case TVIRoomStateDisconnected:
+        return @"DISCONNECTED";
+    case TVIRoomStateReconnecting:
+        return @"RECONNECTING";
+    default:
+        return @"UNKNOWN";
+    }
+}
+
+- (NSDictionary *)bodyForRoom:(TVIRoom *)room {
+    if (room == nil) {
+        return @{};
+    }
+
+    NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithCapacity:4];
+    body[@"sid"] = room.sid ?: @"";
+    body[@"name"] = room.name ?: @"";
+    body[@"remoteParticipants"] = [room.remoteParticipants valueForKeyPath:@"toJSON"];
+    body[@"localParticipant"] = [room.localParticipant toJSON];
+    TVIRemoteParticipant *dominantSpeaker = room.dominantSpeaker;
+    if (dominantSpeaker) {
+        body[@"dominantSpeaker"] = [dominantSpeaker toJSON];
+    } else {
+        body[@"dominantSpeaker"] = [NSNull null];
+    }
+    body[@"state"] = [self stringForRoomState:room.state];
+    body[@"mediaRegion"] = room.mediaRegion ?: @"";
+    return body;
+}
+
 #pragma mark - Common
 
 - (void)sendEventCheckingListenerWithName:(NSString *)event
@@ -1056,6 +1092,7 @@ RCT_EXPORT_METHOD(disconnect) {
                                        body:@{
                                            @"roomName": room.name,
                                            @"roomSid": room.sid,
+                                           @"room": [self bodyForRoom:room],
                                            @"participants": participants,
                                            @"localParticipant":
                                                    [self.localParticipant toJSON]

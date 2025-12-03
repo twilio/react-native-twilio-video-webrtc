@@ -499,10 +499,10 @@ public class CustomTwilioVideoView extends View
                 }
             }
 
-        if (cameraInterrupted) {
-            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
-            cameraInterrupted = false;
-        }
+            if (cameraInterrupted) {
+                pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
+                cameraInterrupted = false;
+            }
             if (room != null) {
                 themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
             }
@@ -1283,11 +1283,12 @@ public class CustomTwilioVideoView extends View
 
                 WritableArray participantsArray = new WritableNativeArray();
                 for (RemoteParticipant participant : participants) {
-                    participantsArray.pushMap(buildParticipant(participant));
+                    participantsArray.pushMap(buildRemoteParticipant(participant));
                 }
-                participantsArray.pushMap(buildParticipant(localParticipant));
+                participantsArray.pushMap(buildLocalParticipant(localParticipant));
                 event.putArray("participants", participantsArray);
-                event.putMap("localParticipant", buildParticipant(localParticipant));
+                event.putMap("localParticipant", buildLocalParticipant(localParticipant));
+                event.putMap("room", buildRoom(room));
 
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECTED, event);
 
@@ -1396,7 +1397,7 @@ public class CustomTwilioVideoView extends View
                 if (remoteParticipant == null) {
                     event.putString("participant", "");
                 } else {
-                    event.putMap("participant", buildParticipant(remoteParticipant));
+                    event.putMap("participant", buildParticipantIdentity(remoteParticipant));
                 }
 
                 pushEvent(CustomTwilioVideoView.this, ON_DOMINANT_SPEAKER_CHANGED, event);
@@ -1412,7 +1413,7 @@ public class CustomTwilioVideoView extends View
         WritableMap event = new WritableNativeMap();
         event.putString("roomName", room.getName());
         event.putString("roomSid", room.getSid());
-        event.putMap("participant", buildParticipant(remoteParticipant));
+        event.putMap("participant", buildParticipantIdentity(remoteParticipant));
 
         pushEvent(this, ON_PARTICIPANT_CONNECTED, event);
 
@@ -1441,7 +1442,7 @@ public class CustomTwilioVideoView extends View
         WritableMap event = new WritableNativeMap();
         event.putString("roomName", room.getName());
         event.putString("roomSid", room.getSid());
-        event.putMap("participant", buildParticipant(participant));
+        event.putMap("participant", buildParticipantIdentity(participant));
         pushEvent(this, ON_PARTICIPANT_DISCONNECTED, event);
         // something about this breaking.
         // participant.setListener(null);
@@ -1594,7 +1595,7 @@ public class CustomTwilioVideoView extends View
             public void onNetworkQualityLevelChanged(RemoteParticipant remoteParticipant,
                                                      NetworkQualityLevel networkQualityLevel) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(remoteParticipant));
+                event.putMap("participant", buildParticipantIdentity(remoteParticipant));
                 event.putBoolean("isLocalUser", false);
 
                 // Twilio SDK defines Enum 0 as UNKNOWN and 1 as Quality ZERO, so we subtract
@@ -1613,7 +1614,7 @@ public class CustomTwilioVideoView extends View
             public void onAudioTrackPublished(LocalParticipant localParticipant,
                                               LocalAudioTrackPublication localAudioTrackPublication) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putMap("track", buildTrack(localAudioTrackPublication));
                 pushEvent(CustomTwilioVideoView.this, ON_LOCAL_AUDIO_TRACK_PUBLISHED, event);
             }
@@ -1622,7 +1623,7 @@ public class CustomTwilioVideoView extends View
             public void onAudioTrackPublicationFailed(LocalParticipant localParticipant,
                                                       LocalAudioTrack localAudioTrack, TwilioException twilioException) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putString("error", twilioException.getMessage());
                 event.putString("code", Integer.toString(twilioException.getCode()));
                 event.putString("errorExplanation", twilioException.getExplanation());
@@ -1633,7 +1634,7 @@ public class CustomTwilioVideoView extends View
             public void onVideoTrackPublished(LocalParticipant localParticipant,
                                               LocalVideoTrackPublication localVideoTrackPublication) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putMap("track", buildTrack(localVideoTrackPublication));
                 pushEvent(CustomTwilioVideoView.this, ON_LOCAL_VIDEO_TRACK_PUBLISHED, event);
             }
@@ -1642,7 +1643,7 @@ public class CustomTwilioVideoView extends View
             public void onVideoTrackPublicationFailed(LocalParticipant localParticipant,
                                                       LocalVideoTrack localVideoTrack, TwilioException twilioException) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putString("error", twilioException.getMessage());
                 event.putString("code", Integer.toString(twilioException.getCode()));
                 event.putString("errorExplanation", twilioException.getExplanation());
@@ -1653,7 +1654,7 @@ public class CustomTwilioVideoView extends View
             public void onDataTrackPublished(LocalParticipant localParticipant,
                                              LocalDataTrackPublication localDataTrackPublication) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putMap("track", buildTrack(localDataTrackPublication));
                 pushEvent(CustomTwilioVideoView.this, ON_LOCAL_DATA_TRACK_PUBLISHED, event);
             }
@@ -1662,7 +1663,7 @@ public class CustomTwilioVideoView extends View
             public void onDataTrackPublicationFailed(LocalParticipant localParticipant, LocalDataTrack localDataTrack,
                                                      TwilioException twilioException) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putString("error", twilioException.getMessage());
                 event.putString("code", Integer.toString(twilioException.getCode()));
                 event.putString("errorExplanation", twilioException.getExplanation());
@@ -1673,7 +1674,7 @@ public class CustomTwilioVideoView extends View
             public void onNetworkQualityLevelChanged(LocalParticipant localParticipant,
                                                      NetworkQualityLevel networkQualityLevel) {
                 WritableMap event = new WritableNativeMap();
-                event.putMap("participant", buildParticipant(localParticipant));
+                event.putMap("participant", buildParticipantIdentity(localParticipant));
                 event.putBoolean("isLocalUser", true);
 
                 // Twilio SDK defines Enum 0 as UNKNOWN and 1 as Quality ZERO, so we subtract
@@ -1685,11 +1686,66 @@ public class CustomTwilioVideoView extends View
         };
     }
 
-    private WritableMap buildParticipant(Participant participant) {
+    private WritableArray buildRemoteParticipants(List<RemoteParticipant> participants) {
+        WritableArray participantsArray = new WritableNativeArray();
+        for (RemoteParticipant participant : participants) {
+            participantsArray.pushMap(buildRemoteParticipant(participant));
+        }
+        return participantsArray;
+    }
+
+    private WritableMap buildRemoteParticipant(RemoteParticipant participant) {
+        WritableMap participantMap = buildParticipantIdentity(participant);
+        participantMap.putArray("audioTracks", buildTrackPublications(participant.getAudioTracks()));
+        participantMap.putArray("videoTracks", buildTrackPublications(participant.getVideoTracks()));
+        participantMap.putArray("dataTracks", buildTrackPublications(participant.getDataTracks()));
+        return participantMap;
+    }
+
+    private WritableArray buildTrackPublications(List<? extends TrackPublication> publications) {
+        WritableArray tracksArray = new WritableNativeArray();
+        if (publications == null) {
+            return tracksArray;
+        }
+        for (TrackPublication publication : publications) {
+            tracksArray.pushMap(buildTrack(publication));
+        }
+        return tracksArray;
+    }
+
+    private WritableMap buildParticipantIdentity(Participant participant) {
         WritableMap participantMap = new WritableNativeMap();
         participantMap.putString("identity", participant.getIdentity());
         participantMap.putString("sid", participant.getSid());
         return participantMap;
+    }
+
+    private WritableMap buildLocalParticipant(LocalParticipant participant) {
+        WritableMap participantMap = buildParticipantIdentity(participant);
+        if (participant == null) {
+            return participantMap;
+        }
+        participantMap.putArray("audioTracks", buildTrackPublications(participant.getAudioTracks()));
+        participantMap.putArray("videoTracks", buildTrackPublications(participant.getVideoTracks()));
+        participantMap.putArray("dataTracks", buildTrackPublications(participant.getDataTracks()));
+        return participantMap;
+    }
+
+    private WritableMap buildRoom(Room room) {
+        WritableMap roomMap = new WritableNativeMap();
+        if (room == null) {
+            return roomMap;
+        }
+        roomMap.putString("sid", room.getSid());
+        roomMap.putString("name", room.getName());
+        roomMap.putMap("dominantSpeaker", buildRemoteParticipant(room.getDominantSpeaker()));
+        roomMap.putArray("remoteParticipants", buildRemoteParticipants(room.getRemoteParticipants()));
+        roomMap.putMap("localParticipant", buildLocalParticipant(room.getLocalParticipant()));
+        State state = room.getState();
+        roomMap.putString("state", state != null ? state.toString() : "");
+        String mediaRegion = room.getMediaRegion();
+        roomMap.putString("mediaRegion", mediaRegion != null ? mediaRegion : "");
+        return roomMap;
     }
 
     private WritableMap buildTrack(TrackPublication publication) {
@@ -1701,7 +1757,7 @@ public class CustomTwilioVideoView extends View
     }
 
     private WritableMap buildParticipantDataEvent(Participant participant, TrackPublication publication) {
-        WritableMap participantMap = buildParticipant(participant);
+        WritableMap participantMap = buildParticipantIdentity(participant);
         WritableMap trackMap = buildTrack(publication);
 
         WritableMap event = new WritableNativeMap();
@@ -1711,7 +1767,7 @@ public class CustomTwilioVideoView extends View
     }
 
     private WritableMap buildParticipantVideoEvent(Participant participant, TrackPublication publication) {
-        WritableMap participantMap = buildParticipant(participant);
+        WritableMap participantMap = buildParticipantIdentity(participant);
         WritableMap trackMap = buildTrack(publication);
 
         WritableMap event = new WritableNativeMap();
