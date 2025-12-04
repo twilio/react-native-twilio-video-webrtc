@@ -19,6 +19,7 @@
 - Android and iOS now label local data tracks as `data`, keeping the emitted `trackName` consistent across platforms.
 - Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 - Example App upgraded to React Native `0.82.1` and React `19.1.1`.
+- Fixed the bug on iOS where screensharing wasn't working with H.264 code enabled.
 
 ### Fixes
 
@@ -27,7 +28,6 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
-- Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used.
 - `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only).
 
 ---
