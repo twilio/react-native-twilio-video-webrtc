@@ -178,6 +178,11 @@ const Example = () => {
         _log("(you) requested stats");
     };
 
+    const _onFetchRoomPress = () => {
+        twilioRef.current?.fetchRoom();
+        _log("(you) requested room snapshot");
+    };
+
     const _onSendStringPress = () => {
         twilioRef.current?.sendString("Hello from RN");
         _log("(you) sent: Hello from RN");
@@ -311,6 +316,14 @@ const Example = () => {
         } else {
             _log(`Data Track Message ${event?.message}`);
         }
+    };
+
+    const _onRoomFetched = (event: any) => {
+        console.log("event", event);
+        const roomName = event?.name || "unknown";
+        const state = event?.state || "unknown";
+        const remoteCount = Array.isArray(event?.remoteParticipants) ? event.remoteParticipants.length : 0;
+        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s)`);
     };
 
     const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
@@ -455,6 +468,7 @@ const Example = () => {
                             <OptionButton label="Ping" onPress={_onSendStringPress} disabled={!isDataTrackEnabled} />
                             <OptionButton label="Send Binary" onPress={_onSendBinaryPress} disabled={!isDataTrackEnabled} />
                             <OptionButton label={isSharing ? "Stop Sharing" : "Start Sharing"} onPress={_onShareButtonPress} />
+                            <OptionButton label="Fetch Room" onPress={_onFetchRoomPress} />
                         </ControlBar>
                     </View>
                 </View>
@@ -500,6 +514,7 @@ const Example = () => {
                 onRemoteDataTrackPublished={_onRemoteDataTrackPublished}
                 onRemoteDataTrackUnpublished={_onRemoteDataTrackUnpublished}
                 onRemoteDataTrackSubscriptionFailed={_onRemoteDataTrackSubscriptionFailed}
+                onRoomFetched={_onRoomFetched}
             />
 
             <Modal

@@ -55,6 +55,12 @@ const propTypes = {
    */
   onScreenShareChanged: PropTypes.func,
   /**
+   * Called when requesting a room snapshot via fetchRoom()
+   *
+   * @param {{sid?: string, name?: string, state?: string}}
+   */
+  onRoomFetched: PropTypes.func,
+  /**
    * Called when the camera starts streaming frames.
    */
   onCameraDidStart: PropTypes.func,
@@ -355,6 +361,7 @@ const nativeEvents = {
   toggleScreenSharing: 16,
   toggleDataTrack: 17,
   sendBinary: 18,
+  fetchRoom: 19,
 };
 
 class CustomTwilioVideoView extends Component {
@@ -541,6 +548,13 @@ class CustomTwilioVideoView extends Component {
   }
 
   /**
+   * Fetch the current native room snapshot
+   */
+  fetchRoom() {
+    this.runCommand(nativeEvents.fetchRoom, []);
+  }
+
+  /**
    * Disable OpenSL ES audio
    */
   disableOpenSLES() {
@@ -590,6 +604,7 @@ class CustomTwilioVideoView extends Component {
       "onParticipantRemovedAudioTrack",
       "onRoomParticipantDidConnect",
       "onRoomParticipantDidDisconnect",
+      "onRoomFetched",
       "onParticipantEnabledVideoTrack",
       "onParticipantDisabledVideoTrack",
       "onParticipantEnabledAudioTrack",

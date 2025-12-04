@@ -53,6 +53,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_T
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_PUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
@@ -86,6 +87,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     private static final int SET_REMOTE_AUDIO_PLAYBACK = 15;
     private static final int TOGGLE_SCREEN_SHARING = 16;
     private static final int TOGGLE_DATA_TRACK = 17;
+    private static final int FETCH_ROOM = 19;
 
     @Override
     public String getName() {
@@ -184,6 +186,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 Boolean dataEnabled = args.getBoolean(0);
                 view.toggleDataTrack(dataEnabled);
                 break;
+            case FETCH_ROOM:
+                view.fetchRoom();
+                break;
         }
     }
 
@@ -231,7 +236,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
         map.putAll(MapBuilder.of(
                 ON_RECONNECTING, MapBuilder.of("registrationName", ON_RECONNECTING),
                 ON_RECONNECTED, MapBuilder.of("registrationName", ON_RECONNECTED),
-                ON_DATA_CHANGED, MapBuilder.of("registrationName", ON_DATA_CHANGED)));
+                ON_DATA_CHANGED, MapBuilder.of("registrationName", ON_DATA_CHANGED),
+                ON_ROOM_FETCHED, MapBuilder.of("registrationName", ON_ROOM_FETCHED)));
         map.putAll(MapBuilder.of(
                 ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
                 ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)));
@@ -278,6 +284,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 .put("sendBinary", SEND_BINARY)
                 .put("toggleScreenSharing", TOGGLE_SCREEN_SHARING)
                 .put("toggleDataTrack", TOGGLE_DATA_TRACK)
+                .put("fetchRoom", FETCH_ROOM)
                 .build();
     }
 }

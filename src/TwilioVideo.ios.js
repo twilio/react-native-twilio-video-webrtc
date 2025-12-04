@@ -224,6 +224,12 @@ export default class TwilioVideo extends Component {
      */
     onScreenShareChanged: PropTypes.func,
     /**
+     * Called when requesting a room snapshot via fetchRoom
+     *
+     * @param {{sid?: string, name?: string, state?: string}}
+     */
+    onRoomFetched: PropTypes.func,
+    /**
      * Callback that is called when room is reconnecting
      *
      * @param {{roomName: string, roomSid: string, error: string}}
@@ -467,6 +473,13 @@ export default class TwilioVideo extends Component {
    */
   getStats() {
     TWVideoModule.getStats();
+  }
+
+  /**
+   * Fetch the current native room snapshot
+   */
+  fetchRoom() {
+    TWVideoModule.fetchRoom();
   }
 
   /**
@@ -726,6 +739,11 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("screenShareChanged", (data) => {
         if (this.props.onScreenShareChanged) {
           this.props.onScreenShareChanged(data);
+        }
+      }),
+      this._eventEmitter.addListener("onRoomFetched", (data) => {
+        if (this.props.onRoomFetched) {
+          this.props.onRoomFetched(data);
         }
       }),
       this._eventEmitter.addListener("roomIsReconnecting", (data) => {

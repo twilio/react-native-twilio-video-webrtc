@@ -63,6 +63,7 @@ static NSString *cameraDidStopRunning = @"cameraDidStopRunning";
 static NSString *statsReceived = @"statsReceived";
 static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
 static NSString *dataChanged = @"dataChanged";
+static NSString *roomFetched = @"onRoomFetched";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
@@ -164,6 +165,7 @@ RCT_EXPORT_MODULE();
         videoChanged,
         audioChanged,
         localParticipantSupportedCodecs,
+        roomFetched,
         recordingStarted,
         recordingStopped,
         localAudioTrackPublished,
@@ -769,6 +771,11 @@ RCT_EXPORT_METHOD(getStats) {
     }
 }
 
+RCT_EXPORT_METHOD(fetchRoom) {
+    NSDictionary *body = [self bodyForRoom:self.room];
+    [self sendEventCheckingListenerWithName:roomFetched body:body];
+}
+
 RCT_EXPORT_METHOD(
         connect : (NSString *) accessToken roomName : (
                 NSString *) roomName enableAudio : (BOOL) enableAudio enableVideo : (BOOL)
@@ -947,6 +954,47 @@ RCT_EXPORT_METHOD(disconnect) {
     if (publication && [publication respondsToSelector:@selector(toJSON)]) {
         body[@"track"] = [publication toJSON];
     }
+    return body;
+}
+
+- (NSString *)stringForRoomState:(TVIRoomState)state {
+    switch (state) {
+        case TVIRoomStateConnecting:
+            return @"connecting";
+        case TVIRoomStateConnected:
+            return @"connected";
+        case TVIRoomStateReconnecting:
+            return @"reconnecting";
+        case TVIRoomStateDisconnected:
+            return @"disconnected";
+        default:
+            return @"unknown";
+    }
+}
+
+- (NSDictionary *)bodyForRoom:(TVIRoom *)room {
+    if (room == nil) {
+        return @{};
+    }
+
+    NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithCapacity:6];
+    body[@"sid"] = room.sid ?: @"";
+    body[@"name"] = room.name ?: @"";
+
+    NSArray *remoteParticipants =
+            [room.remoteParticipants valueForKeyPath:@"toJSON"] ?: @[];
+    body[@"remoteParticipants"] = remoteParticipants;
+
+    TVILocalParticipant *localParticipant = room.localParticipant;
+    body[@"localParticipant"] = localParticipant ? [localParticipant toJSON] : @{};
+
+    TVIRemoteParticipant *dominantSpeaker = room.dominantSpeaker;
+    body[@"dominantSpeaker"] =
+            dominantSpeaker ? [dominantSpeaker toJSON] : [NSNull null];
+
+    body[@"state"] = [self stringForRoomState:room.state];
+    body[@"mediaRegion"] = room.mediaRegion ?: @"";
+
     return body;
 }
 
