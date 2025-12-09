@@ -957,18 +957,66 @@ RCT_EXPORT_METHOD(disconnect) {
     return body;
 }
 
+- (NSArray<NSDictionary *> *)jsonForTrackPublications:(NSArray<id> *)publications {
+    if (publications == nil || publications.count == 0) {
+        return @[];
+    }
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:publications.count];
+    for (id publication in publications) {
+        if ([publication respondsToSelector:@selector(toJSON)]) {
+            [result addObject:[publication toJSON]];
+        }
+    }
+    return result;
+}
+
+- (NSDictionary *)participantWithTracks:(TVIParticipant *)participant {
+    if (participant == nil) {
+        return @{
+            @"sid": @"",
+            @"identity": @"",
+            @"audioTracks": @[],
+            @"videoTracks": @[],
+            @"dataTracks": @[]
+        };
+    }
+
+    NSMutableDictionary *participantJSON = [[participant toJSON] mutableCopy];
+    NSArray *audioTracks = @[];
+    NSArray *videoTracks = @[];
+    NSArray *dataTracks = @[];
+
+    if ([participant isKindOfClass:[TVIRemoteParticipant class]]) {
+        TVIRemoteParticipant *remote = (TVIRemoteParticipant *)participant;
+        audioTracks = [self jsonForTrackPublications:remote.remoteAudioTracks];
+        videoTracks = [self jsonForTrackPublications:remote.remoteVideoTracks];
+        dataTracks = [self jsonForTrackPublications:remote.remoteDataTracks];
+    } else if ([participant isKindOfClass:[TVILocalParticipant class]]) {
+        TVILocalParticipant *local = (TVILocalParticipant *)participant;
+        audioTracks = [self jsonForTrackPublications:local.audioTracks];
+        videoTracks = [self jsonForTrackPublications:local.videoTracks];
+        dataTracks = [self jsonForTrackPublications:local.dataTracks];
+    }
+
+    participantJSON[@"audioTracks"] = audioTracks ?: @[];
+    participantJSON[@"videoTracks"] = videoTracks ?: @[];
+    participantJSON[@"dataTracks"] = dataTracks ?: @[];
+
+    return participantJSON;
+}
+
 - (NSString *)stringForRoomState:(TVIRoomState)state {
     switch (state) {
         case TVIRoomStateConnecting:
-            return @"connecting";
+            return @"CONNECTING";
         case TVIRoomStateConnected:
-            return @"connected";
+            return @"CONNECTED";
         case TVIRoomStateReconnecting:
-            return @"reconnecting";
+            return @"RECONNECTING";
         case TVIRoomStateDisconnected:
-            return @"disconnected";
+            return @"DISCONNECTED";
         default:
-            return @"unknown";
+            return @"UNKNOWN";
     }
 }
 
@@ -981,16 +1029,18 @@ RCT_EXPORT_METHOD(disconnect) {
     body[@"sid"] = room.sid ?: @"";
     body[@"name"] = room.name ?: @"";
 
-    NSArray *remoteParticipants =
-            [room.remoteParticipants valueForKeyPath:@"toJSON"] ?: @[];
+    NSMutableArray *remoteParticipants = [[NSMutableArray alloc] initWithCapacity:room.remoteParticipants.count];
+    for (TVIRemoteParticipant *participant in room.remoteParticipants) {
+        [remoteParticipants addObject:[self participantWithTracks:participant]];
+    }
     body[@"remoteParticipants"] = remoteParticipants;
 
     TVILocalParticipant *localParticipant = room.localParticipant;
-    body[@"localParticipant"] = localParticipant ? [localParticipant toJSON] : @{};
+    body[@"localParticipant"] = [self participantWithTracks:localParticipant];
 
     TVIRemoteParticipant *dominantSpeaker = room.dominantSpeaker;
     body[@"dominantSpeaker"] =
-            dominantSpeaker ? [dominantSpeaker toJSON] : [NSNull null];
+            dominantSpeaker ? [self participantWithTracks:dominantSpeaker] : [NSNull null];
 
     body[@"state"] = [self stringForRoomState:room.state];
     body[@"mediaRegion"] = room.mediaRegion ?: @"";

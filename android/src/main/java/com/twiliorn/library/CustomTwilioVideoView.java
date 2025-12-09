@@ -1733,14 +1733,11 @@ public class CustomTwilioVideoView extends View
 
         roomMap.putString("sid", currentRoom.getSid());
         roomMap.putString("name", currentRoom.getName());
+        roomMap.putString("mediaRegion", currentRoom.getMediaRegion());
+        roomMap.putString("state", currentRoom.getState().toString());
         roomMap.putMap("dominantSpeaker", buildParticipantWithTracks(currentRoom.getDominantSpeaker()));
         roomMap.putArray("remoteParticipants", buildRemoteParticipants(currentRoom.getRemoteParticipants()));
         roomMap.putMap("localParticipant", buildParticipantWithTracks(currentRoom.getLocalParticipant()));
-
-        State state = currentRoom.getState();
-        roomMap.putString("state", state != null ? state.toString() : "");
-        String mediaRegion = currentRoom.getMediaRegion();
-        roomMap.putString("mediaRegion", mediaRegion != null ? mediaRegion : "");
         return roomMap;
     }
 
