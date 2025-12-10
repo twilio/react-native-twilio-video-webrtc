@@ -2439,8 +2439,8 @@ PODS:
   - SocketRocket (0.7.1)
   - twilio-video-react-native-sdk (3.4.0-dev):
     - React
-    - TwilioVideo (~> 5.10.0)
-  - TwilioVideo (5.10.2)
+    - TwilioVideo (~> 5.11.0)
+  - TwilioVideo (5.11.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2759,8 +2759,8 @@ SPEC CHECKSUMS:
   ReactCommon: 804dc80944fa90b86800b43c871742ec005ca424
   RNPermissions: a707f1287e3a26e247391251ea8b38f28d744b04
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  twilio-video-react-native-sdk: a7bd7684d7b0267dfa711f6e2919f760d5d6baa7
-  TwilioVideo: dba977baf7ffd59522e4ecf304e841f2c92fbe2a
+  twilio-video-react-native-sdk: e292e1f865620ac1b8ffc40b2954ed359a4ff513
+  TwilioVideo: 82add9f38a9d68a6f9d516989d5c7b3629539edf
   Yoga: 689c8e04277f3ad631e60fe2a08e41d411daf8eb
 
 PODFILE CHECKSUM: a8cf5b6661c20b448a88ab343d7e9be355417dd5

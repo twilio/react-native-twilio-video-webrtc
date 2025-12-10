@@ -152,6 +152,10 @@ public class CustomTwilioVideoView extends View
     private static final String TRACK_NAME_MICROPHONE = "microphone";
     private static final String TRACK_NAME_SCREEN = "screen";
     private static final String TRACK_NAME_DATA = "data";
+    private static final String PRODUCT_NAME_KEY = "com.twilio.video.product.name";
+    private static final String PRODUCT_VERSION_KEY = "com.twilio.video.product.version";
+    private static final String PRODUCT_NAME_VALUE = "react-native";
+    private static final String PRODUCT_VERSION_VALUE = "3.4.0";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
     private boolean enableRemoteAudio = false;
     private boolean enableNetworkQualityReporting = false;
@@ -341,6 +345,9 @@ public class CustomTwilioVideoView extends View
         super(context);
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
+
+        System.setProperty(PRODUCT_NAME_KEY, PRODUCT_NAME_VALUE);
+        System.setProperty(PRODUCT_VERSION_KEY, PRODUCT_VERSION_VALUE);
 
         // add lifecycle for onResume and on onPause
         themedReactContext.addLifecycleEventListener(this);
