@@ -30,7 +30,6 @@
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
 - Screensharing on iOS is only supported using VP8 codec. Screen share tracks will fail to publish when H.264 codec is used.
-- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only).
 
 ---
 
