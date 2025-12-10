@@ -83,7 +83,8 @@ static TVIVideoFormat *RCTTWScreenSourceVideoFormat(void) {
     return format;
 }
 
-static BOOL RCTTWScreenSourceDeviceSupportsPreferredFormat(void) {
+// Check if the screen source exceeds 1280x720 resolution
+static BOOL RCTTWScreenSourceDeviceExceedsMaxSupportedFormat(void) {
     CGRect nativeBounds = [UIScreen mainScreen].nativeBounds;
     CGFloat maxDimension = MAX(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
     CGFloat minDimension = MIN(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
