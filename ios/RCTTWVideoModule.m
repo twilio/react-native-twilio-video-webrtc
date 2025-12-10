@@ -70,6 +70,8 @@ static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
 
 static const int32_t kRCTTWVideoCameraSourceFrameRate = 15;
 
+// Preferred max dimensions for a H.264 screen share track
+// iOS native SDK cannot publish H.264 codec tracks above 1280x720 resolution
 static const CMVideoDimensions kRCTTWScreenSourceDimensions =
         (CMVideoDimensions) {1280, 720};
 
