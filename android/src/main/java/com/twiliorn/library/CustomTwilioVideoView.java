@@ -53,10 +53,10 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_T
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_PUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
-import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -502,10 +502,10 @@ public class CustomTwilioVideoView extends View
                 }
             }
 
-        if (cameraInterrupted) {
-            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
-            cameraInterrupted = false;
-        }
+            if (cameraInterrupted) {
+                pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
+                cameraInterrupted = false;
+            }
             if (room != null) {
                 themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
             }
@@ -1735,7 +1735,7 @@ public class CustomTwilioVideoView extends View
         roomMap.putString("name", currentRoom.getName());
         roomMap.putString("mediaRegion", currentRoom.getMediaRegion());
         roomMap.putString("state", currentRoom.getState().toString());
-        roomMap.putMap("dominantSpeaker", buildParticipantWithTracks(currentRoom.getDominantSpeaker()));
+        roomMap.putMap("dominantSpeaker", currentRoom.getDominantSpeaker() != null ? buildParticipantWithTracks(currentRoom.getDominantSpeaker()) : null);
         roomMap.putArray("remoteParticipants", buildRemoteParticipants(currentRoom.getRemoteParticipants()));
         roomMap.putMap("localParticipant", buildParticipantWithTracks(currentRoom.getLocalParticipant()));
         return roomMap;
