@@ -129,6 +129,7 @@ RCT_EXPORT_MODULE();
 - (instancetype)init {
     self = [super init];
     if (self) {
+        // Set properties for Video Insights reporting 
         setenv(kTWProductNameKey, kTWProductNameValue, 1);
         setenv(kTWProductVersionKey, kTWProductVersionValue, 1);
     }
