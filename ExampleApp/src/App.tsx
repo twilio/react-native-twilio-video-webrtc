@@ -321,7 +321,7 @@ const Example = () => {
     const _onRoomFetched = (event: any) => {
         const roomName = event?.name || "unknown";
         const state = event?.state || "unknown";
-        const remoteCount = Array.isArray(event?.remoteParticipants) ? event.remoteParticipants.length : 0;
+        const remoteCount = event.remoteParticipants.length;
         _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s)`);
     };
 
