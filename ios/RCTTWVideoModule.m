@@ -65,6 +65,7 @@ static NSString *statsReceived = @"statsReceived";
 static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
 static NSString *dataChanged = @"dataChanged";
 
+static NSString *const kTWProductConfigName = @"twilio-product-config";
 static const char *kTWProductNameKey = "com.twilio.video.product.name";
 static const char *kTWProductVersionKey = "com.twilio.video.product.version";
 static const char *kTWProductNameValue = "react-native";
@@ -129,10 +130,34 @@ RCT_EXPORT_MODULE();
 - (instancetype)init {
     self = [super init];
     if (self) {
-        setenv(kTWProductNameKey, kTWProductNameValue, 1);
-        setenv(kTWProductVersionKey, kTWProductVersionValue, 1);
+        NSDictionary *metadata = [self productMetadata];
+        NSString *productName =
+                metadata[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
+        NSString *productVersion =
+                metadata[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
+        setenv(kTWProductNameKey, [productName UTF8String], 1);
+        setenv(kTWProductVersionKey, [productVersion UTF8String], 1);
     }
     return self;
+}
+
+- (NSDictionary *)productMetadata {
+    static NSDictionary *metadata = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+      NSString *path = [bundle pathForResource:kTWProductConfigName ofType:@"json"];
+      NSData *data = [NSData dataWithContentsOfFile:path];
+      NSDictionary *parsed = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+
+      NSString *productName = parsed[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
+      NSString *productVersion = parsed[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
+      metadata = @{
+          @"productName": productName,
+          @"productVersion": productVersion
+      };
+    });
+    return metadata;
 }
 
 - (void)dealloc {

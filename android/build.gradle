@@ -1,4 +1,25 @@
 apply plugin: 'com.android.library'
+import groovy.json.JsonSlurper
+
+def loadProductConfig() {
+    def pkg = new JsonSlurper().parse(new File(projectDir.parentFile, "package.json"))
+    def configFile = new File(projectDir.parentFile, "twilio-product-config.json")
+
+    def productName = "react-native"
+    if (configFile.exists()) {
+        def parsed = new JsonSlurper().parse(configFile)
+        if (parsed?.productName) {
+            productName = parsed.productName
+        }
+    }
+
+    return [
+        productName  : productName,
+        productVersion: pkg?.version
+    ]
+}
+
+def twilioProduct = loadProductConfig()
 
 def DEFAULT_COMPILE_SDK_VERSION             = 30
 def DEFAULT_BUILD_TOOLS_VERSION             = "27.0.3"
@@ -20,6 +41,8 @@ android {
         targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "TW_PRODUCT_NAME", "\"${twilioProduct.productName}\""
+        buildConfigField "String", "TW_PRODUCT_VERSION", "\"${twilioProduct.productVersion}\""
     }
     buildTypes {
         release {

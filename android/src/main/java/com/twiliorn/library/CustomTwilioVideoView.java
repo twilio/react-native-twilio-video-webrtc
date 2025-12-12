@@ -154,8 +154,8 @@ public class CustomTwilioVideoView extends View
     private static final String TRACK_NAME_DATA = "data";
     private static final String PRODUCT_NAME_KEY = "com.twilio.video.product.name";
     private static final String PRODUCT_VERSION_KEY = "com.twilio.video.product.version";
-    private static final String PRODUCT_NAME_VALUE = "react-native";
-    private static final String PRODUCT_VERSION_VALUE = "3.4.0";
+    private static final String PRODUCT_NAME_VALUE = BuildConfig.TW_PRODUCT_NAME;
+    private static final String PRODUCT_VERSION_VALUE = BuildConfig.TW_PRODUCT_VERSION;
     private static final int REQUEST_MEDIA_PROJECTION = 100;
     private boolean enableRemoteAudio = false;
     private boolean enableNetworkQualityReporting = false;
@@ -506,10 +506,10 @@ public class CustomTwilioVideoView extends View
                 }
             }
 
-        if (cameraInterrupted) {
-            pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
-            cameraInterrupted = false;
-        }
+            if (cameraInterrupted) {
+                pushEvent(CustomTwilioVideoView.this, ON_CAMERA_INTERRUPTION_ENDED, null);
+                cameraInterrupted = false;
+            }
             if (room != null) {
                 themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
             }

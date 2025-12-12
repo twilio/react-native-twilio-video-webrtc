@@ -16,6 +16,35 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = 'LICENSE', 'README.md', 'package.json', 'index.js'
   s.source_files   = 'ios/*.{h,m}'
+  s.resources      = 'twilio-product-config.json'
+
+  s.prepare_command = <<-CMD
+ruby <<-'RUBY'
+require 'json'
+
+pkg = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
+config_path = File.join(__dir__, 'twilio-product-config.json')
+default_name = "react-native"
+product_name = default_name
+
+begin
+  if File.exist?(config_path)
+    existing = JSON.parse(File.read(config_path))
+    product_name = existing["productName"] if existing["productName"]
+  end
+rescue
+  product_name = default_name
+end
+
+data = {
+  "productName" => product_name,
+  "productVersion" => pkg["version"]
+}
+
+File.write(config_path, JSON.pretty_generate(data) + "\n")
+RUBY
+  CMD
 
   s.dependency 'React'
   s.dependency 'TwilioVideo', '~> 5.11.0'
