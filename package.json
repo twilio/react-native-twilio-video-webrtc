@@ -42,7 +42,8 @@
     "index.d.ts",
     "twilio-video-react-native-sdk.podspec",
     "plugin/build",
-    "app.plugin.js"
+    "app.plugin.js",
+    "twilio-product-config.json"
   ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
