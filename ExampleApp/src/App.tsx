@@ -14,6 +14,7 @@ import {
     TwilioVideoScreenShareView,
     TwilioVideoParticipantView,
     TwilioVideo,
+    RoomFetchedEventArgs
 } from "@twilio/video-react-native-sdk";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import { styles } from "./styles";
@@ -318,10 +319,10 @@ const Example = () => {
         }
     };
 
-    const _onRoomFetched = (event: any) => {
-        const roomName = event?.name || "unknown";
-        const state = event?.state || "unknown";
-        const remoteCount = event.remoteParticipants.length;
+    const _onRoomFetched = ({ name, state: roomState, remoteParticipants }: RoomFetchedEventArgs) => {
+        const roomName = name || "unknown";
+        const state = roomState || "unknown";
+        const remoteCount = remoteParticipants?.length;
         _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s)`);
     };
 
