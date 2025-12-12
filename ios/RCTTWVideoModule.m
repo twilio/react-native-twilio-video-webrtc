@@ -63,6 +63,7 @@ static NSString *cameraDidStopRunning = @"cameraDidStopRunning";
 static NSString *statsReceived = @"statsReceived";
 static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
 static NSString *dataChanged = @"dataChanged";
+static NSString *roomFetched = @"onRoomFetched";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
@@ -164,6 +165,7 @@ RCT_EXPORT_MODULE();
         videoChanged,
         audioChanged,
         localParticipantSupportedCodecs,
+        roomFetched,
         recordingStarted,
         recordingStopped,
         localAudioTrackPublished,
@@ -769,6 +771,11 @@ RCT_EXPORT_METHOD(getStats) {
     }
 }
 
+RCT_EXPORT_METHOD(fetchRoom) {
+    NSDictionary *body = [self bodyForRoom:self.room];
+    [self sendEventCheckingListenerWithName:roomFetched body:body];
+}
+
 RCT_EXPORT_METHOD(
         connect : (NSString *) accessToken roomName : (
                 NSString *) roomName enableAudio : (BOOL) enableAudio enableVideo : (BOOL)
@@ -947,6 +954,97 @@ RCT_EXPORT_METHOD(disconnect) {
     if (publication && [publication respondsToSelector:@selector(toJSON)]) {
         body[@"track"] = [publication toJSON];
     }
+    return body;
+}
+
+- (NSArray<NSDictionary *> *)jsonForTrackPublications:(NSArray<id> *)publications {
+    if (publications == nil || publications.count == 0) {
+        return @[];
+    }
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:publications.count];
+    for (id publication in publications) {
+        if ([publication respondsToSelector:@selector(toJSON)]) {
+            [result addObject:[publication toJSON]];
+        }
+    }
+    return result;
+}
+
+- (NSDictionary *)participantWithTracks:(TVIParticipant *)participant {
+    if (participant == nil) {
+        return @{
+            @"sid": @"",
+            @"identity": @"",
+            @"audioTracks": @[],
+            @"videoTracks": @[],
+            @"dataTracks": @[]
+        };
+    }
+
+    NSMutableDictionary *participantJSON = [[participant toJSON] mutableCopy];
+    NSArray *audioTracks = @[];
+    NSArray *videoTracks = @[];
+    NSArray *dataTracks = @[];
+
+    if ([participant isKindOfClass:[TVIRemoteParticipant class]]) {
+        TVIRemoteParticipant *remote = (TVIRemoteParticipant *)participant;
+        audioTracks = [self jsonForTrackPublications:remote.remoteAudioTracks];
+        videoTracks = [self jsonForTrackPublications:remote.remoteVideoTracks];
+        dataTracks = [self jsonForTrackPublications:remote.remoteDataTracks];
+    } else if ([participant isKindOfClass:[TVILocalParticipant class]]) {
+        TVILocalParticipant *local = (TVILocalParticipant *)participant;
+        audioTracks = [self jsonForTrackPublications:local.audioTracks];
+        videoTracks = [self jsonForTrackPublications:local.videoTracks];
+        dataTracks = [self jsonForTrackPublications:local.dataTracks];
+    }
+
+    participantJSON[@"audioTracks"] = audioTracks ?: @[];
+    participantJSON[@"videoTracks"] = videoTracks ?: @[];
+    participantJSON[@"dataTracks"] = dataTracks ?: @[];
+
+    return participantJSON;
+}
+
+- (NSString *)stringForRoomState:(TVIRoomState)state {
+    switch (state) {
+        case TVIRoomStateConnecting:
+            return @"CONNECTING";
+        case TVIRoomStateConnected:
+            return @"CONNECTED";
+        case TVIRoomStateReconnecting:
+            return @"RECONNECTING";
+        case TVIRoomStateDisconnected:
+            return @"DISCONNECTED";
+        default:
+            return @"UNKNOWN";
+    }
+}
+
+- (NSDictionary *)bodyForRoom:(TVIRoom *)room {
+    if (room == nil) {
+        return @{};
+    }
+
+    NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithCapacity:6];
+    body[@"sid"] = room.sid ?: @"";
+    body[@"name"] = room.name ?: @"";
+
+    NSMutableArray *remoteParticipants = [[NSMutableArray alloc] initWithCapacity:room.remoteParticipants.count];
+    for (TVIRemoteParticipant *participant in room.remoteParticipants) {
+        [remoteParticipants addObject:[self participantWithTracks:participant]];
+    }
+    body[@"remoteParticipants"] = remoteParticipants;
+
+    TVILocalParticipant *localParticipant = room.localParticipant;
+    body[@"localParticipant"] = [self participantWithTracks:localParticipant];
+
+    TVIRemoteParticipant *dominantSpeaker = room.dominantSpeaker;
+    body[@"dominantSpeaker"] =
+            dominantSpeaker ? [self participantWithTracks:dominantSpeaker] : [NSNull null];
+
+    body[@"state"] = [self stringForRoomState:room.state];
+    body[@"mediaRegion"] = room.mediaRegion ?: @"";
+
     return body;
 }
 
