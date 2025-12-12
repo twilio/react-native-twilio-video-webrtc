@@ -91,8 +91,8 @@ static BOOL RCTTWScreenSourceDeviceExceedsMaxSupportedFormat(void) {
     CGFloat maxDimension = MAX(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
     CGFloat minDimension = MIN(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
 
-    return maxDimension >= kRCTTWScreenSourceDimensions.width &&
-            minDimension >= kRCTTWScreenSourceDimensions.height;
+    return maxDimension > kRCTTWScreenSourceDimensions.width &&
+            minDimension > kRCTTWScreenSourceDimensions.height;
 }
 
 TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
