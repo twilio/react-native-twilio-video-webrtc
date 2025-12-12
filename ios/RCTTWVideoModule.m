@@ -586,7 +586,7 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
     if (enabled) {
         BOOL shouldForcePreferredFormat =
                 self.screenSharePrefersH264 &&
-                RCTTWScreenSourceDeviceSupportsPreferredFormat();
+                RCTTWScreenSourceDeviceExceedsMaxSupportedFormat();
         TVIVideoFormat *screenShareFormat =
                 shouldForcePreferredFormat ? RCTTWScreenSourceVideoFormat() : nil;
 
