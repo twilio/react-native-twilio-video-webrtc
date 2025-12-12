@@ -20,6 +20,7 @@
 - Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 - Example App upgraded to React Native `0.82.1` and React `19.1.1`.
 - Fixed a bug on iOS where screensharing wasn't working with H.264 codec enabled. The screen share track will be limited to a max resolution of 1280x720 when using H.264, which is the maximum resolution supported by the native Video iOS SDK.
+- Added new method `fetchRoom` to request the room object and a new callback `onRoomFetched` to handle the response.
 
 ### Fixes
 

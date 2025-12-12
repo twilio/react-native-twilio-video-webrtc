@@ -15,9 +15,9 @@ declare module "@twilio/video-react-native-sdk" {
     ref?: React.Ref<any>;
     scaleType?: scaleType;
     /**
-     * Whether to apply Z ordering to this view.  Setting this to true will cause
-     * this view to appear above other Twilio Video views.
-     */
+ * Whether to apply Z ordering to this view.  Setting this to true will cause
+ * this view to appear above other Twilio Video views.
+ */
     applyZOrder?: boolean | undefined;
   }
 
@@ -26,9 +26,9 @@ declare module "@twilio/video-react-native-sdk" {
     ref?: React.Ref<any>;
     scaleType?: scaleType;
     /**
-     * Whether to apply Z ordering to this view.  Setting this to true will cause
-     * this view to appear above other Twilio Video views.
-     */
+ * Whether to apply Z ordering to this view.  Setting this to true will cause
+ * this view to appear above other Twilio Video views.
+ */
     applyZOrder?: boolean | undefined;
   }
 
@@ -37,9 +37,9 @@ declare module "@twilio/video-react-native-sdk" {
     ref?: React.Ref<any>;
     scaleType?: scaleType;
     /**
-     * Whether to apply Z ordering to this view.  Setting this to true will cause
-     * this view to appear above other Twilio Video views.
-     */
+ * Whether to apply Z ordering to this view.  Setting this to true will cause
+ * this view to appear above other Twilio Video views.
+ */
     applyZOrder?: boolean | undefined;
   }
 
@@ -109,25 +109,19 @@ declare module "@twilio/video-react-native-sdk" {
 
   export type ParticipantEventCb = (p: ParticipantEventArgs) => void;
 
-  export type NetworkLevelChangeEventCb = (
-    p: NetworkLevelChangeEventArgs
-  ) => void;
+  export type NetworkLevelChangeEventCb = (p: NetworkLevelChangeEventArgs) => void;
 
   export type DominantSpeakerChangedEventArgs = RoomEventCommonArgs & {
     participant: Participant;
   };
 
-  export type DominantSpeakerChangedCb = (
-    d: DominantSpeakerChangedEventArgs
-  ) => void;
+  export type DominantSpeakerChangedCb = (d: DominantSpeakerChangedEventArgs) => void;
 
   export type LocalParticipantSupportedCodecsCbEventArgs = {
     supportedCodecs: Array<string>;
   };
 
-  export type LocalParticipantSupportedCodecsCb = (
-    d: LocalParticipantSupportedCodecsCbEventArgs
-  ) => void;
+  export type LocalParticipantSupportedCodecsCb = (d: LocalParticipantSupportedCodecsCbEventArgs) => void;
 
   export type ScreenShareChangedEventArgs = {
     screenShareEnabled: boolean;
@@ -146,6 +140,16 @@ declare module "@twilio/video-react-native-sdk" {
   };
   export type ReconnectingEventCb = (e: ReconnectingEventArgs) => void;
   export type ReconnectedEventCb = (e: RoomEventCommonArgs) => void;
+
+  export type RoomFetchedEventArgs = {
+    sid?: string;
+    name?: string;
+    dominantSpeaker?: Participant | null;
+    remoteParticipants: Array<Participant>;
+    localParticipant: Participant;
+    state?: string;
+    mediaRegion?: string;
+  };
 
   export type TwilioVideoProps = ViewProps & {
     onCameraDidStart?: () => void;
@@ -194,6 +198,7 @@ declare module "@twilio/video-react-native-sdk" {
     onRemoteDataTrackPublished?: TrackEventCb;
     onRemoteDataTrackUnpublished?: TrackEventCb;
     onRemoteDataTrackSubscriptionFailed?: TrackErrorEventCb;
+    onRoomFetched?: (event: RoomFetchedEventArgs) => void;
 
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;
@@ -253,13 +258,14 @@ declare module "@twilio/video-react-native-sdk" {
     unpublishLocalVideo: () => void;
     sendString: (message: string) => void;
     sendBinary: (base64Payload: string) => void;
+    fetchRoom: () => void;
   }
 
-  class TwilioVideoLocalView extends React.Component<TwilioVideoLocalViewProps> {}
+  class TwilioVideoLocalView extends React.Component<TwilioVideoLocalViewProps> { }
 
-  class TwilioVideoScreenShareView extends React.Component<TwilioVideoScreenShareViewProps> {}
+  class TwilioVideoScreenShareView extends React.Component<TwilioVideoScreenShareViewProps> { }
 
-  class TwilioVideoParticipantView extends React.Component<TwilioVideoParticipantViewProps> {}
+  class TwilioVideoParticipantView extends React.Component<TwilioVideoParticipantViewProps> { }
 
   export {
     TwilioVideoLocalView,
