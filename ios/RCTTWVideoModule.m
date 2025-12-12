@@ -9,6 +9,7 @@
 #import "RCTTWVideoModule.h"
 
 #import "RCTTWSerializable.h"
+#import <UIKit/UIKit.h>
 
 static NSString *roomDidConnect = @"roomDidConnect";
 static NSString *screenShareChanged = @"screenShareChanged";
@@ -70,6 +71,31 @@ static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
 
 static const int32_t kRCTTWVideoCameraSourceFrameRate = 15;
 
+// Preferred max dimensions for a H.264 screen share track
+// iOS native SDK cannot publish H.264 codec tracks above 1280x720 resolution
+static const CMVideoDimensions kRCTTWScreenSourceDimensions =
+        (CMVideoDimensions) {1280, 720};
+
+static const int32_t kRCTTWScreenSourceFrameRate = 30;
+
+static TVIVideoFormat *RCTTWScreenSourceVideoFormat(void) {
+    TVIVideoFormat *format = [[TVIVideoFormat alloc] init];
+    format.dimensions = kRCTTWScreenSourceDimensions;
+    format.frameRate = kRCTTWScreenSourceFrameRate;
+    format.pixelFormat = TVIPixelFormatYUV420BiPlanarFullRange;
+    return format;
+}
+
+// Check if the screen source exceeds 1280x720 resolution
+static BOOL RCTTWScreenSourceDeviceExceedsMaxSupportedFormat(void) {
+    CGRect nativeBounds = [UIScreen mainScreen].nativeBounds;
+    CGFloat maxDimension = MAX(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
+    CGFloat minDimension = MIN(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
+
+    return maxDimension > kRCTTWScreenSourceDimensions.width &&
+            minDimension > kRCTTWScreenSourceDimensions.height;
+}
+
 TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
         AVCaptureDevice *device, CMVideoDimensions targetSize) {
     TVIVideoFormat *selectedFormat = nil;
@@ -107,6 +133,7 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
 @property(strong, nonatomic) TVIRoom *room;
 @property(nonatomic) BOOL listening;
 @property(strong, nonatomic) TVIVideoView *localVideoView;
+@property(nonatomic) BOOL screenSharePrefersH264;
 
 // Screen sharing source
 @property(strong, nonatomic) TVIAppScreenSource *screen;
@@ -559,10 +586,17 @@ RCT_EXPORT_METHOD(flipCamera) {
 
 RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
     if (enabled) {
+        BOOL shouldForcePreferredFormat =
+                self.screenSharePrefersH264 &&
+                RCTTWScreenSourceDeviceExceedsMaxSupportedFormat();
+        TVIVideoFormat *screenShareFormat =
+                shouldForcePreferredFormat ? RCTTWScreenSourceVideoFormat() : nil;
+
         // Create screen source/track if needed
         if (self.screen == nil) {
-            TVIAppScreenSourceOptions *options = [TVIAppScreenSourceOptions optionsWithBlock:^(
-                                                                                    TVIAppScreenSourceOptionsBuilder *builder) {}];
+            TVIAppScreenSourceOptions *options =
+                    [TVIAppScreenSourceOptions optionsWithBlock:^(
+                            TVIAppScreenSourceOptionsBuilder *builder) {}];
             self.screen = [[TVIAppScreenSource alloc] initWithOptions:options
                                                              delegate:self];
             if (self.screen == nil) {
@@ -571,6 +605,11 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
             self.screenVideoTrack = [TVILocalVideoTrack trackWithSource:self.screen
                                                                 enabled:NO
                                                                    name:@"screen"];
+        }
+
+        if (self.screen != nil && screenShareFormat != nil) {
+            // Request the 1280x720 @ 30 fps output format before publishing
+            [self.screen requestOutputFormat:screenShareFormat];
         }
 
         if (self.screen != nil && self.screenVideoTrack != nil) {
@@ -808,6 +847,9 @@ RCT_EXPORT_METHOD(
 
     __block NSMutableArray<NSString *> *supportedCodecs = [NSMutableArray array];
 
+    BOOL enableH264 = [encodingParameters[@"enableH264Codec"] boolValue];
+    self.screenSharePrefersH264 = enableH264;
+
     TVIConnectOptions *connectOptions = [TVIConnectOptions
             optionsWithToken:accessToken
                        block:^(TVIConnectOptionsBuilder *_Nonnull builder) {
@@ -829,7 +871,6 @@ RCT_EXPORT_METHOD(
                          builder.roomName = roomName;
 
                          [supportedCodecs addObject:@"VP8"];
-                         BOOL enableH264 = [encodingParameters[@"enableH264Codec"] boolValue];
                          if (enableH264) {
                              TVIVideoCodec *h264Codec = [TVIH264Codec new];
                              builder.preferredVideoCodecs = @[h264Codec];
