@@ -20,7 +20,7 @@
 - Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 - Example App upgraded to React Native `0.82.1` and React `19.1.1`.
 - Updated native Twilio Video SDKs to Android `7.10.0` and iOS `5.11.0`.
-- Centralized Twilio Insights product metadata in `twilio-product-config.json`, sourcing version from `package.json`.
+- Centralized Twilio Insights product metadata in `twilio-product-config.json` (with version sourced from `package.json`), ensuring the SDK now sends the correct SDK name and version—reported as `Twilio Video Android React Native` or `Twilio Video iOS React Native`—to Twilio Video Insights, as shown in the [Video Insights Dashboard](https://console.twilio.com/us1/monitor/insights/video/video-insights-dashboard) and [Room Insights](https://console.twilio.com/us1/monitor/insights/video/video-rooms).
 
 ### Fixes
 

@@ -346,6 +346,7 @@ public class CustomTwilioVideoView extends View
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
+        // Set properties for Video Insights reporting 
         System.setProperty(PRODUCT_NAME_KEY, PRODUCT_NAME_VALUE);
         System.setProperty(PRODUCT_VERSION_KEY, PRODUCT_VERSION_VALUE);
 

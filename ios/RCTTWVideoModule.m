@@ -130,6 +130,7 @@ RCT_EXPORT_MODULE();
 - (instancetype)init {
     self = [super init];
     if (self) {
+        // Set properties for Video Insights reporting
         NSDictionary *metadata = [self productMetadata];
         NSString *productName =
                 metadata[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
