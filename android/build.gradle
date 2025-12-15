@@ -14,7 +14,7 @@ def loadProductConfig() {
     }
 
     return [
-        productName  : productName,
+        productName: productName,
         productVersion: pkg?.version
     ]
 }
