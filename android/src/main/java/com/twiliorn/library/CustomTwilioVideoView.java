@@ -53,6 +53,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_DATA_T
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_PUBLISHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_TRACK_UNPUBLISHED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
@@ -202,6 +203,7 @@ public class CustomTwilioVideoView extends View
                 Events.ON_RECONNECTING,
                 Events.ON_RECONNECTED,
                 Events.ON_DATA_CHANGED,
+                Events.ON_ROOM_FETCHED,
                 Events.ON_RECORDING_STARTED,
                 Events.ON_RECORDING_STOPPED,
                 Events.ON_LOCAL_AUDIO_TRACK_PUBLISHED,
@@ -251,6 +253,7 @@ public class CustomTwilioVideoView extends View
         String ON_RECONNECTING = "onRoomIsReconnecting";
         String ON_RECONNECTED = "onRoomDidReconnect";
         String ON_DATA_CHANGED = "onDataChanged";
+        String ON_ROOM_FETCHED = "onRoomFetched";
         String ON_RECORDING_STARTED = "onRecordingStarted";
         String ON_RECORDING_STOPPED = "onRecordingStopped";
         String ON_LOCAL_AUDIO_TRACK_PUBLISHED = "onLocalAudioTrackPublished";
@@ -1265,6 +1268,11 @@ public class CustomTwilioVideoView extends View
         }
     }
 
+    public void fetchRoom() {
+        WritableMap roomMap = buildRoom(room);
+        pushEvent(CustomTwilioVideoView.this, ON_ROOM_FETCHED, roomMap);
+    }
+
     // ====== ROOM LISTENER ========================================================================
 
     /*
@@ -1695,8 +1703,25 @@ public class CustomTwilioVideoView extends View
 
     private WritableMap buildParticipant(Participant participant) {
         WritableMap participantMap = new WritableNativeMap();
+        if (participant == null) {
+            participantMap.putString("identity", "");
+            participantMap.putString("sid", "");
+            return participantMap;
+        }
         participantMap.putString("identity", participant.getIdentity());
         participantMap.putString("sid", participant.getSid());
+        return participantMap;
+    }
+
+    private WritableMap buildParticipantWithTracks(Participant participant) {
+        WritableMap participantMap = buildParticipant(participant);
+        List<? extends TrackPublication> audioTracks = participant != null ? participant.getAudioTracks() : null;
+        List<? extends TrackPublication> videoTracks = participant != null ? participant.getVideoTracks() : null;
+        List<? extends TrackPublication> dataTracks = participant != null ? participant.getDataTracks() : null;
+
+        participantMap.putArray("audioTracks", buildTrackPublications(audioTracks));
+        participantMap.putArray("videoTracks", buildTrackPublications(videoTracks));
+        participantMap.putArray("dataTracks", buildTrackPublications(dataTracks));
         return participantMap;
     }
 
@@ -1706,6 +1731,44 @@ public class CustomTwilioVideoView extends View
         trackMap.putString("trackName", publication.getTrackName());
         trackMap.putBoolean("enabled", publication.isTrackEnabled());
         return trackMap;
+    }
+
+    private WritableMap buildRoom(Room currentRoom) {
+        WritableMap roomMap = new WritableNativeMap();
+        if (currentRoom == null) {
+            return roomMap;
+        }
+
+        roomMap.putString("sid", currentRoom.getSid());
+        roomMap.putString("name", currentRoom.getName());
+        roomMap.putString("mediaRegion", currentRoom.getMediaRegion());
+        roomMap.putString("state", currentRoom.getState().toString());
+        roomMap.putMap("dominantSpeaker", currentRoom.getDominantSpeaker() != null ? buildParticipantWithTracks(currentRoom.getDominantSpeaker()) : null);
+        roomMap.putArray("remoteParticipants", buildRemoteParticipants(currentRoom.getRemoteParticipants()));
+        roomMap.putMap("localParticipant", buildParticipantWithTracks(currentRoom.getLocalParticipant()));
+        return roomMap;
+    }
+
+    private WritableArray buildRemoteParticipants(List<RemoteParticipant> participants) {
+        WritableArray participantsArray = new WritableNativeArray();
+        if (participants == null) {
+            return participantsArray;
+        }
+        for (RemoteParticipant participant : participants) {
+            participantsArray.pushMap(buildParticipantWithTracks(participant));
+        }
+        return participantsArray;
+    }
+
+    private WritableArray buildTrackPublications(List<? extends TrackPublication> publications) {
+        WritableArray tracksArray = new WritableNativeArray();
+        if (publications == null) {
+            return tracksArray;
+        }
+        for (TrackPublication publication : publications) {
+            tracksArray.pushMap(buildTrack(publication));
+        }
+        return tracksArray;
     }
 
     private WritableMap buildParticipantDataEvent(Participant participant, TrackPublication publication) {
