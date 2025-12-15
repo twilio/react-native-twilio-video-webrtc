@@ -9,8 +9,8 @@
 #import "RCTTWVideoModule.h"
 
 #import "RCTTWSerializable.h"
-#import <stdlib.h>
 #import <UIKit/UIKit.h>
+#import <stdlib.h>
 
 static NSString *roomDidConnect = @"roomDidConnect";
 static NSString *screenShareChanged = @"screenShareChanged";
@@ -70,8 +70,6 @@ static NSString *roomFetched = @"onRoomFetched";
 static NSString *const kTWProductConfigName = @"twilio-product-config";
 static const char *kTWProductNameKey = "com.twilio.video.product.name";
 static const char *kTWProductVersionKey = "com.twilio.video.product.version";
-static const char *kTWProductNameValue = "react-native";
-static const char *kTWProductVersionValue = "3.4.0";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
@@ -100,7 +98,7 @@ static BOOL RCTTWScreenSourceDeviceExceedsMaxSupportedFormat(void) {
     CGFloat minDimension = MIN(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
 
     return maxDimension > kRCTTWScreenSourceDimensions.width &&
-            minDimension > kRCTTWScreenSourceDimensions.height;
+           minDimension > kRCTTWScreenSourceDimensions.height;
 }
 
 TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
@@ -161,11 +159,15 @@ RCT_EXPORT_MODULE();
         // Set properties for Video Insights reporting
         NSDictionary *metadata = [self productMetadata];
         NSString *productName =
-                metadata[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
+                metadata[@"productName"];
         NSString *productVersion =
-                metadata[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
-        setenv(kTWProductNameKey, [productName UTF8String], 1);
-        setenv(kTWProductVersionKey, [productVersion UTF8String], 1);
+                metadata[@"productVersion"];
+        if (productName.length > 0) {
+            setenv(kTWProductNameKey, [productName UTF8String], 1);
+        }
+        if (productVersion.length > 0) {
+            setenv(kTWProductVersionKey, [productVersion UTF8String], 1);
+        }
     }
     return self;
 }
@@ -179,8 +181,8 @@ RCT_EXPORT_MODULE();
       NSData *data = [NSData dataWithContentsOfFile:path];
       NSDictionary *parsed = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
 
-      NSString *productName = parsed[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
-      NSString *productVersion = parsed[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
+      NSString *productName = parsed[@"productName"];
+      NSString *productVersion = parsed[@"productVersion"];
       metadata = @{
           @"productName": productName,
           @"productVersion": productVersion
@@ -637,7 +639,7 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
         if (self.screen == nil) {
             TVIAppScreenSourceOptions *options =
                     [TVIAppScreenSourceOptions optionsWithBlock:^(
-                            TVIAppScreenSourceOptionsBuilder *builder) {}];
+                                                       TVIAppScreenSourceOptionsBuilder *builder) {}];
             self.screen = [[TVIAppScreenSource alloc] initWithOptions:options
                                                              delegate:self];
             if (self.screen == nil) {
@@ -1070,12 +1072,12 @@ RCT_EXPORT_METHOD(disconnect) {
     NSArray *dataTracks = @[];
 
     if ([participant isKindOfClass:[TVIRemoteParticipant class]]) {
-        TVIRemoteParticipant *remote = (TVIRemoteParticipant *)participant;
+        TVIRemoteParticipant *remote = (TVIRemoteParticipant *) participant;
         audioTracks = [self jsonForTrackPublications:remote.remoteAudioTracks];
         videoTracks = [self jsonForTrackPublications:remote.remoteVideoTracks];
         dataTracks = [self jsonForTrackPublications:remote.remoteDataTracks];
     } else if ([participant isKindOfClass:[TVILocalParticipant class]]) {
-        TVILocalParticipant *local = (TVILocalParticipant *)participant;
+        TVILocalParticipant *local = (TVILocalParticipant *) participant;
         audioTracks = [self jsonForTrackPublications:local.audioTracks];
         videoTracks = [self jsonForTrackPublications:local.videoTracks];
         dataTracks = [self jsonForTrackPublications:local.dataTracks];

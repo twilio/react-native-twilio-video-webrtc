@@ -23,6 +23,7 @@
 - Centralized Twilio Insights product metadata in `twilio-product-config.json` (with version sourced from `package.json`), ensuring the SDK now sends the correct SDK name and version—reported as `Twilio Video Android React Native` or `Twilio Video iOS React Native`—to Twilio Video Insights, as shown in the [Video Insights Dashboard](https://console.twilio.com/us1/monitor/insights/video/video-insights-dashboard) and [Room Insights](https://console.twilio.com/us1/monitor/insights/video/video-rooms).
 - Fixed a bug on iOS where screensharing wasn't working with H.264 codec enabled. The screen share track will be limited to a max resolution of 1280x720 when using H.264, which is the maximum resolution supported by the native Video iOS SDK.
 - Added new method `fetchRoom` to request the room object and a new callback `onRoomFetched` to handle the response.
+- Fixed an Android bug where `roomName` was reported as `roomSid` when `roomName` was not passed as a connection option.
 
 ### Fixes
 
@@ -31,7 +32,6 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
-- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only).
 
 ---
 
