@@ -70,6 +70,8 @@ static NSString *roomFetched = @"onRoomFetched";
 static NSString *const kTWProductConfigName = @"twilio-product-config";
 static const char *kTWProductNameKey = "com.twilio.video.product.name";
 static const char *kTWProductVersionKey = "com.twilio.video.product.version";
+static const char *kTWProductNameValue = "react-native";
+static const char *kTWProductVersionValue = "3.4.0-dev";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
@@ -159,9 +161,9 @@ RCT_EXPORT_MODULE();
         // Set properties for Video Insights reporting
         NSDictionary *metadata = [self productMetadata];
         NSString *productName =
-                metadata[@"productName"];
+                metadata[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
         NSString *productVersion =
-                metadata[@"productVersion"];
+                metadata[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
         if (productName.length > 0) {
             setenv(kTWProductNameKey, [productName UTF8String], 1);
         }
@@ -181,8 +183,9 @@ RCT_EXPORT_MODULE();
       NSData *data = [NSData dataWithContentsOfFile:path];
       NSDictionary *parsed = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
 
-      NSString *productName = parsed[@"productName"];
-      NSString *productVersion = parsed[@"productVersion"];
+      NSString *productName = parsed[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
+      NSString *productVersion = parsed[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
+
       metadata = @{
           @"productName": productName,
           @"productVersion": productVersion
