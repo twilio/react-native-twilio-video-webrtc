@@ -109,7 +109,7 @@ yarn ios  # or yarn android
 
 ### Version Constants
 
-The SDK version is embedded in both iOS and Android native code for analytics purposes. This is handled automatically:
+The SDK version is embedded in both iOS and Android native code for reporting to Twilio Video Insights. This is handled automatically:
 
 - **Template files**: `ios/RCTTWVideoConstants.h.template` and `android/src/main/java/com/twiliorn/library/TwilioVideoConstants.java.template`
 - **Generated files**: `ios/RCTTWVideoConstants.h` and `android/.../TwilioVideoConstants.java` (gitignored)
