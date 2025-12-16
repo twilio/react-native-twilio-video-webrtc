@@ -9,6 +9,7 @@
 #import "RCTTWVideoModule.h"
 
 #import "RCTTWSerializable.h"
+#import "RCTTWVideoConstants.h"
 #import <UIKit/UIKit.h>
 #import <stdlib.h>
 
@@ -67,11 +68,8 @@ static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
 static NSString *dataChanged = @"dataChanged";
 static NSString *roomFetched = @"onRoomFetched";
 
-static NSString *const kTWProductConfigName = @"twilio-product-config";
 static const char *kTWProductNameKey = "com.twilio.video.product.name";
 static const char *kTWProductVersionKey = "com.twilio.video.product.version";
-static const char *kTWProductNameValue = "react-native";
-static const char *kTWProductVersionValue = "3.4.0-dev";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
@@ -159,39 +157,10 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self) {
         // Set properties for Video Insights reporting
-        NSDictionary *metadata = [self productMetadata];
-        NSString *productName =
-                metadata[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
-        NSString *productVersion =
-                metadata[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
-        if (productName.length > 0) {
-            setenv(kTWProductNameKey, [productName UTF8String], 1);
-        }
-        if (productVersion.length > 0) {
-            setenv(kTWProductVersionKey, [productVersion UTF8String], 1);
-        }
+        setenv(kTWProductNameKey, [kTwilioVideoReactNativeName UTF8String], 1);
+        setenv(kTWProductVersionKey, [kTwilioVideoReactNativeVersion UTF8String], 1);
     }
     return self;
-}
-
-- (NSDictionary *)productMetadata {
-    static NSDictionary *metadata = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-      NSString *path = [bundle pathForResource:kTWProductConfigName ofType:@"json"];
-      NSData *data = [NSData dataWithContentsOfFile:path];
-      NSDictionary *parsed = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
-
-      NSString *productName = parsed[@"productName"] ?: [NSString stringWithUTF8String:kTWProductNameValue];
-      NSString *productVersion = parsed[@"productVersion"] ?: [NSString stringWithUTF8String:kTWProductVersionValue];
-
-      metadata = @{
-          @"productName": productName,
-          @"productVersion": productVersion
-      };
-    });
-    return metadata;
 }
 
 - (void)dealloc {

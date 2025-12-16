@@ -12,11 +12,13 @@
   "types": "index.d.ts",
   "scripts": {
     "build": "expo-module build",
+    "build:constants": "node ./scripts/generate-constants.js",
     "clean": "expo-module clean",
     "test": "expo-module test",
     "lint": "prettier -c 'src/**/*.js'",
     "lint:fix": "prettier -w 'src/**/*.js'",
-    "ci": "yarn lint"
+    "ci": "yarn lint",
+    "prepare": "yarn run build:constants"
   },
   "standard": {
     "parser": "babel-eslint"
@@ -42,8 +44,7 @@
     "index.d.ts",
     "twilio-video-react-native-sdk.podspec",
     "plugin/build",
-    "app.plugin.js",
-    "twilio-product-config.json"
+    "app.plugin.js"
   ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",

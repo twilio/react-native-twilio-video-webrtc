@@ -20,7 +20,7 @@
 - Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 - Example App upgraded to React Native `0.82.1` and React `19.1.1`.
 - Updated native Twilio Video SDKs to Android `7.10.0` and iOS `5.11.0`.
-- Centralized Twilio Insights product metadata in `twilio-product-config.json` (with version sourced from `package.json`), ensuring the SDK now sends the correct SDK name and version - reported as `Twilio Video Android React Native` or `Twilio Video iOS React Native` - to Twilio Video Insights, as shown in the [Video Insights Dashboard](https://console.twilio.com/us1/monitor/insights/video/video-insights-dashboard) and [Room Insights](https://console.twilio.com/us1/monitor/insights/video/video-rooms).
+- Added automated version constants generation for Twilio Video Insights reporting. The SDK version from `package.json` is now embedded into native iOS (`RCTTWVideoConstants.h`) and Android (`TwilioVideoConstants.java`) files via template files and a `prepare` script. This ensures the correct SDK name and version are reported to Twilio Video Insights.
 - Fixed a bug on iOS where screensharing wasn't working with H.264 codec enabled. The screen share track will be limited to a max resolution of 1280x720 when using H.264, which is the maximum resolution supported by the native Video iOS SDK.
 - Added new method `fetchRoom` to request the room object and a new callback `onRoomFetched` to handle the response.
 - Fixed an Android bug where `roomName` was reported as `roomSid` when `roomName` was not passed as a connection option.

@@ -4,6 +4,10 @@
 # Node
 node_modules
 
+# Generated constants (from .template files via scripts/generate-constants.js)
+ios/RCTTWVideoConstants.h
+android/src/main/java/com/twiliorn/library/TwilioVideoConstants.java
+
 # Xcode
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore

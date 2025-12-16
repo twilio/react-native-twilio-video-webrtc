@@ -93,6 +93,39 @@ import {
 The [Example App](./ExampleApp) provides an example how the Video React Native SDK can be used.
 Please check out the Example App's [README](./ExampleApp/README.md) for more details.
 
+**Before running the Example App**, ensure you first install dependencies in the root SDK directory to generate the version constants:
+```shell
+cd rn-twilio-video-webrtc
+yarn install
+```
+Then install and run the Example App:
+```shell
+cd ExampleApp
+yarn install
+yarn ios  # or yarn android
+```
+
+## Contributing
+
+### Version Constants
+
+The SDK version is embedded in both iOS and Android native code for analytics purposes. This is handled automatically:
+
+- **Template files**: `ios/RCTTWVideoConstants.h.template` and `android/src/main/java/com/twiliorn/library/TwilioVideoConstants.java.template`
+- **Generated files**: `ios/RCTTWVideoConstants.h` and `android/.../TwilioVideoConstants.java` (gitignored)
+
+The `prepare` script runs automatically on `yarn install` and before `npm publish`, generating the constants from `package.json` version.
+
+**Important for contributors:**
+- Never edit the generated `.h` or `.java` files directly - they will be overwritten
+- Edit the `.template` files if you need to change the structure
+- The version is the single source of truth from `package.json`
+
+To manually regenerate constants:
+```shell
+yarn build:constants
+```
+
 ## License
 
 See [LICENSE](https://github.com/twilio/react-native-twilio-video-webrtc/blob/master/LICENSE)
