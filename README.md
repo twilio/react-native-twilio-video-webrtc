@@ -91,13 +91,12 @@ import {
 - `TwilioVideoParticipantView` / is responsible for a remote peer's camera feed
 
 The [Example App](./ExampleApp) provides an example how the Video React Native SDK can be used.
-Please check out the Example App's [README](./ExampleApp/README.md) for more details.
 
 **Before running the Example App**, ensure you first install dependencies in the root SDK directory to generate the version constants:
 ```shell
 yarn install
 ```
-Please check out the Example App's [README](./ExampleApp/README.md) for more details on how to run it.
+Please check out the Example App's [README](./ExampleApp/README.md) for more details.
 
 ## Contributing
 
