@@ -27,7 +27,7 @@ console.log(`Generating constants with version: ${version}`);
 
 // iOS template
 const iosTemplatePath = path.join(__dirname, '..', 'ios', 'RCTTWVideoConstants.h.template');
-const iosOutputPath = path.join(__dirname, '..', 'ios', 'RCTTWVideoConstants.h');
+const iosOutputPath = path.join(path.dirname(iosTemplatePath), 'RCTTWVideoConstants.h');
 
 if (!fs.existsSync(iosTemplatePath)) {
   console.error(`Error: iOS template not found at ${iosTemplatePath}`);
