@@ -19,8 +19,11 @@
 - Android and iOS now label local data tracks as `data`, keeping the emitted `trackName` consistent across platforms.
 - Added default value to `autoInitializeCamera` and deprecated it to show future removal.
 - Example App upgraded to React Native `0.82.1` and React `19.1.1`.
+- Updated native Twilio Video SDKs to Android `7.10.0` and iOS `5.11.0`.
+- Added automated version constants generation for Twilio Video Insights reporting. The SDK version from `package.json` is now embedded into native iOS (`RCTTWVideoConstants.h`) and Android (`TwilioVideoConstants.java`) files via template files and a `prepare` script. This ensures the correct SDK name and version are reported to Twilio Video Insights.
 - Fixed a bug on iOS where screensharing wasn't working with H.264 codec enabled. The screen share track will be limited to a max resolution of 1280x720 when using H.264, which is the maximum resolution supported by the native Video iOS SDK.
 - Added new method `fetchRoom` to request the room object and a new callback `onRoomFetched` to handle the response.
+- Fixed an Android bug where `roomName` was reported as `roomSid` when `roomName` was not passed as a connection option.
 
 ### Fixes
 
@@ -29,7 +32,6 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
-- `roomName` is reported as `roomSid` when we don't pass the `roomName` on the connection options (Android only).
 
 ---
 

@@ -6,3 +6,7 @@ docs/
 *.xcworkspace
 *.xcodeproj
 
+# Development-only files (not needed by end users)
+scripts/
+ios/RCTTWVideoConstants.h.template
+android/src/main/java/com/twiliorn/library/TwilioVideoConstants.java.template

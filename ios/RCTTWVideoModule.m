@@ -9,7 +9,9 @@
 #import "RCTTWVideoModule.h"
 
 #import "RCTTWSerializable.h"
+#import "RCTTWVideoConstants.h"
 #import <UIKit/UIKit.h>
+#import <stdlib.h>
 
 static NSString *roomDidConnect = @"roomDidConnect";
 static NSString *screenShareChanged = @"screenShareChanged";
@@ -66,6 +68,9 @@ static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
 static NSString *dataChanged = @"dataChanged";
 static NSString *roomFetched = @"onRoomFetched";
 
+static const char *kTWProductNameKey = "com.twilio.video.product.name";
+static const char *kTWProductVersionKey = "com.twilio.video.product.version";
+
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
         (CMVideoDimensions) {900, 720};
 
@@ -93,7 +98,7 @@ static BOOL RCTTWScreenSourceDeviceExceedsMaxSupportedFormat(void) {
     CGFloat minDimension = MIN(CGRectGetWidth(nativeBounds), CGRectGetHeight(nativeBounds));
 
     return maxDimension > kRCTTWScreenSourceDimensions.width &&
-            minDimension > kRCTTWScreenSourceDimensions.height;
+           minDimension > kRCTTWScreenSourceDimensions.height;
 }
 
 TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
@@ -147,6 +152,16 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        // Set properties for Video Insights reporting
+        setenv(kTWProductNameKey, [kTwilioVideoReactNativeName UTF8String], 1);
+        setenv(kTWProductVersionKey, [kTwilioVideoReactNativeVersion UTF8String], 1);
+    }
+    return self;
+}
 
 - (void)dealloc {
     [self clearAudioInstance];
@@ -510,7 +525,7 @@ RCT_REMAP_METHOD(setLocalDataTrackEnabled,
     if (self.localDataTrack == nil) {
         TVIDataTrackOptions *options =
                 [TVIDataTrackOptions optionsWithBlock:^(TVIDataTrackOptionsBuilder *builder) {
-                    builder.name = kRCTTWLocalDataTrackName;
+                  builder.name = kRCTTWLocalDataTrackName;
                 }];
         self.localDataTrack = [TVILocalDataTrack trackWithOptions:options];
     }
@@ -596,7 +611,7 @@ RCT_EXPORT_METHOD(toggleScreenSharing : (BOOL) enabled) {
         if (self.screen == nil) {
             TVIAppScreenSourceOptions *options =
                     [TVIAppScreenSourceOptions optionsWithBlock:^(
-                            TVIAppScreenSourceOptionsBuilder *builder) {}];
+                                                       TVIAppScreenSourceOptionsBuilder *builder) {}];
             self.screen = [[TVIAppScreenSource alloc] initWithOptions:options
                                                              delegate:self];
             if (self.screen == nil) {
@@ -917,12 +932,13 @@ RCT_EXPORT_METHOD(sendString : (nonnull NSString *) message) {
     }
 }
 
-RCT_EXPORT_METHOD(sendBinary : (nonnull NSString *)base64Payload) {
+RCT_EXPORT_METHOD(sendBinary : (nonnull NSString *) base64Payload) {
     if (self.localDataTrack == nil || base64Payload == nil) {
         return;
     }
     NSData *data =
-            [[NSData alloc] initWithBase64EncodedString:base64Payload options:0];
+            [[NSData alloc] initWithBase64EncodedString:base64Payload
+                                                options:0];
     if (data == nil) {
         NSLog(@"[RCTTWVideoModule] Invalid Base64 payload passed to sendBinary");
         return;
@@ -987,7 +1003,7 @@ RCT_EXPORT_METHOD(disconnect) {
 #pragma mark - Event helpers
 
 - (NSMutableDictionary *)bodyForParticipant:(TVIParticipant *)participant
-                          trackPublication:(id)publication {
+                           trackPublication:(id)publication {
     NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithCapacity:2];
     if (participant) {
         body[@"participant"] = [participant toJSON];
@@ -1028,12 +1044,12 @@ RCT_EXPORT_METHOD(disconnect) {
     NSArray *dataTracks = @[];
 
     if ([participant isKindOfClass:[TVIRemoteParticipant class]]) {
-        TVIRemoteParticipant *remote = (TVIRemoteParticipant *)participant;
+        TVIRemoteParticipant *remote = (TVIRemoteParticipant *) participant;
         audioTracks = [self jsonForTrackPublications:remote.remoteAudioTracks];
         videoTracks = [self jsonForTrackPublications:remote.remoteVideoTracks];
         dataTracks = [self jsonForTrackPublications:remote.remoteDataTracks];
     } else if ([participant isKindOfClass:[TVILocalParticipant class]]) {
-        TVILocalParticipant *local = (TVILocalParticipant *)participant;
+        TVILocalParticipant *local = (TVILocalParticipant *) participant;
         audioTracks = [self jsonForTrackPublications:local.audioTracks];
         videoTracks = [self jsonForTrackPublications:local.videoTracks];
         dataTracks = [self jsonForTrackPublications:local.dataTracks];
@@ -1096,7 +1112,7 @@ RCT_EXPORT_METHOD(disconnect) {
     if (error.localizedDescription) {
         body[@"error"] = error.localizedDescription;
     }
-    body[@"code"] = [NSString stringWithFormat:@"%ld", (long)error.code];
+    body[@"code"] = [NSString stringWithFormat:@"%ld", (long) error.code];
     NSString *explanation = error.localizedFailureReason ?: error.localizedRecoverySuggestion;
     if (explanation.length > 0) {
         body[@"errorExplanation"] = explanation;
@@ -1482,24 +1498,24 @@ RCT_EXPORT_METHOD(disconnect) {
 }
 
 - (void)localParticipant:(TVILocalParticipant *)participant
-didFailToPublishAudioTrack:(TVILocalAudioTrack *)audioTrack
-               withError:(NSError *)error {
+        didFailToPublishAudioTrack:(TVILocalAudioTrack *)audioTrack
+                         withError:(NSError *)error {
     NSMutableDictionary *body = [self bodyForParticipant:participant trackPublication:nil];
     [self appendError:error toBody:body];
     [self sendEventCheckingListenerWithName:localAudioTrackPublicationFailed body:body];
 }
 
 - (void)localParticipant:(TVILocalParticipant *)participant
-didFailToPublishVideoTrack:(TVILocalVideoTrack *)videoTrack
-               withError:(NSError *)error {
+        didFailToPublishVideoTrack:(TVILocalVideoTrack *)videoTrack
+                         withError:(NSError *)error {
     NSMutableDictionary *body = [self bodyForParticipant:participant trackPublication:nil];
     [self appendError:error toBody:body];
     [self sendEventCheckingListenerWithName:localVideoTrackPublicationFailed body:body];
 }
 
 - (void)localParticipant:(TVILocalParticipant *)participant
-didFailToPublishDataTrack:(TVILocalDataTrack *)dataTrack
-               withError:(NSError *)error {
+        didFailToPublishDataTrack:(TVILocalDataTrack *)dataTrack
+                        withError:(NSError *)error {
     NSMutableDictionary *body = [self bodyForParticipant:participant trackPublication:nil];
     [self appendError:error toBody:body];
     [self sendEventCheckingListenerWithName:localDataTrackPublicationFailed body:body];

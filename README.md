@@ -91,7 +91,33 @@ import {
 - `TwilioVideoParticipantView` / is responsible for a remote peer's camera feed
 
 The [Example App](./ExampleApp) provides an example how the Video React Native SDK can be used.
+
+**Before running the Example App**, ensure you first install dependencies in the root SDK directory to generate the version constants:
+```shell
+yarn install
+```
 Please check out the Example App's [README](./ExampleApp/README.md) for more details.
+
+## Contributing
+
+### Version Constants
+
+The SDK version is embedded in both iOS and Android native code for reporting to Twilio Video Insights. This is handled automatically:
+
+- **Template files**: `ios/RCTTWVideoConstants.h.template` and `android/src/main/java/com/twiliorn/library/TwilioVideoConstants.java.template`
+- **Generated files**: `ios/RCTTWVideoConstants.h` and `android/.../TwilioVideoConstants.java` (gitignored)
+
+The `prepare` script runs automatically on `yarn install` and before `npm publish`, generating the constants from `package.json` version.
+
+**Important for contributors:**
+- Never edit the generated `.h` or `.java` files directly - they will be overwritten
+- Edit the `.template` files if you need to change the structure
+- The version is the single source of truth from `package.json`
+
+To manually regenerate constants:
+```shell
+yarn build:constants
+```
 
 ## License
 

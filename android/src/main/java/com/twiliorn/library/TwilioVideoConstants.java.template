@@ -1,0 +1,6 @@
+package com.twiliorn.library;
+
+public class TwilioVideoConstants {
+  public static final String kTwilioVideoReactNativeName = "react-native";
+  public static final String kTwilioVideoReactNativeVersion = "";
+}

@@ -1,0 +1,3 @@
+static NSString *const kTwilioVideoReactNativeName = @"react-native";
+static NSString *const kTwilioVideoReactNativeVersion = @"";
+
