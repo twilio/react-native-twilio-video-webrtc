@@ -98,12 +98,7 @@ Please check out the Example App's [README](./ExampleApp/README.md) for more det
 cd rn-twilio-video-webrtc
 yarn install
 ```
-Then install and run the Example App:
-```shell
-cd ExampleApp
-yarn install
-yarn ios  # or yarn android
-```
+Please check out the Example App's [README](./ExampleApp/README.md) for more details on how to run it.
 
 ## Contributing
 
