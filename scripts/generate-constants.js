@@ -55,18 +55,7 @@ const androidTemplatePath = path.join(
   'library',
   'TwilioVideoConstants.java.template'
 );
-const androidOutputPath = path.join(
-  __dirname,
-  '..',
-  'android',
-  'src',
-  'main',
-  'java',
-  'com',
-  'twiliorn',
-  'library',
-  'TwilioVideoConstants.java'
-);
+const androidOutputPath = path.join(path.dirname(androidTemplatePath), 'TwilioVideoConstants.java');
 
 if (!fs.existsSync(androidTemplatePath)) {
   console.error(`Error: Android template not found at ${androidTemplatePath}`);
