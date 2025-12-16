@@ -95,7 +95,6 @@ Please check out the Example App's [README](./ExampleApp/README.md) for more det
 
 **Before running the Example App**, ensure you first install dependencies in the root SDK directory to generate the version constants:
 ```shell
-cd rn-twilio-video-webrtc
 yarn install
 ```
 Please check out the Example App's [README](./ExampleApp/README.md) for more details on how to run it.
