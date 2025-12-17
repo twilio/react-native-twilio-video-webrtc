@@ -1864,7 +1864,7 @@
     "@sinonjs/commons" "^3.0.0"
 
 "@twilio/video-react-native-sdk@file:..":
-  version "3.4.0-dev"
+  version "3.4.0"
   dependencies:
     prop-types "^15.5.10"
 
