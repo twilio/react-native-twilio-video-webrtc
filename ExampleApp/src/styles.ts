@@ -159,4 +159,87 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
     },
+
+    regionPickerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 16,
+    },
+
+    regionPickerLabel: {
+        fontSize: 14,
+        marginRight: 10,
+    },
+
+    regionPicker: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderWidth: 1,
+        borderColor: "#D0D5DD",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        backgroundColor: "#FAFAFA",
+    },
+
+    regionPickerText: {
+        fontSize: 14,
+        color: "#333",
+    },
+
+    regionPickerArrow: {
+        fontSize: 10,
+        color: "#666",
+    },
+
+    regionModalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    regionModalContainer: {
+        backgroundColor: "white",
+        borderRadius: 12,
+        padding: 16,
+        margin: 20,
+        minWidth: 280,
+        maxHeight: 400,
+    },
+
+    regionModalTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 12,
+        color: "#333",
+    },
+
+    regionList: {
+        maxHeight: 300,
+    },
+
+    regionOption: {
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "#eee",
+    },
+
+    regionOptionSelected: {
+        backgroundColor: "#E3F2FD",
+    },
+
+    regionOptionText: {
+        fontSize: 14,
+        color: "#333",
+    },
+
+    regionOptionTextSelected: {
+        color: "#1976D2",
+        fontWeight: "600",
+    },
 });

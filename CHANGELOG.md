@@ -1,3 +1,14 @@
+## 3.5.0 (In Progress)
+
+### Changes
+
+- Added `region` connect option for both Android and iOS to specify the Twilio signaling region (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`). Defaults to `gll` (Global Low Latency) if not specified or empty.
+- Added a region selector dropdown to the Example App for testing different Twilio regions before connecting to a room.
+
+### Known issues
+
+- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
+
 ## 3.4.0
 
 ### Changes

@@ -168,6 +168,7 @@ public class CustomTwilioVideoView extends View
     private boolean enableH264Codec = false;
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
+    private String region = "gll";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
@@ -347,7 +348,7 @@ public class CustomTwilioVideoView extends View
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
-        // Set properties for Video Insights reporting 
+        // Set properties for Video Insights reporting
         System.setProperty(PRODUCT_NAME_KEY, TwilioVideoConstants.kTwilioVideoReactNativeName);
         System.setProperty(PRODUCT_VERSION_KEY, TwilioVideoConstants.kTwilioVideoReactNativeVersion);
 
@@ -617,6 +618,7 @@ public class CustomTwilioVideoView extends View
     public void connectToRoomWrapper(
             String roomName,
             String accessToken,
+            String region,
             boolean enableAudio,
             boolean enableVideo,
             boolean enableRemoteAudio,
@@ -635,6 +637,7 @@ public class CustomTwilioVideoView extends View
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
         this.isDataEnabled = enableDataTrack;
+        this.region = (region != null && !region.isEmpty()) ? region : "gll";
 
         // Share your microphone
         if (enableAudio) {
@@ -675,7 +678,7 @@ public class CustomTwilioVideoView extends View
             return;
         }
 
-        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(this.accessToken);
+        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(this.accessToken).region(this.region);
 
         if (this.roomName != null) {
             connectOptionsBuilder.roomName(this.roomName);

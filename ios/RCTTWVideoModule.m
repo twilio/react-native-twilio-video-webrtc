@@ -832,7 +832,7 @@ RCT_EXPORT_METHOD(fetchRoom) {
 
 RCT_EXPORT_METHOD(
         connect : (NSString *) accessToken roomName : (
-                NSString *) roomName enableAudio : (BOOL) enableAudio enableVideo : (BOOL)
+                NSString *) roomName region : (NSString *) region enableAudio : (BOOL) enableAudio enableVideo : (BOOL)
                 enableVideo encodingParameters : (NSDictionary *)
                         encodingParameters enableNetworkQualityReporting : (BOOL)
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
@@ -884,6 +884,7 @@ RCT_EXPORT_METHOD(
                                  dominantSpeakerEnabled ? YES : NO;
 
                          builder.roomName = roomName;
+                         builder.region = (region && region.length > 0) ? region : @"gll";
 
                          [supportedCodecs addObject:@"VP8"];
                          if (enableH264) {
