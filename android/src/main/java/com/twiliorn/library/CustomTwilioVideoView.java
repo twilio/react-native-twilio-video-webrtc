@@ -637,7 +637,7 @@ public class CustomTwilioVideoView extends View
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
         this.isDataEnabled = enableDataTrack;
-        this.region = (region != null && !region.isEmpty()) ? region : "gll";
+        this.region = region;
 
         // Share your microphone
         if (enableAudio) {
