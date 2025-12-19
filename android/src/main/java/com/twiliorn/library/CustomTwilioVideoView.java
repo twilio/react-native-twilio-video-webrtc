@@ -678,7 +678,12 @@ public class CustomTwilioVideoView extends View
             return;
         }
 
-        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(this.accessToken).region(this.region);
+        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(this.accessToken);
+
+
+        if (this.region != null) {
+            connectOptionsBuilder.region(this.region);
+        }
 
         if (this.roomName != null) {
             connectOptionsBuilder.roomName(this.roomName);
