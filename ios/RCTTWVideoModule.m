@@ -884,7 +884,9 @@ RCT_EXPORT_METHOD(
                                  dominantSpeakerEnabled ? YES : NO;
 
                          builder.roomName = roomName;
-                         builder.region = (region && region.length > 0) ? region : @"gll";
+                         if (self.region) {
+                             builder. region = @[self.region];
+                         }
 
                          [supportedCodecs addObject:@"VP8"];
                          if (enableH264) {
