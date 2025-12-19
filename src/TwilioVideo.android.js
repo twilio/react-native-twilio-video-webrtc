@@ -384,7 +384,7 @@ class CustomTwilioVideoView extends Component {
   connect({
     roomName,
     accessToken,
-    region = "gll",
+    region,
     cameraType = "front",
     enableAudio = true,
     enableVideo = true,
