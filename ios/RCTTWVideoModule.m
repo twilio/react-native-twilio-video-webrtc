@@ -1101,9 +1101,9 @@ RCT_EXPORT_METHOD(disconnect) {
     TVIRemoteParticipant *dominantSpeaker = room.dominantSpeaker;
     body[@"dominantSpeaker"] =
             dominantSpeaker ? [self participantWithTracks:dominantSpeaker] : [NSNull null];
-
     body[@"state"] = [self stringForRoomState:room.state];
     body[@"mediaRegion"] = room.mediaRegion ?: @"";
+    body[@"localParticipantRegion"] = localParticipant.signalingRegion ?: @"";
 
     return body;
 }
