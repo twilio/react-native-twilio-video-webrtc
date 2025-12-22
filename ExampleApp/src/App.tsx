@@ -56,6 +56,7 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
 const SAMPLE_BINARY_BASE64 = "AQIDBA=="; // 0x01 0x02 0x03 0x04
 
 const REGIONS = [
+    { value: null, label: "No region selected" },
     { value: "gll", label: "Global Low Latency (gll)" },
     { value: "au1", label: "Australia (au1)" },
     { value: "br1", label: "Brazil (br1)" },
@@ -131,7 +132,7 @@ const Example = () => {
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
-    const [selectedRegion, setSelectedRegion] = useState("gll");
+    const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
     const [isSharing, setIsSharing] = useState(false);
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
@@ -155,7 +156,7 @@ const Example = () => {
         setNetworkQualityEnabled(false);
         setDominantSpeakerEnabled(false);
         setEnableH264Codec(false);
-        setSelectedRegion("gll");
+        setSelectedRegion(null);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
     };
@@ -388,11 +389,12 @@ const Example = () => {
         }
     };
 
-    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, mediaRegion }: RoomFetchedEventArgs) => {
+    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, localParticipantRegion }: RoomFetchedEventArgs) => {
+        console.log("localParticipantRegion", localParticipantRegion);
         const roomName = name || "unknown";
         const state = roomState || "unknown";
         const remoteCount = remoteParticipants?.length;
-        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s)`);
+        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s) ${localParticipantRegion ? `in region ${localParticipantRegion}` : ""}`);
     };
 
     const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
