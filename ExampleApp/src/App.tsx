@@ -489,7 +489,7 @@ const Example = () => {
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
 
                     <View style={styles.regionPickerContainer}>
-                        <Text style={styles.regionPickerLabel}>Region:</Text>
+                        <Text style={styles.regionPickerLabel}>Signaling Region:</Text>
                         <RegionPicker selectedRegion={selectedRegion} onSelect={setSelectedRegion} />
                     </View>
 
