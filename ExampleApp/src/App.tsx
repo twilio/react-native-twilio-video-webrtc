@@ -56,6 +56,7 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
 const SAMPLE_BINARY_BASE64 = "AQIDBA=="; // 0x01 0x02 0x03 0x04
 
 const REGIONS = [
+    { value: null, label: "No region selected" },
     { value: "gll", label: "Global Low Latency (gll)" },
     { value: "au1", label: "Australia (au1)" },
     { value: "br1", label: "Brazil (br1)" },
