@@ -2,7 +2,7 @@
 
 ### Changes
 
-- Added `region` connect option for both Android and iOS to specify the Twilio signaling region (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`). Defaults to `gll` (Global Low Latency) if not specified or empty.
+- Added `region` connect option for both Android and iOS to specify the [Twilio Signaling Region](https://www.twilio.com/docs/video/tutorials/video-regions-and-global-low-latency) (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`).
 - Added a region selector dropdown to the Example App for testing different Twilio regions before connecting to a room.
 
 ### Known issues
