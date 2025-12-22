@@ -168,7 +168,6 @@ public class CustomTwilioVideoView extends View
     private boolean enableH264Codec = false;
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
-    private String region = "gll";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
@@ -286,6 +285,7 @@ public class CustomTwilioVideoView extends View
     private static Room room;
     private String roomName = null;
     private String accessToken = null;
+    private String region = null;
     private LocalParticipant localParticipant;
 
     /*
@@ -1752,6 +1752,7 @@ public class CustomTwilioVideoView extends View
         roomMap.putMap("dominantSpeaker", currentRoom.getDominantSpeaker() != null ? buildParticipantWithTracks(currentRoom.getDominantSpeaker()) : null);
         roomMap.putArray("remoteParticipants", buildRemoteParticipants(currentRoom.getRemoteParticipants()));
         roomMap.putMap("localParticipant", buildParticipantWithTracks(currentRoom.getLocalParticipant()));
+        roomMap.putString("localParticipantRegion", currentRoom.getLocalParticipant().getSignalingRegion());
         return roomMap;
     }
 

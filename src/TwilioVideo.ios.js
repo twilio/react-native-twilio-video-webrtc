@@ -226,7 +226,7 @@ export default class TwilioVideo extends Component {
     /**
      * Called when requesting a room snapshot via fetchRoom
      *
-     * @param {{sid?: string, name?: string, mediaRegion?: string, state?: string, localParticipant: Participant, remoteParticipants: Participant[], dominantSpeaker?: Participant}}
+     * @param {{sid?: string, name?: string, mediaRegion?: string, state?: string, localParticipant: Participant, localParticipantRegion?: string, remoteParticipants: Participant[], dominantSpeaker?: Participant}}
      */
     onRoomFetched: PropTypes.func,
     /**
