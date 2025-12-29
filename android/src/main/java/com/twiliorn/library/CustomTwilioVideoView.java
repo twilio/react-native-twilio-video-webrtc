@@ -1752,7 +1752,7 @@ public class CustomTwilioVideoView extends View
         roomMap.putMap("dominantSpeaker", currentRoom.getDominantSpeaker() != null ? buildParticipantWithTracks(currentRoom.getDominantSpeaker()) : null);
         roomMap.putArray("remoteParticipants", buildRemoteParticipants(currentRoom.getRemoteParticipants()));
         roomMap.putMap("localParticipant", buildParticipantWithTracks(currentRoom.getLocalParticipant()));
-        roomMap.putString("localParticipantRegion", currentRoom.getLocalParticipant().getSignalingRegion());
+        roomMap.putString("signalingRegion", currentRoom.getLocalParticipant().getSignalingRegion());
         return roomMap;
     }
 
