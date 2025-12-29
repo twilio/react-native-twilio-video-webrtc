@@ -57,7 +57,7 @@ const propTypes = {
   /**
    * Called when requesting a room snapshot via fetchRoom()
    *
-   * @param {{sid?: string, name?: string, mediaRegion?: string, state?: string, localParticipant: Participant, localParticipantRegion?: string, remoteParticipants: Participant[], dominantSpeaker?: Participant}}
+   * @param {{sid?: string, name?: string, mediaRegion?: string, state?: string, localParticipant: Participant, signalingRegion?: string, remoteParticipants: Participant[], dominantSpeaker?: Participant}}
    */
   onRoomFetched: PropTypes.func,
   /**

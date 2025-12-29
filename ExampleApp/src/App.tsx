@@ -389,12 +389,11 @@ const Example = () => {
         }
     };
 
-    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, localParticipantRegion }: RoomFetchedEventArgs) => {
-        console.log("localParticipantRegion", localParticipantRegion);
+    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, signalingRegion }: RoomFetchedEventArgs) => {
         const roomName = name || "unknown";
         const state = roomState || "unknown";
         const remoteCount = remoteParticipants?.length;
-        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s) ${localParticipantRegion ? `in region ${localParticipantRegion}` : ""}`);
+        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s) ${signalingRegion ? `in region ${signalingRegion}` : ""}`);
     };
 
     const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
