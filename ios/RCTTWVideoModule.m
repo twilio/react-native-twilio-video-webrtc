@@ -1103,7 +1103,7 @@ RCT_EXPORT_METHOD(disconnect) {
             dominantSpeaker ? [self participantWithTracks:dominantSpeaker] : [NSNull null];
     body[@"state"] = [self stringForRoomState:room.state];
     body[@"mediaRegion"] = room.mediaRegion ?: @"";
-    body[@"localParticipantRegion"] = localParticipant.signalingRegion ?: @"";
+    body[@"signalingRegion"] = localParticipant.signalingRegion ?: @"";
 
     return body;
 }
