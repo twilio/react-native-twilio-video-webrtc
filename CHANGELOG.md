@@ -3,7 +3,7 @@
 ### Changes
 
 - Updated `expo` and `expo-module-scripts` versions to fix snyk vulnerabilities.
-- Added resolution for libraries `inflight` and `node-rfoge` to fix vulnerability.
+- Added resolution for libraries `inflight` and `node-forge` to fix vulnerability.
 
 ## 3.4.0
 
