@@ -71,10 +71,11 @@ static NSString *roomFetched = @"onRoomFetched";
 static const char *kTWProductNameKey = "com.twilio.video.product.name";
 static const char *kTWProductVersionKey = "com.twilio.video.product.version";
 
-static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions =
-        (CMVideoDimensions) {900, 720};
+// Default video format values (used when no videoFormat is specified and camera query fails)
+static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensionsDefault =
+        (CMVideoDimensions) {1280, 720};
 
-static const int32_t kRCTTWVideoCameraSourceFrameRate = 15;
+static const int32_t kRCTTWVideoCameraSourceFrameRateDefault = 30;
 
 // Preferred max dimensions for a H.264 screen share track
 // iOS native SDK cannot publish H.264 codec tracks above 1280x720 resolution
@@ -125,6 +126,22 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
     return selectedFormat;
 }
 
+// Select the best (highest resolution) video format from the camera
+TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectBestFormat(AVCaptureDevice *device) {
+    TVIVideoFormat *bestFormat = nil;
+    NSOrderedSet<TVIVideoFormat *> *formats =
+            [TVICameraSource supportedFormatsForDevice:device];
+
+    for (TVIVideoFormat *format in formats) {
+        if (format.pixelFormat != TVIPixelFormatYUV420BiPlanarFullRange) {
+            continue;
+        }
+        // Formats are ordered from smallest to largest, so keep updating
+        bestFormat = format;
+    }
+    return bestFormat;
+}
+
 @interface RCTTWVideoModule () <
         TVIRemoteDataTrackDelegate, TVIRemoteParticipantDelegate, TVIRoomDelegate,
         TVICameraSourceDelegate, TVILocalParticipantDelegate,
@@ -139,6 +156,9 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(
 @property(nonatomic) BOOL listening;
 @property(strong, nonatomic) TVIVideoView *localVideoView;
 @property(nonatomic) BOOL screenSharePrefersH264;
+
+// User-specified video format (nil means auto-select best)
+@property(strong, nonatomic) NSDictionary *requestedVideoFormat;
 
 // Screen sharing source
 @property(strong, nonatomic) TVIAppScreenSource *screen;
@@ -336,19 +356,67 @@ RCT_EXPORT_METHOD(startLocalVideo) {
                 [TVICameraSource captureDeviceForPosition:AVCaptureDevicePositionFront];
     }
 
-    [self.camera
-            startCaptureWithDevice:camera
-                        completion:^(AVCaptureDevice *device,
-                                     TVIVideoFormat *startFormat, NSError *error) {
-                          if (!error) {
-                              for (TVIVideoView *renderer in self.localVideoTrack
-                                           .renderers) {
-                                  [self updateLocalViewMirroring:renderer];
+    // Determine the video format to use
+    TVIVideoFormat *format = nil;
+    if (self.requestedVideoFormat != nil) {
+        // User specified a format - find the closest supported one
+        NSNumber *width = self.requestedVideoFormat[@"width"];
+        NSNumber *height = self.requestedVideoFormat[@"height"];
+        if (width != nil && height != nil) {
+            CMVideoDimensions targetSize = (CMVideoDimensions){
+                [width intValue],
+                [height intValue]
+            };
+            format = RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(camera, targetSize);
+        }
+    }
+    
+    // If no format specified or couldn't find one, use the best available
+    if (format == nil) {
+        format = RCTTWVideoModuleCameraSourceSelectBestFormat(camera);
+    }
+    
+    // Apply custom frame rate if specified
+    if (format != nil && self.requestedVideoFormat[@"frameRate"] != nil) {
+        NSNumber *frameRate = self.requestedVideoFormat[@"frameRate"];
+        TVIVideoFormat *customFormat = [[TVIVideoFormat alloc] init];
+        customFormat.dimensions = format.dimensions;
+        customFormat.frameRate = [frameRate unsignedIntValue];
+        customFormat.pixelFormat = format.pixelFormat;
+        format = customFormat;
+    }
+
+    if (format != nil) {
+        [self.camera
+                startCaptureWithDevice:camera
+                                format:format
+                            completion:^(AVCaptureDevice *device,
+                                         TVIVideoFormat *startFormat, NSError *error) {
+                              if (!error) {
+                                  for (TVIVideoView *renderer in self.localVideoTrack
+                                               .renderers) {
+                                      [self updateLocalViewMirroring:renderer];
+                                  }
+                                  [self sendEventCheckingListenerWithName:cameraDidStart
+                                                                     body:nil];
                               }
-                              [self sendEventCheckingListenerWithName:cameraDidStart
-                                                                 body:nil];
-                          }
-                        }];
+                            }];
+    } else {
+        // Fallback to default behavior without explicit format
+        [self.camera
+                startCaptureWithDevice:camera
+                            completion:^(AVCaptureDevice *device,
+                                         TVIVideoFormat *startFormat, NSError *error) {
+                              if (!error) {
+                                  for (TVIVideoView *renderer in self.localVideoTrack
+                                               .renderers) {
+                                      [self updateLocalViewMirroring:renderer];
+                                  }
+                                  [self sendEventCheckingListenerWithName:cameraDidStart
+                                                                     body:nil];
+                              }
+                            }];
+    }
 }
 
 RCT_EXPORT_METHOD(startLocalAudio) {
@@ -837,13 +905,16 @@ RCT_EXPORT_METHOD(
                         encodingParameters enableNetworkQualityReporting : (BOOL)
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
                                         dominantSpeakerEnabled cameraType : (NSString *)
-                                                cameraType enableDataTrack : (BOOL) enableDataTrack) {
+                                                cameraType enableDataTrack : (BOOL) enableDataTrack videoFormat : (NSDictionary *) videoFormat) {
 
     if (accessToken == nil || [accessToken length] == 0) {
         NSMutableDictionary *body = [@{@"error": @"Access token is required"} mutableCopy];
         [self sendEventCheckingListenerWithName:roomDidFailToConnect body:body];
         return;
     }
+
+    // Store the requested video format (nil means auto-select best)
+    self.requestedVideoFormat = videoFormat;
 
     // Only create video track if enabled during connect
     if (enableVideo) {

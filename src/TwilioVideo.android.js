@@ -379,6 +379,7 @@ class CustomTwilioVideoView extends Component {
    * @param {boolean} [params.maintainVideoTrackInBackground=false] - Whether to maintain video track in background
    * @param {Object} [params.encodingParameters={}] - Video encoding parameters
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
+   * @param {Object} [params.videoFormat=null] - Video capture format { width, height, frameRate }
    */
   connect({
     roomName,
@@ -392,6 +393,7 @@ class CustomTwilioVideoView extends Component {
     maintainVideoTrackInBackground = false,
     encodingParameters = {},
     enableDataTrack = false,
+    videoFormat = null,
   }) {
     this.runCommand(nativeEvents.connectToRoom, [
       roomName,
@@ -405,6 +407,7 @@ class CustomTwilioVideoView extends Component {
       cameraType,
       encodingParameters,
       enableDataTrack,
+      videoFormat,
     ]);
   }
 

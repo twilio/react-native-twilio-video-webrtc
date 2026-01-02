@@ -494,6 +494,7 @@ export default class TwilioVideo extends Component {
    * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
+   * @param {Object} [params.videoFormat=null] - Video capture format { width, height, frameRate }
    */
   connect({
     roomName,
@@ -505,6 +506,7 @@ export default class TwilioVideo extends Component {
     enableNetworkQualityReporting = false,
     dominantSpeakerEnabled = false,
     enableDataTrack = false,
+    videoFormat = null,
   }) {
     TWVideoModule.connect(
       accessToken,
@@ -515,7 +517,8 @@ export default class TwilioVideo extends Component {
       enableNetworkQualityReporting,
       dominantSpeakerEnabled,
       cameraType,
-      enableDataTrack
+      enableDataTrack,
+      videoFormat
     );
   }
 

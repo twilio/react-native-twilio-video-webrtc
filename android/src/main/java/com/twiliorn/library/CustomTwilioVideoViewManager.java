@@ -115,6 +115,26 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ReadableMap encodingParameters = args.getMap(9);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
                 boolean enableDataTrack = args.getBoolean(10);
+                
+                // Parse optional videoFormat (index 11)
+                int videoWidth = 0;
+                int videoHeight = 0;
+                int videoFrameRate = 0;
+                if (args.size() > 11 && !args.isNull(11)) {
+                    ReadableMap videoFormat = args.getMap(11);
+                    if (videoFormat != null) {
+                        if (videoFormat.hasKey("width")) {
+                            videoWidth = videoFormat.getInt("width");
+                        }
+                        if (videoFormat.hasKey("height")) {
+                            videoHeight = videoFormat.getInt("height");
+                        }
+                        if (videoFormat.hasKey("frameRate")) {
+                            videoFrameRate = videoFormat.getInt("frameRate");
+                        }
+                    }
+                }
+                
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
@@ -126,7 +146,10 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         maintainVideoTrackInBackground,
                         cameraType,
                         enableH264Codec,
-                        enableDataTrack);
+                        enableDataTrack,
+                        videoWidth,
+                        videoHeight,
+                        videoFrameRate);
                 break;
             case DISCONNECT:
                 view.disconnect();

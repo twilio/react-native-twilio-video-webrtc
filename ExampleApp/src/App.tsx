@@ -8,6 +8,7 @@ import {
     Switch,
     ScrollView,
     Modal,
+    TextInput,
 } from "react-native";
 import {
     TwilioVideoLocalView,
@@ -28,6 +29,19 @@ const ToggleRow = ({ label, value, onValueChange }: { label: string, value: bool
     <View style={styles.toggleRow}>
         <Text style={{ marginRight: 6 }}>{label}</Text>
         <Switch value={value} onValueChange={onValueChange} />
+    </View>
+);
+
+const NumberInput = ({ label, value, onChangeText, placeholder }: { label: string, value: string, onChangeText: (v: string) => void, placeholder?: string }) => (
+    <View style={styles.toggleRow}>
+        <Text style={{ marginRight: 6, flex: 1 }}>{label}</Text>
+        <TextInput
+            style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4, width: 80, textAlign: 'center' }}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            keyboardType="numeric"
+        />
     </View>
 );
 
@@ -70,6 +84,12 @@ const Example = () => {
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [logs, setLogs] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
+    
+    // Video format settings (empty string = auto-select best)
+    const [useCustomVideoFormat, setUseCustomVideoFormat] = useState(false);
+    const [videoWidth, setVideoWidth] = useState("");
+    const [videoHeight, setVideoHeight] = useState("");
+    const [videoFrameRate, setVideoFrameRate] = useState("");
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
     const insets = useSafeAreaInsets();
@@ -89,6 +109,10 @@ const Example = () => {
         setEnableH264Codec(false);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
+        setUseCustomVideoFormat(false);
+        setVideoWidth("");
+        setVideoHeight("");
+        setVideoFrameRate("");
     };
 
     const _requestAudioPermission = () => {
@@ -126,6 +150,13 @@ const Example = () => {
             await request(PERMISSIONS.IOS.MICROPHONE);
         }
 
+        // Build videoFormat if custom format is enabled
+        const videoFormat = useCustomVideoFormat ? {
+            ...(videoWidth ? { width: parseInt(videoWidth, 10) } : {}),
+            ...(videoHeight ? { height: parseInt(videoHeight, 10) } : {}),
+            ...(videoFrameRate ? { frameRate: parseInt(videoFrameRate, 10) } : {}),
+        } : undefined;
+
         twilioRef.current?.connect({
             accessToken: token,
             enableAudio: isAudioEnabled,
@@ -135,6 +166,7 @@ const Example = () => {
             enableNetworkQualityReporting: networkQualityEnabled,
             dominantSpeakerEnabled,
             encodingParameters: { enableH264Codec },
+            videoFormat,
         });
         setStatus("connecting");
     };
@@ -425,6 +457,20 @@ const Example = () => {
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
+                    
+                    <ToggleRow label="Custom Video Format" value={useCustomVideoFormat} onValueChange={setUseCustomVideoFormat} />
+                    {useCustomVideoFormat && (
+                        <>
+                            <NumberInput label="Width (px)" value={videoWidth} onChangeText={setVideoWidth} placeholder="1280" />
+                            <NumberInput label="Height (px)" value={videoHeight} onChangeText={setVideoHeight} placeholder="720" />
+                            <NumberInput label="Frame Rate (fps)" value={videoFrameRate} onChangeText={setVideoFrameRate} placeholder="30" />
+                        </>
+                    )}
+                    {!useCustomVideoFormat && (
+                        <Text style={{ fontSize: 11, color: '#666', marginHorizontal: 16, marginBottom: 8 }}>
+                            Auto-selecting best camera format
+                        </Text>
+                    )}
 
                     <TouchableOpacity style={styles.button} onPress={_onConnectButtonPress}>
                         <Text style={{ fontSize: 12 }}>Join Room</Text>

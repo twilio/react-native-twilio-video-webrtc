@@ -168,6 +168,11 @@ public class CustomTwilioVideoView extends View
     private boolean enableH264Codec = false;
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
+    
+    // User-specified video format (0 means auto-select best)
+    private int requestedVideoWidth = 0;
+    private int requestedVideoHeight = 0;
+    private int requestedVideoFrameRate = 0;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
@@ -380,7 +385,64 @@ public class CustomTwilioVideoView extends View
     // ===== SETUP =================================================================================
 
     private VideoFormat buildVideoFormat() {
-        return new VideoFormat(VideoDimensions.CIF_VIDEO_DIMENSIONS, 15);
+        // If user specified dimensions, use them
+        if (requestedVideoWidth > 0 && requestedVideoHeight > 0) {
+            VideoDimensions dimensions = new VideoDimensions(requestedVideoWidth, requestedVideoHeight);
+            int frameRate = requestedVideoFrameRate > 0 ? requestedVideoFrameRate : 30;
+            return new VideoFormat(dimensions, frameRate);
+        }
+        
+        // Auto-select best format from camera
+        String cameraId = getCurrentCameraId();
+        if (cameraId != null) {
+            VideoFormat bestFormat = getBestVideoFormatForCamera(cameraId);
+            if (bestFormat != null) {
+                return bestFormat;
+            }
+        }
+        
+        // Fallback to HD 720p @ 30fps
+        return new VideoFormat(VideoDimensions.HD_720P_VIDEO_DIMENSIONS, 30);
+    }
+    
+    private String getCurrentCameraId() {
+        if (cameraCapturer != null) {
+            return cameraCapturer.getCameraId();
+        }
+        // Return the camera ID based on cameraType preference
+        buildDeviceInfo();
+        if (FRONT_CAMERA_TYPE.equals(cameraType)) {
+            return frontFacingDevice != null ? frontFacingDevice : backFacingDevice;
+        } else {
+            return backFacingDevice != null ? backFacingDevice : frontFacingDevice;
+        }
+    }
+    
+    private VideoFormat getBestVideoFormatForCamera(String cameraId) {
+        if (cameraId == null) {
+            return null;
+        }
+        Camera1Enumerator enumerator = new Camera1Enumerator();
+        List<tvi.webrtc.CameraEnumerationAndroid.CaptureFormat> formats = enumerator.getSupportedFormats(cameraId);
+        if (formats == null || formats.isEmpty()) {
+            return null;
+        }
+        // Find the format with highest resolution
+        tvi.webrtc.CameraEnumerationAndroid.CaptureFormat bestFormat = null;
+        int maxPixels = 0;
+        for (tvi.webrtc.CameraEnumerationAndroid.CaptureFormat format : formats) {
+            int pixels = format.width * format.height;
+            if (pixels > maxPixels) {
+                maxPixels = pixels;
+                bestFormat = format;
+            }
+        }
+        if (bestFormat != null) {
+            // Use max framerate from the format's range, capped at 30fps
+            int frameRate = Math.min(bestFormat.framerate.max / 1000, 30);
+            return new VideoFormat(new VideoDimensions(bestFormat.width, bestFormat.height), frameRate);
+        }
+        return null;
     }
 
     private CameraCapturer createCameraCaputer(Context context, String cameraId) {
@@ -625,7 +687,10 @@ public class CustomTwilioVideoView extends View
             boolean maintainVideoTrackInBackground,
             String cameraType,
             boolean enableH264Codec,
-            boolean enableDataTrack) {
+            boolean enableDataTrack,
+            int videoWidth,
+            int videoHeight,
+            int videoFrameRate) {
         this.roomName = roomName;
         this.accessToken = accessToken;
         this.enableRemoteAudio = enableRemoteAudio;
@@ -635,6 +700,9 @@ public class CustomTwilioVideoView extends View
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
         this.isDataEnabled = enableDataTrack;
+        this.requestedVideoWidth = videoWidth;
+        this.requestedVideoHeight = videoHeight;
+        this.requestedVideoFrameRate = videoFrameRate;
 
         // Share your microphone
         if (enableAudio) {
