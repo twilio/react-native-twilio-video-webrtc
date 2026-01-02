@@ -149,6 +149,7 @@ declare module "@twilio/video-react-native-sdk" {
     localParticipant: Participant;
     state?: string;
     mediaRegion?: string;
+    signalingRegion?: string;
   };
 
   export type TwilioVideoProps = ViewProps & {
