@@ -8,6 +8,12 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
+## 3.4.1
+
+### Changes
+
+- Updated `expo` and `expo-module-scripts` versions to fix snyk vulnerabilities.
+- Added resolution for libraries `inflight` and `node-forge` to fix vulnerability.
 
 ## 3.4.0
 
