@@ -8,6 +8,7 @@
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
+
 ## 3.4.1
 
 ### Changes
