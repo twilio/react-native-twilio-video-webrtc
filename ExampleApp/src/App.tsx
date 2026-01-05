@@ -55,6 +55,74 @@ const LogPanel = React.memo(({ logs, scrollRef }: { logs: string[], scrollRef: R
 
 const SAMPLE_BINARY_BASE64 = "AQIDBA=="; // 0x01 0x02 0x03 0x04
 
+const REGIONS = [
+    { value: null, label: "No region selected" },
+    { value: "gll", label: "Global Low Latency (gll)" },
+    { value: "au1", label: "Australia (au1)" },
+    { value: "br1", label: "Brazil (br1)" },
+    { value: "de1", label: "Germany (de1)" },
+    { value: "ie1", label: "Ireland (ie1)" },
+    { value: "in1", label: "India (in1)" },
+    { value: "jp1", label: "Japan (jp1)" },
+    { value: "sg1", label: "Singapore (sg1)" },
+    { value: "us1", label: "US East Coast (us1)" },
+    { value: "us2", label: "US West Coast (us2)" },
+];
+
+const RegionPicker = ({ selectedRegion, onSelect }: { selectedRegion: string, onSelect: (region: string) => void }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const selectedLabel = REGIONS.find(r => r.value === selectedRegion)?.label || selectedRegion;
+
+    return (
+        <>
+            <TouchableOpacity
+                style={styles.regionPicker}
+                onPress={() => setIsOpen(true)}
+            >
+                <Text style={styles.regionPickerText}>{selectedLabel}</Text>
+                <Text style={styles.regionPickerArrow}>▼</Text>
+            </TouchableOpacity>
+            <Modal
+                visible={isOpen}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setIsOpen(false)}
+            >
+                <TouchableOpacity
+                    style={styles.regionModalOverlay}
+                    activeOpacity={1}
+                    onPress={() => setIsOpen(false)}
+                >
+                    <View style={styles.regionModalContainer}>
+                        <Text style={styles.regionModalTitle}>Select Region</Text>
+                        <ScrollView style={styles.regionList}>
+                            {REGIONS.map((region) => (
+                                <TouchableOpacity
+                                    key={region.value}
+                                    style={[
+                                        styles.regionOption,
+                                        selectedRegion === region.value && styles.regionOptionSelected
+                                    ]}
+                                    onPress={() => {
+                                        onSelect(region.value);
+                                        setIsOpen(false);
+                                    }}
+                                >
+                                    <Text style={[
+                                        styles.regionOptionText,
+                                        selectedRegion === region.value && styles.regionOptionTextSelected
+                                    ]}>
+                                        {region.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
+        </>
+    );
+};
 
 const Example = () => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -64,6 +132,7 @@ const Example = () => {
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
+    const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
     const [isSharing, setIsSharing] = useState(false);
     const [status, setStatus] = useState("disconnected");
     const [videoTracks, setVideoTracks] = useState(new Map());
@@ -87,6 +156,7 @@ const Example = () => {
         setNetworkQualityEnabled(false);
         setDominantSpeakerEnabled(false);
         setEnableH264Codec(false);
+        setSelectedRegion(null);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
     };
@@ -125,9 +195,9 @@ const Example = () => {
             await request(PERMISSIONS.IOS.CAMERA);
             await request(PERMISSIONS.IOS.MICROPHONE);
         }
-
         twilioRef.current?.connect({
             accessToken: token,
+            region: selectedRegion,
             enableAudio: isAudioEnabled,
             enableVideo: isVideoEnabled,
             enableDataTrack: isDataTrackEnabled,
@@ -319,11 +389,11 @@ const Example = () => {
         }
     };
 
-    const _onRoomFetched = ({ name, state: roomState, remoteParticipants }: RoomFetchedEventArgs) => {
+    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, signalingRegion }: RoomFetchedEventArgs) => {
         const roomName = name || "unknown";
         const state = roomState || "unknown";
         const remoteCount = remoteParticipants?.length;
-        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s)`);
+        _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s) ${signalingRegion ? `in region ${signalingRegion}` : ""}`);
     };
 
     const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
@@ -418,6 +488,11 @@ const Example = () => {
             {status === "disconnected" && (
                 <ScrollView>
                     <Text style={styles.welcome}>React Native Twilio Video</Text>
+
+                    <View style={styles.regionPickerContainer}>
+                        <Text style={styles.regionPickerLabel}>Signaling Region:</Text>
+                        <RegionPicker selectedRegion={selectedRegion} onSelect={setSelectedRegion} />
+                    </View>
 
                     <ToggleRow label="Connect with video enabled" value={isVideoEnabled} onValueChange={setIsVideoEnabled} />
                     <ToggleRow label="Connect with audio enabled" value={isAudioEnabled} onValueChange={setIsAudioEnabled} />

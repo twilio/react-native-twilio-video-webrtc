@@ -285,6 +285,7 @@ public class CustomTwilioVideoView extends View
     private static Room room;
     private String roomName = null;
     private String accessToken = null;
+    private String region = null;
     private LocalParticipant localParticipant;
 
     /*
@@ -347,7 +348,7 @@ public class CustomTwilioVideoView extends View
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
-        // Set properties for Video Insights reporting 
+        // Set properties for Video Insights reporting
         System.setProperty(PRODUCT_NAME_KEY, TwilioVideoConstants.kTwilioVideoReactNativeName);
         System.setProperty(PRODUCT_VERSION_KEY, TwilioVideoConstants.kTwilioVideoReactNativeVersion);
 
@@ -617,6 +618,7 @@ public class CustomTwilioVideoView extends View
     public void connectToRoomWrapper(
             String roomName,
             String accessToken,
+            String region,
             boolean enableAudio,
             boolean enableVideo,
             boolean enableRemoteAudio,
@@ -635,6 +637,7 @@ public class CustomTwilioVideoView extends View
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
         this.isDataEnabled = enableDataTrack;
+        this.region = region;
 
         // Share your microphone
         if (enableAudio) {
@@ -676,6 +679,11 @@ public class CustomTwilioVideoView extends View
         }
 
         ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(this.accessToken);
+
+
+        if (this.region != null) {
+            connectOptionsBuilder.region(this.region);
+        }
 
         if (this.roomName != null) {
             connectOptionsBuilder.roomName(this.roomName);
@@ -1744,6 +1752,7 @@ public class CustomTwilioVideoView extends View
         roomMap.putMap("dominantSpeaker", currentRoom.getDominantSpeaker() != null ? buildParticipantWithTracks(currentRoom.getDominantSpeaker()) : null);
         roomMap.putArray("remoteParticipants", buildRemoteParticipants(currentRoom.getRemoteParticipants()));
         roomMap.putMap("localParticipant", buildParticipantWithTracks(currentRoom.getLocalParticipant()));
+        roomMap.putString("signalingRegion", currentRoom.getLocalParticipant() != null ? currentRoom.getLocalParticipant().getSignalingRegion() : "");
         return roomMap;
     }
 
