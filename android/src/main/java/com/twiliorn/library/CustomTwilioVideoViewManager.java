@@ -115,14 +115,14 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 String cameraType = args.getString(9);
                 ReadableMap encodingParameters = args.getMap(10);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
-                boolean enableDataTrack = args.getBoolean(10);
+                boolean enableDataTrack = args.getBoolean(11);
                 
                 // Parse optional videoFormat (index 11)
                 int videoWidth = 0;
                 int videoHeight = 0;
                 int videoFrameRate = 0;
-                if (args.size() > 11 && !args.isNull(11)) {
-                    ReadableMap videoFormat = args.getMap(11);
+                if (args.size() > 11 && !args.isNull(12)) {
+                    ReadableMap videoFormat = args.getMap(12);
                     if (videoFormat != null) {
                         if (videoFormat.hasKey("width")) {
                             videoWidth = videoFormat.getInt("width");
