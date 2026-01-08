@@ -226,7 +226,7 @@ export default class TwilioVideo extends Component {
     /**
      * Called when requesting a room snapshot via fetchRoom
      *
-     * @param {{sid?: string, name?: string, mediaRegion?: string, state?: string, localParticipant: Participant, remoteParticipants: Participant[], dominantSpeaker?: Participant}}
+     * @param {{sid?: string, name?: string, mediaRegion?: string, state?: string, localParticipant: Participant, signalingRegion?: string, remoteParticipants: Participant[], dominantSpeaker?: Participant}}
      */
     onRoomFetched: PropTypes.func,
     /**
@@ -487,6 +487,7 @@ export default class TwilioVideo extends Component {
    * @param {Object} params - Connection parameters
    * @param {string} params.roomName - The room name to connect to
    * @param {string} params.accessToken - The Twilio JWT access token
+   * @param {string} params.region - The Twilio Signaling Region to connect to
    * @param {'front'|'back'} [params.cameraType='front'] - Camera type to use
    * @param {boolean} [params.enableAudio=true] - Whether to enable audio
    * @param {boolean} [params.enableVideo=true] - Whether to enable video
@@ -499,6 +500,7 @@ export default class TwilioVideo extends Component {
   connect({
     roomName,
     accessToken,
+    region,
     cameraType = "front",
     enableAudio = true,
     enableVideo = true,
@@ -511,6 +513,7 @@ export default class TwilioVideo extends Component {
     TWVideoModule.connect(
       accessToken,
       roomName,
+      region,
       enableAudio,
       enableVideo,
       encodingParameters,

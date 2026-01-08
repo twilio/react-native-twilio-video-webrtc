@@ -909,7 +909,7 @@ RCT_EXPORT_METHOD(fetchRoom) {
 
 RCT_EXPORT_METHOD(
         connect : (NSString *) accessToken roomName : (
-                NSString *) roomName enableAudio : (BOOL) enableAudio enableVideo : (BOOL)
+                NSString *) roomName region : (NSString *) region enableAudio : (BOOL) enableAudio enableVideo : (BOOL)
                 enableVideo encodingParameters : (NSDictionary *)
                         encodingParameters enableNetworkQualityReporting : (BOOL)
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
@@ -964,6 +964,9 @@ RCT_EXPORT_METHOD(
                                  dominantSpeakerEnabled ? YES : NO;
 
                          builder.roomName = roomName;
+                         if (region) {
+                             builder.region = region;
+                         }
 
                          [supportedCodecs addObject:@"VP8"];
                          if (enableH264) {
@@ -1178,9 +1181,9 @@ RCT_EXPORT_METHOD(disconnect) {
     TVIRemoteParticipant *dominantSpeaker = room.dominantSpeaker;
     body[@"dominantSpeaker"] =
             dominantSpeaker ? [self participantWithTracks:dominantSpeaker] : [NSNull null];
-
     body[@"state"] = [self stringForRoomState:room.state];
     body[@"mediaRegion"] = room.mediaRegion ?: @"";
+    body[@"signalingRegion"] = localParticipant.signalingRegion ?: @"";
 
     return body;
 }

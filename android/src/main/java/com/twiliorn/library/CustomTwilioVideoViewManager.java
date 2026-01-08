@@ -105,14 +105,15 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
             case CONNECT_TO_ROOM:
                 String roomName = args.getString(0);
                 String accessToken = args.getString(1);
-                boolean enableAudio = args.getBoolean(2);
-                boolean enableVideo = args.getBoolean(3);
-                boolean enableRemoteAudio = args.getBoolean(4);
-                boolean enableNetworkQualityReporting = args.getBoolean(5);
-                boolean dominantSpeakerEnabled = args.getBoolean(6);
-                boolean maintainVideoTrackInBackground = args.getBoolean(7);
-                String cameraType = args.getString(8);
-                ReadableMap encodingParameters = args.getMap(9);
+                String region = args.getString(2);
+                boolean enableAudio = args.getBoolean(3);
+                boolean enableVideo = args.getBoolean(4);
+                boolean enableRemoteAudio = args.getBoolean(5);
+                boolean enableNetworkQualityReporting = args.getBoolean(6);
+                boolean dominantSpeakerEnabled = args.getBoolean(7);
+                boolean maintainVideoTrackInBackground = args.getBoolean(8);
+                String cameraType = args.getString(9);
+                ReadableMap encodingParameters = args.getMap(10);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
                 boolean enableDataTrack = args.getBoolean(10);
                 
@@ -138,6 +139,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
+                        region,
                         enableAudio,
                         enableVideo,
                         enableRemoteAudio,

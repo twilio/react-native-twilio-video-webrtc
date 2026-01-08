@@ -4,7 +4,12 @@
 
 - Added `videoFormat` option to `connect()` method on both iOS and Android platforms. This allows users to specify the desired video capture format (width, height, and frame rate) when connecting to a room. When `videoFormat` is not provided, the SDK automatically selects the best available format from the camera.
 
----
+- Added `region` connect option for both Android and iOS to specify the [Twilio Signaling Region](https://www.twilio.com/docs/video/tutorials/video-regions-and-global-low-latency) (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`). The `onRoomFetched` callback will now return the local participant's selected region via the `signalingRegion` parameter.
+- Added a region selector dropdown to the Example App main menu for testing different Twilio Signaling Regions.
+
+### Known issues
+
+- Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
 
 ## 3.4.1
 
