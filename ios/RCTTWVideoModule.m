@@ -133,13 +133,6 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectFittingFormat(AVCaptureDevice 
     NSOrderedSet<TVIVideoFormat *> *formats =
             [TVICameraSource supportedFormatsForDevice:device];
 
-    // Log all supported formats
-    NSLog(@"[RCTTWVideoModule] Supported formats for device:");
-    for (TVIVideoFormat *format in formats) {
-        CMVideoDimensions dimensions = format.dimensions;
-        NSLog(@"[RCTTWVideoModule]   %dx%d @ %lu fps", dimensions.width, dimensions.height, (unsigned long)format.frameRate);
-    }
-
     int64_t targetPixels = (int64_t)targetWidth * targetHeight;
     int64_t maxFittingPixels = 0;
     int64_t maxFittingPixelsWithFrameRate = 0;
