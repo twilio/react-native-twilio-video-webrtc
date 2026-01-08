@@ -84,7 +84,7 @@ const Example = () => {
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [logs, setLogs] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
-    
+
     // Video format settings (empty string = auto-select best)
     const [useCustomVideoFormat, setUseCustomVideoFormat] = useState(false);
     const [videoWidth, setVideoWidth] = useState("");
@@ -457,13 +457,13 @@ const Example = () => {
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
-                    
+
                     <ToggleRow label="Custom Video Format" value={useCustomVideoFormat} onValueChange={setUseCustomVideoFormat} />
                     {useCustomVideoFormat && (
                         <>
-                            <NumberInput label="Width (px)" value={videoWidth} onChangeText={setVideoWidth} placeholder="1280" />
-                            <NumberInput label="Height (px)" value={videoHeight} onChangeText={setVideoHeight} placeholder="720" />
-                            <NumberInput label="Frame Rate (fps)" value={videoFrameRate} onChangeText={setVideoFrameRate} placeholder="30" />
+                            <NumberInput label="Width (px)" value={videoWidth} onChangeText={setVideoWidth} />
+                            <NumberInput label="Height (px)" value={videoHeight} onChangeText={setVideoHeight} />
+                            <NumberInput label="Frame Rate (fps)" value={videoFrameRate} onChangeText={setVideoFrameRate} />
                         </>
                     )}
                     {!useCustomVideoFormat && (

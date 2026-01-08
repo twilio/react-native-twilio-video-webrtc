@@ -1,3 +1,11 @@
+## 3.5.0
+
+### Changes
+
+- Added `videoFormat` option to `connect()` method on both iOS and Android platforms. This allows users to specify the desired video capture format (width, height, and frame rate) when connecting to a room. When `videoFormat` is not provided, the SDK automatically selects the best available format from the camera.
+
+---
+
 ## 3.4.1
 
 ### Changes

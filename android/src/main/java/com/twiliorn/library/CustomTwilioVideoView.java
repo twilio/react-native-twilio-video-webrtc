@@ -138,6 +138,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import tvi.webrtc.Camera1Enumerator;
+import tvi.webrtc.CameraEnumerationAndroid.CaptureFormat;
 import tvi.webrtc.HardwareVideoDecoderFactory;
 import tvi.webrtc.HardwareVideoEncoderFactory;
 import tvi.webrtc.VideoCodecInfo;
@@ -168,7 +169,7 @@ public class CustomTwilioVideoView extends View
     private boolean enableH264Codec = false;
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
-    
+
     // User-specified video format (0 means auto-select best)
     private int requestedVideoWidth = 0;
     private int requestedVideoHeight = 0;
@@ -352,7 +353,7 @@ public class CustomTwilioVideoView extends View
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
-        // Set properties for Video Insights reporting 
+        // Set properties for Video Insights reporting
         System.setProperty(PRODUCT_NAME_KEY, TwilioVideoConstants.kTwilioVideoReactNativeName);
         System.setProperty(PRODUCT_VERSION_KEY, TwilioVideoConstants.kTwilioVideoReactNativeVersion);
 
@@ -391,8 +392,8 @@ public class CustomTwilioVideoView extends View
             int frameRate = requestedVideoFrameRate > 0 ? requestedVideoFrameRate : 30;
             return new VideoFormat(dimensions, frameRate);
         }
-        
-        // Auto-select best format from camera
+
+        // Autoselect best format from camera
         String cameraId = getCurrentCameraId();
         if (cameraId != null) {
             VideoFormat bestFormat = getBestVideoFormatForCamera(cameraId);
@@ -400,11 +401,11 @@ public class CustomTwilioVideoView extends View
                 return bestFormat;
             }
         }
-        
+
         // Fallback to HD 720p @ 30fps
         return new VideoFormat(VideoDimensions.HD_720P_VIDEO_DIMENSIONS, 30);
     }
-    
+
     private String getCurrentCameraId() {
         if (cameraCapturer != null) {
             return cameraCapturer.getCameraId();
@@ -417,20 +418,20 @@ public class CustomTwilioVideoView extends View
             return backFacingDevice != null ? backFacingDevice : frontFacingDevice;
         }
     }
-    
+
     private VideoFormat getBestVideoFormatForCamera(String cameraId) {
         if (cameraId == null) {
             return null;
         }
         Camera1Enumerator enumerator = new Camera1Enumerator();
-        List<tvi.webrtc.CameraEnumerationAndroid.CaptureFormat> formats = enumerator.getSupportedFormats(cameraId);
+        List<CaptureFormat> formats = enumerator.getSupportedFormats(cameraId);
         if (formats == null || formats.isEmpty()) {
             return null;
         }
         // Find the format with highest resolution
-        tvi.webrtc.CameraEnumerationAndroid.CaptureFormat bestFormat = null;
+        CaptureFormat bestFormat = null;
         int maxPixels = 0;
-        for (tvi.webrtc.CameraEnumerationAndroid.CaptureFormat format : formats) {
+        for (CaptureFormat format : formats) {
             int pixels = format.width * format.height;
             if (pixels > maxPixels) {
                 maxPixels = pixels;
@@ -438,14 +439,13 @@ public class CustomTwilioVideoView extends View
             }
         }
         if (bestFormat != null) {
-            // Use max framerate from the format's range, capped at 30fps
-            int frameRate = Math.min(bestFormat.framerate.max / 1000, 30);
+            int frameRate = (bestFormat.framerate.max / 1000);
             return new VideoFormat(new VideoDimensions(bestFormat.width, bestFormat.height), frameRate);
         }
         return null;
     }
 
-    private CameraCapturer createCameraCaputer(Context context, String cameraId) {
+    private CameraCapturer createCameraCapturer(Context context, String cameraId) {
         CameraCapturer newCameraCapturer = null;
         try {
             newCameraCapturer = new CameraCapturer(
@@ -502,17 +502,17 @@ public class CustomTwilioVideoView extends View
 
         if (cameraType.equals(CustomTwilioVideoView.FRONT_CAMERA_TYPE)) {
             if (frontFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), frontFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), backFacingDevice);
             }
         } else {
             if (backFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), backFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), frontFacingDevice);
             }
         }
 
