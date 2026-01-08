@@ -401,6 +401,15 @@ RCT_EXPORT_METHOD(startLocalVideo) {
         format = RCTTWVideoModuleCameraSourceSelectBestFormat(camera);
     }
 
+    // Fallback to default HD format if no format found (matches Android behavior)
+    if (format == nil) {
+        TVIVideoFormat *defaultFormat = [[TVIVideoFormat alloc] init];
+        defaultFormat.dimensions = kRCTTWVideoAppCameraSourceDimensionsDefault;
+        defaultFormat.frameRate = kRCTTWVideoCameraSourceFrameRateDefault;
+        defaultFormat.pixelFormat = TVIPixelFormatYUV420BiPlanarFullRange;
+        format = defaultFormat;
+    }
+
     if (format != nil) {
         [self.camera
                 startCaptureWithDevice:camera
