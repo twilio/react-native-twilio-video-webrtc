@@ -56,6 +56,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_TRANSCRIPTION_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
 
 import androidx.annotation.Nullable;
@@ -116,6 +117,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ReadableMap encodingParameters = args.getMap(10);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
                 boolean enableDataTrack = args.getBoolean(11);
+                boolean receiveTranscriptions = args.getBoolean(12);
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
@@ -128,7 +130,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         maintainVideoTrackInBackground,
                         cameraType,
                         enableH264Codec,
-                        enableDataTrack);
+                        enableDataTrack,
+                        receiveTranscriptions);
                 break;
             case DISCONNECT:
                 view.disconnect();
@@ -266,6 +269,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
 
         map.putAll(MapBuilder.of(
                 ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED)));
+
+        map.putAll(MapBuilder.of(
+                ON_TRANSCRIPTION_RECEIVED, MapBuilder.of("registrationName", ON_TRANSCRIPTION_RECEIVED)));
 
         return map;
     }

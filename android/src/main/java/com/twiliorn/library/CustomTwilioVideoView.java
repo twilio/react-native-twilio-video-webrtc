@@ -56,6 +56,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_TRANSCRIPTION_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
 
 import android.app.Activity;
@@ -137,6 +138,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONObject;
 import tvi.webrtc.Camera1Enumerator;
 import tvi.webrtc.HardwareVideoDecoderFactory;
 import tvi.webrtc.HardwareVideoEncoderFactory;
@@ -168,6 +170,7 @@ public class CustomTwilioVideoView extends View
     private boolean enableH264Codec = false;
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
+    private boolean receiveTranscriptions = false;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
@@ -218,7 +221,8 @@ public class CustomTwilioVideoView extends View
                 Events.ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED,
                 Events.ON_REMOTE_DATA_TRACK_PUBLISHED,
                 Events.ON_REMOTE_DATA_TRACK_UNPUBLISHED,
-                Events.ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED})
+                Events.ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED,
+                Events.ON_TRANSCRIPTION_RECEIVED})
     public @interface Events {
         String ON_CAMERA_SWITCHED = "onCameraSwitched";
         String ON_CAMERA_DID_START = "onCameraDidStart";
@@ -269,6 +273,7 @@ public class CustomTwilioVideoView extends View
         String ON_REMOTE_DATA_TRACK_PUBLISHED = "onRemoteDataTrackPublished";
         String ON_REMOTE_DATA_TRACK_UNPUBLISHED = "onRemoteDataTrackUnpublished";
         String ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED = "onRemoteDataTrackSubscriptionFailed";
+        String ON_TRANSCRIPTION_RECEIVED = "onTranscriptionReceived";
     }
 
     private final ThemedReactContext themedReactContext;
@@ -627,7 +632,8 @@ public class CustomTwilioVideoView extends View
             boolean maintainVideoTrackInBackground,
             String cameraType,
             boolean enableH264Codec,
-            boolean enableDataTrack) {
+            boolean enableDataTrack,
+            boolean receiveTranscriptions) {
         this.roomName = roomName;
         this.accessToken = accessToken;
         this.enableRemoteAudio = enableRemoteAudio;
@@ -637,6 +643,7 @@ public class CustomTwilioVideoView extends View
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
         this.isDataEnabled = enableDataTrack;
+        this.receiveTranscriptions = receiveTranscriptions;
         this.region = region;
 
         // Share your microphone
@@ -752,6 +759,8 @@ public class CustomTwilioVideoView extends View
                     NetworkQualityVerbosity.NETWORK_QUALITY_VERBOSITY_MINIMAL,
                     NetworkQualityVerbosity.NETWORK_QUALITY_VERBOSITY_MINIMAL));
         }
+
+        connectOptionsBuilder.receiveTranscriptions(this.receiveTranscriptions);
 
         room = Video.connect(getContext(), connectOptionsBuilder.build(), roomListener());
     }
@@ -1422,6 +1431,26 @@ public class CustomTwilioVideoView extends View
                 }
 
                 pushEvent(CustomTwilioVideoView.this, ON_DOMINANT_SPEAKER_CHANGED, event);
+            }
+
+            @Override
+            public void onTranscription(Room room, JSONObject json) {
+                try {
+                    WritableMap event = new WritableNativeMap();
+                    event.putString("transcription", json.optString("transcription", ""));
+                    event.putString("participant", json.optString("participant", ""));
+                    event.putString("track", json.optString("track", ""));
+                    event.putBoolean("partialResults", json.optBoolean("partial_results", false));
+                    if (json.has("stability")) {
+                        event.putDouble("stability", json.optDouble("stability", 0.0));
+                    }
+                    event.putString("languageCode", json.optString("language_code", ""));
+                    event.putString("timestamp", json.optString("timestamp", ""));
+                    event.putInt("sequenceNumber", json.optInt("sequence_number", 0));
+                    pushEvent(CustomTwilioVideoView.this, ON_TRANSCRIPTION_RECEIVED, event);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error processing transcription event", e);
+                }
             }
         };
     }

@@ -67,6 +67,7 @@ static NSString *statsReceived = @"statsReceived";
 static NSString *networkQualityLevelsChanged = @"networkQualityLevelsChanged";
 static NSString *dataChanged = @"dataChanged";
 static NSString *roomFetched = @"onRoomFetched";
+static NSString *transcriptionReceived = @"onTranscriptionReceived";
 
 static const char *kTWProductNameKey = "com.twilio.video.product.name";
 static const char *kTWProductVersionKey = "com.twilio.video.product.version";
@@ -225,6 +226,7 @@ RCT_EXPORT_MODULE();
         remoteDataTrackPublished,
         remoteDataTrackUnpublished,
         remoteDataTrackSubscriptionFailed,
+        transcriptionReceived,
 
     ];
 }
@@ -837,7 +839,7 @@ RCT_EXPORT_METHOD(
                         encodingParameters enableNetworkQualityReporting : (BOOL)
                                 enableNetworkQualityReporting dominantSpeakerEnabled : (BOOL)
                                         dominantSpeakerEnabled cameraType : (NSString *)
-                                                cameraType enableDataTrack : (BOOL) enableDataTrack) {
+                                                cameraType enableDataTrack : (BOOL) enableDataTrack receiveTranscriptions : (BOOL) receiveTranscriptions) {
 
     if (accessToken == nil || [accessToken length] == 0) {
         NSMutableDictionary *body = [@{@"error": @"Access token is required"} mutableCopy];
@@ -919,6 +921,7 @@ RCT_EXPORT_METHOD(
                                                     remoteVerbosity:
                                                             TVINetworkQualityVerbosityMinimal];
                          }
+                         builder.receiveTranscriptions = receiveTranscriptions;
                        }];
 
     if (supportedCodecs.count > 0) {
@@ -1317,6 +1320,35 @@ RCT_EXPORT_METHOD(disconnect) {
                                            @"roomName": room.name ?: @"",
                                            @"roomSid": room.sid ?: @""
                                        }];
+}
+
+- (void)room:(nonnull TVIRoom *)room didReceiveTranscription:(nonnull NSDictionary *)transcription {
+    NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+    if (transcription[@"transcription"]) {
+        body[@"transcription"] = transcription[@"transcription"];
+    }
+    if (transcription[@"participant"]) {
+        body[@"participant"] = transcription[@"participant"];
+    }
+    if (transcription[@"track"]) {
+        body[@"track"] = transcription[@"track"];
+    }
+    if (transcription[@"partial_results"]) {
+        body[@"partialResults"] = transcription[@"partial_results"];
+    }
+    if (transcription[@"stability"]) {
+        body[@"stability"] = transcription[@"stability"];
+    }
+    if (transcription[@"language_code"]) {
+        body[@"languageCode"] = transcription[@"language_code"];
+    }
+    if (transcription[@"timestamp"]) {
+        body[@"timestamp"] = transcription[@"timestamp"];
+    }
+    if (transcription[@"sequence_number"]) {
+        body[@"sequenceNumber"] = transcription[@"sequence_number"];
+    }
+    [self sendEventCheckingListenerWithName:transcriptionReceived body:body];
 }
 
 #pragma mark - TVIRemoteParticipantDelegate

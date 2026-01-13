@@ -340,6 +340,12 @@ const propTypes = {
     * @param {{supportedCodecs: string[]}}
     */
   onLocalParticipantSupportedCodecs: PropTypes.func,
+  /**
+    * Called when a transcription is received
+    *
+    * @param {{transcription: string, participant: string, track: string, partialResults: boolean, stability?: number, languageCode: string, timestamp: string, sequenceNumber: number}}
+    */
+  onTranscriptionReceived: PropTypes.func,
 };
 
 const nativeEvents = {
@@ -380,6 +386,7 @@ class CustomTwilioVideoView extends Component {
    * @param {boolean} [params.maintainVideoTrackInBackground=false] - Whether to maintain video track in background
    * @param {Object} [params.encodingParameters={}] - Video encoding parameters
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
+   * @param {boolean} [params.receiveTranscriptions=false] - Whether to receive transcription events
    */
   connect({
     roomName,
@@ -394,6 +401,7 @@ class CustomTwilioVideoView extends Component {
     maintainVideoTrackInBackground = false,
     encodingParameters = {},
     enableDataTrack = false,
+    receiveTranscriptions = false,
   }) {
     this.runCommand(nativeEvents.connectToRoom, [
       roomName,
@@ -408,6 +416,7 @@ class CustomTwilioVideoView extends Component {
       cameraType,
       encodingParameters,
       enableDataTrack,
+      receiveTranscriptions,
     ]);
   }
 
@@ -639,6 +648,7 @@ class CustomTwilioVideoView extends Component {
       "onRemoteDataTrackPublished",
       "onRemoteDataTrackUnpublished",
       "onRemoteDataTrackSubscriptionFailed",
+      "onTranscriptionReceived",
     ].reduce((wrappedEvents, eventName) => {
       if (this.props[eventName]) {
         return {

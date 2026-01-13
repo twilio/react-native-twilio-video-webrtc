@@ -4,6 +4,8 @@
 
 - Added `region` connect option for both Android and iOS to specify the [Twilio Signaling Region](https://www.twilio.com/docs/video/tutorials/video-regions-and-global-low-latency) (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`). The `onRoomFetched` callback will now return the local participant's selected region via the `signalingRegion` parameter.
 - Added a region selector dropdown to the Example App main menu for testing different Twilio Signaling Regions.
+- Added `receiveTranscriptions` connect option to enable receiving live transcription events when transcriptions are enabled on the room. When set to `true`, transcription events will be emitted via the `onTranscriptionReceived` callback. (Room needs to have transcription enabled)
+- Added `onTranscriptionReceived` callback that is called when a live transcription is received. The callback receives an object containing `transcription`, `participant`, `track`, `partialResults`, `stability`, `languageCode`, `timestamp`, and `sequenceNumber` properties.
 
 ### Known issues
 
