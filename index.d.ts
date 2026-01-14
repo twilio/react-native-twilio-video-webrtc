@@ -135,6 +135,19 @@ declare module "@twilio/video-react-native-sdk" {
 
   export type DataChangedCb = (e: DataChangedEventArgs) => void;
 
+  export type TranscriptionEventArgs = {
+    transcription: string;
+    participant: string;
+    track: string;
+    partialResults: boolean;
+    stability?: number;
+    languageCode: string;
+    timestamp: string;
+    sequenceNumber: number;
+  };
+
+  export type TranscriptionEventCb = (e: TranscriptionEventArgs) => void;
+
   export type ReconnectingEventArgs = RoomEventCommonArgs & {
     error: any;
   };
@@ -200,6 +213,7 @@ declare module "@twilio/video-react-native-sdk" {
     onRemoteDataTrackUnpublished?: TrackEventCb;
     onRemoteDataTrackSubscriptionFailed?: TrackErrorEventCb;
     onRoomFetched?: (event: RoomFetchedEventArgs) => void;
+    onTranscriptionReceived?: TranscriptionEventCb;
 
     onStatsReceived?: (data: any) => void;
     onDataTrackMessageReceived?: DataTrackEventCb;
@@ -224,6 +238,7 @@ declare module "@twilio/video-react-native-sdk" {
       videoBitrate?: number;
     };
     enableNetworkQualityReporting?: boolean;
+    receiveTranscriptions?: boolean;
   };
 
   type androidConnectParams = {
@@ -240,6 +255,7 @@ declare module "@twilio/video-react-native-sdk" {
     };
     enableNetworkQualityReporting?: boolean;
     maintainVideoTrackInBackground?: boolean;
+    receiveTranscriptions?: boolean;
   };
 
   class TwilioVideo extends React.Component<TwilioVideoProps> {

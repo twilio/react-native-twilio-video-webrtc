@@ -139,6 +139,7 @@ const Example = () => {
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [logs, setLogs] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
+    const [receiveTranscriptions, setReceiveTranscriptions] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
     const twilioRef = useRef<any>(null);
     const insets = useSafeAreaInsets();
@@ -159,6 +160,7 @@ const Example = () => {
         setSelectedRegion(null);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
+        setReceiveTranscriptions(false);
     };
 
     const _requestAudioPermission = () => {
@@ -205,6 +207,7 @@ const Example = () => {
             enableNetworkQualityReporting: networkQualityEnabled,
             dominantSpeakerEnabled,
             encodingParameters: { enableH264Codec },
+            receiveTranscriptions,
         });
         setStatus("connecting");
     };
@@ -483,6 +486,17 @@ const Example = () => {
         _log(`Room Did Reconnect ${event.roomName}`);
     };
 
+    const _onTranscriptionReceived = (event: any) => {
+        const transcriptionText = event?.transcription || "";
+        const participant = event?.participant || "unknown";
+        
+        if (transcriptionText) {
+            const displayText = `${participant}: ${transcriptionText}`;
+            
+            _log(`Transcription: ${displayText}`);
+        }
+    };
+
     return (
         <SafeAreaView style={{ ...styles.container, paddingBottom: insets.bottom }} >
             {status === "disconnected" && (
@@ -500,6 +514,7 @@ const Example = () => {
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
+                    <ToggleRow label="Receive Transcriptions" value={receiveTranscriptions} onValueChange={setReceiveTranscriptions} />
 
                     <TouchableOpacity style={styles.button} onPress={_onConnectButtonPress}>
                         <Text style={{ fontSize: 12 }}>Join Room</Text>
@@ -590,6 +605,7 @@ const Example = () => {
                 onRemoteDataTrackUnpublished={_onRemoteDataTrackUnpublished}
                 onRemoteDataTrackSubscriptionFailed={_onRemoteDataTrackSubscriptionFailed}
                 onRoomFetched={_onRoomFetched}
+                onTranscriptionReceived={_onTranscriptionReceived}
             />
 
             <Modal
