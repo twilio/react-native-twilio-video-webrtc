@@ -121,17 +121,21 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 int videoWidth = 0;
                 int videoHeight = 0;
                 int videoFrameRate = 0;
-                if (args.size() > 11 && !args.isNull(12)) {
+                if (args.size() > 12 && !args.isNull(12)) {
                     ReadableMap videoFormat = args.getMap(12);
                     if (videoFormat != null) {
-                        if (videoFormat.hasKey("width")) {
-                            videoWidth = videoFormat.getInt("width");
-                        }
-                        if (videoFormat.hasKey("height")) {
-                            videoHeight = videoFormat.getInt("height");
-                        }
-                        if (videoFormat.hasKey("frameRate")) {
-                            videoFrameRate = videoFormat.getInt("frameRate");
+                        boolean hasWidth = videoFormat.hasKey("width");
+                        boolean hasHeight = videoFormat.hasKey("height");
+                        boolean hasFrameRate = videoFormat.hasKey("frameRate");
+                        int widthValue = hasWidth ? videoFormat.getInt("width") : 0;
+                        int heightValue = hasHeight ? videoFormat.getInt("height") : 0;
+                        int frameRateValue = hasFrameRate ? videoFormat.getInt("frameRate") : 0;
+
+                        if (hasWidth && hasHeight && hasFrameRate &&
+                                widthValue > 0 && heightValue > 0 && frameRateValue > 0) {
+                            videoWidth = widthValue;
+                            videoHeight = heightValue;
+                            videoFrameRate = frameRateValue;
                         }
                     }
                 }

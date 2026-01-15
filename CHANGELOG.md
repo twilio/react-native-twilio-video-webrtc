@@ -2,7 +2,7 @@
 
 ### Changes
 
-- Added `videoFormat` option to `connect()` method on both iOS and Android platforms. This allows users to specify the maximum video capture format (width, height, and frame rate) when connecting to a room. When `videoFormat` is not provided, the SDK automatically selects the best available format from the camera, or fallbacks to 1280x720, 30 FPS video if the camera video format cannot be determined.
+- Added `videoFormat` option to `connect()` method on both iOS and Android platforms. This allows users to specify the maximum video capture format (width, height, and frame rate) when connecting to a room. When `videoFormat` is not provided, the SDK automatically selects the best available format from the camera, or fallbacks to 1280x720, 30 FPS video if the camera video format cannot be determined. Note: On Android, frame rates lower than 15 fps will have no effect.
 
 - Added `region` connect option for both Android and iOS to specify the [Twilio Signaling Region](https://www.twilio.com/docs/video/tutorials/video-regions-and-global-low-latency) (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`). The `onRoomFetched` callback will now return the local participant's selected region via the `signalingRegion` parameter.
 - Added a region selector dropdown to the Example App main menu for testing different Twilio Signaling Regions.

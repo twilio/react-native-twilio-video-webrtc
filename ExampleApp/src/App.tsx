@@ -83,9 +83,41 @@ const REGIONS = [
     { value: "us2", label: "US West Coast (us2)" },
 ];
 
-const RegionPicker = ({ selectedRegion, onSelect }: { selectedRegion: string, onSelect: (region: string) => void }) => {
+type VideoFormatPreset = {
+    value: string;
+    label: string;
+    width?: number;
+    height?: number;
+    frameRate?: number;
+};
+
+const VIDEO_FORMAT_PRESETS: VideoFormatPreset[] = [
+    { value: "default", label: "Default (auto-select best camera format)" },
+    { value: "1280x720_30", label: "1280x720, 30 FPS", width: 1280, height: 720, frameRate: 30 },
+    { value: "900x720_15", label: "900x720, 15 FPS", width: 900, height: 720, frameRate: 15 },
+    { value: "640x480_15", label: "640x480, 15 FPS", width: 640, height: 480, frameRate: 15 },
+    { value: "352x258_15", label: "352x258, 15 FPS", width: 352, height: 258, frameRate: 15 },
+    { value: "custom", label: "Custom video format" },
+];
+
+type PickerOption<T> = {
+    value: T;
+    label: string;
+};
+
+const Picker = <T extends string | null>({
+    options,
+    selectedValue,
+    onSelect,
+    title
+}: {
+    options: PickerOption<T>[];
+    selectedValue: T;
+    onSelect: (value: T) => void;
+    title: string;
+}) => {
     const [isOpen, setIsOpen] = useState(false);
-    const selectedLabel = REGIONS.find(r => r.value === selectedRegion)?.label || selectedRegion;
+    const selectedLabel = options.find(o => o.value === selectedValue)?.label || String(selectedValue);
 
     return (
         <>
@@ -108,25 +140,25 @@ const RegionPicker = ({ selectedRegion, onSelect }: { selectedRegion: string, on
                     onPress={() => setIsOpen(false)}
                 >
                     <View style={styles.regionModalContainer}>
-                        <Text style={styles.regionModalTitle}>Select Region</Text>
+                        <Text style={styles.regionModalTitle}>{title}</Text>
                         <ScrollView style={styles.regionList}>
-                            {REGIONS.map((region) => (
+                            {options.map((option) => (
                                 <TouchableOpacity
-                                    key={region.value}
+                                    key={String(option.value)}
                                     style={[
                                         styles.regionOption,
-                                        selectedRegion === region.value && styles.regionOptionSelected
+                                        selectedValue === option.value && styles.regionOptionSelected
                                     ]}
                                     onPress={() => {
-                                        onSelect(region.value);
+                                        onSelect(option.value);
                                         setIsOpen(false);
                                     }}
                                 >
                                     <Text style={[
                                         styles.regionOptionText,
-                                        selectedRegion === region.value && styles.regionOptionTextSelected
+                                        selectedValue === option.value && styles.regionOptionTextSelected
                                     ]}>
-                                        {region.label}
+                                        {option.label}
                                     </Text>
                                 </TouchableOpacity>
                             ))}
@@ -154,8 +186,8 @@ const Example = () => {
     const [logs, setLogs] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
 
-    // Video format settings (empty string = auto-select best)
-    const [useCustomVideoFormat, setUseCustomVideoFormat] = useState(false);
+    // Video format settings
+    const [selectedVideoFormatId, setSelectedVideoFormatId] = useState("default");
     const [videoWidth, setVideoWidth] = useState("");
     const [videoHeight, setVideoHeight] = useState("");
     const [videoFrameRate, setVideoFrameRate] = useState("");
@@ -179,7 +211,7 @@ const Example = () => {
         setSelectedRegion(null);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
-        setUseCustomVideoFormat(false);
+        setSelectedVideoFormatId("default");
         setVideoWidth("");
         setVideoHeight("");
         setVideoFrameRate("");
@@ -220,14 +252,32 @@ const Example = () => {
             await request(PERMISSIONS.IOS.MICROPHONE);
         }
 
-        // Build videoFormat if custom format is enabled
-        const videoFormat = useCustomVideoFormat ? {
-            ...(videoWidth ? { width: parseInt(videoWidth, 10) } : {}),
-            ...(videoHeight ? { height: parseInt(videoHeight, 10) } : {}),
-            ...(videoFrameRate ? { frameRate: parseInt(videoFrameRate, 10) } : {}),
-        } : undefined;
+        const customWidth = videoWidth ? parseInt(videoWidth, 10) : undefined;
+        const customHeight = videoHeight ? parseInt(videoHeight, 10) : undefined;
+        const customFrameRate = videoFrameRate ? parseInt(videoFrameRate, 10) : undefined;
 
-        twilioRef.current?.connect({
+        // Build videoFormat based on selected preset
+        let videoFormat: { width?: number; height?: number; frameRate?: number } | undefined;
+        const selectedPreset = VIDEO_FORMAT_PRESETS.find(f => f.value === selectedVideoFormatId);
+
+        if (selectedPreset) {
+            if (selectedPreset.value === "custom") {
+                if (customWidth && customHeight && customFrameRate) {
+                    videoFormat = {
+                        width: customWidth,
+                        height: customHeight,
+                        frameRate: customFrameRate,
+                    };
+                }
+            } else if (selectedPreset.value !== "default") {
+                videoFormat = {
+                    ...(selectedPreset.width ? { width: selectedPreset.width } : {}),
+                    ...(selectedPreset.height ? { height: selectedPreset.height } : {}),
+                    ...(selectedPreset.frameRate ? { frameRate: selectedPreset.frameRate } : {}),
+                };
+            }
+        }
+        const connectOptions: any = {
             accessToken: token,
             region: selectedRegion,
             enableAudio: isAudioEnabled,
@@ -237,8 +287,10 @@ const Example = () => {
             enableNetworkQualityReporting: networkQualityEnabled,
             dominantSpeakerEnabled,
             encodingParameters: { enableH264Codec },
-            videoFormat,
-        });
+            ...(videoFormat && { videoFormat }),
+        };
+
+        twilioRef.current?.connect(connectOptions);
         setStatus("connecting");
     };
 
@@ -524,7 +576,12 @@ const Example = () => {
 
                     <View style={styles.regionPickerContainer}>
                         <Text style={styles.regionPickerLabel}>Signaling Region:</Text>
-                        <RegionPicker selectedRegion={selectedRegion} onSelect={setSelectedRegion} />
+                        <Picker
+                            options={REGIONS}
+                            selectedValue={selectedRegion}
+                            onSelect={setSelectedRegion}
+                            title="Select Region"
+                        />
                     </View>
 
                     <ToggleRow label="Connect with video enabled" value={isVideoEnabled} onValueChange={setIsVideoEnabled} />
@@ -534,18 +591,21 @@ const Example = () => {
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
 
-                    <ToggleRow label="Custom Video Format" value={useCustomVideoFormat} onValueChange={setUseCustomVideoFormat} />
-                    {useCustomVideoFormat && (
+                    <View style={styles.regionPickerContainer}>
+                        <Text style={styles.regionPickerLabel}>Video Format:</Text>
+                        <Picker
+                            options={VIDEO_FORMAT_PRESETS}
+                            selectedValue={selectedVideoFormatId}
+                            onSelect={setSelectedVideoFormatId}
+                            title="Select Video Format"
+                        />
+                    </View>
+                    {selectedVideoFormatId === "custom" && (
                         <>
                             <NumberInput label="Width (px)" value={videoWidth} onChangeText={setVideoWidth} />
                             <NumberInput label="Height (px)" value={videoHeight} onChangeText={setVideoHeight} />
                             <NumberInput label="Frame Rate (fps)" value={videoFrameRate} onChangeText={setVideoFrameRate} />
                         </>
-                    )}
-                    {!useCustomVideoFormat && (
-                        <Text style={{ fontSize: 11, color: '#666', marginHorizontal: 16, marginBottom: 8 }}>
-                            Auto-selecting best camera format
-                        </Text>
                     )}
 
                     <TouchableOpacity style={styles.button} onPress={_onConnectButtonPress}>

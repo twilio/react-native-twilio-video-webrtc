@@ -16,11 +16,11 @@ declare module "@twilio/video-react-native-sdk" {
    */
   interface VideoFormat {
     /** Video width in pixels */
-    width?: number;
+    width: number;
     /** Video height in pixels */
-    height?: number;
+    height: number;
     /** Frame rate in frames per second */
-    frameRate?: number;
+    frameRate: number;
   }
 
   interface TwilioVideoParticipantViewProps extends ViewProps {
@@ -238,7 +238,7 @@ declare module "@twilio/video-react-native-sdk" {
     };
     enableNetworkQualityReporting?: boolean;
     /** Video capture format. When not specified, the best available camera format is used. */
-    videoFormat?: VideoFormat;
+    videoFormat?: VideoFormat | null;
   };
 
   type androidConnectParams = {
@@ -256,7 +256,7 @@ declare module "@twilio/video-react-native-sdk" {
     enableNetworkQualityReporting?: boolean;
     maintainVideoTrackInBackground?: boolean;
     /** Video capture format. When not specified, the best available camera format is used. */
-    videoFormat?: VideoFormat;
+    videoFormat?: VideoFormat | null;
   };
 
   class TwilioVideo extends React.Component<TwilioVideoProps> {

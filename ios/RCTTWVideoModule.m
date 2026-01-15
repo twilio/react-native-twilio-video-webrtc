@@ -129,29 +129,18 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectFittingFormat(AVCaptureDevice 
                                                                  int32_t targetHeight,
                                                                  NSUInteger targetFrameRate) {
     TVIVideoFormat *bestFittingFormat = nil;
-    TVIVideoFormat *bestFittingFormatWithFrameRate = nil;
     NSOrderedSet<TVIVideoFormat *> *formats =
             [TVICameraSource supportedFormatsForDevice:device];
 
     int64_t targetPixels = (int64_t)targetWidth * targetHeight;
     int64_t maxFittingPixels = 0;
-    int64_t maxFittingPixelsWithFrameRate = 0;
 
     // Find the largest format that fits within the target dimensions (pixels <= target)
-    // Prefer formats that match the requested frame rate
     for (TVIVideoFormat *format in formats) {
         CMVideoDimensions dimensions = format.dimensions;
         int64_t pixels = (int64_t)dimensions.width * dimensions.height;
 
         if (pixels <= targetPixels) {
-            // Prefer formats that match the requested frame rate
-            if (targetFrameRate > 0 && format.frameRate == targetFrameRate) {
-                if (pixels > maxFittingPixelsWithFrameRate) {
-                    maxFittingPixelsWithFrameRate = pixels;
-                    bestFittingFormatWithFrameRate = format;
-                }
-            }
-            // Also track the best fitting format regardless of frame rate
             if (pixels > maxFittingPixels) {
                 maxFittingPixels = pixels;
                 bestFittingFormat = format;
@@ -159,8 +148,19 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectFittingFormat(AVCaptureDevice 
         }
     }
 
-    // Return format with matching frame rate if found, otherwise return best fitting format
-    return bestFittingFormatWithFrameRate != nil ? bestFittingFormatWithFrameRate : bestFittingFormat;
+    // If we found a fitting format, create a new one with the same dimensions but our target frame rate
+    if (bestFittingFormat != nil && targetFrameRate > 0) {
+        CMVideoDimensions selectedDimensions = bestFittingFormat.dimensions;
+        TVIVideoFormat *customFormat = [[TVIVideoFormat alloc] init];
+        customFormat.dimensions = selectedDimensions;
+        customFormat.frameRate = targetFrameRate;
+        customFormat.pixelFormat = bestFittingFormat.pixelFormat;
+        return customFormat;
+    } else if (bestFittingFormat != nil) {
+        return bestFittingFormat;
+    } else {
+        return nil;
+    }
 }
 
 @interface RCTTWVideoModule () <
@@ -379,14 +379,28 @@ RCT_EXPORT_METHOD(startLocalVideo) {
 
     // Determine the video format to use
     TVIVideoFormat *format = nil;
+    
     if (self.requestedVideoFormat != nil) {
         // User specified a format - find the closest supported format
-        NSNumber *width = self.requestedVideoFormat[@"width"];
-        NSNumber *height = self.requestedVideoFormat[@"height"];
-        NSNumber *frameRate = self.requestedVideoFormat[@"frameRate"];
+        // Handle NSNull values from JavaScript (when null is passed for individual fields)
+        id widthValue = self.requestedVideoFormat[@"width"];
+        id heightValue = self.requestedVideoFormat[@"height"];
+        id frameRateValue = self.requestedVideoFormat[@"frameRate"];
+        
+        NSNumber *width = ([widthValue isKindOfClass:[NSNumber class]]) ? widthValue : nil;
+        NSNumber *height = ([heightValue isKindOfClass:[NSNumber class]]) ? heightValue : nil;
+        NSNumber *frameRate = ([frameRateValue isKindOfClass:[NSNumber class]]) ? frameRateValue : nil;
 
-        if (width != nil && height != nil) {
-            NSUInteger fps = frameRate != nil ? [frameRate unsignedIntegerValue] : 0;
+        BOOL hasCustomFormat =
+                width != nil &&
+                height != nil &&
+                frameRate != nil &&
+                [width intValue] > 0 &&
+                [height intValue] > 0 &&
+                [frameRate unsignedIntegerValue] > 0;
+
+        if (hasCustomFormat) {
+            NSUInteger fps = [frameRate unsignedIntegerValue];
             format = RCTTWVideoModuleCameraSourceSelectFittingFormat(
                 camera,
                 [width intValue],
@@ -923,7 +937,12 @@ RCT_EXPORT_METHOD(
     }
 
     // Store the requested video format (nil means auto-select best)
-    self.requestedVideoFormat = videoFormat;
+    // Handle NSNull from JavaScript (when null is passed explicitly)
+    if (videoFormat != nil && ![videoFormat isKindOfClass:[NSNull class]]) {
+        self.requestedVideoFormat = videoFormat;
+    } else {
+        self.requestedVideoFormat = nil;
+    }
 
     // Only create video track if enabled during connect
     if (enableVideo) {

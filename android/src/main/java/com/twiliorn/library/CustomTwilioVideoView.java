@@ -157,6 +157,8 @@ public class CustomTwilioVideoView extends View
     private static final String PRODUCT_NAME_KEY = "com.twilio.video.product.name";
     private static final String PRODUCT_VERSION_KEY = "com.twilio.video.product.version";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
+    private static final VideoDimensions DEFAULT_VIDEO_DIMENSIONS = VideoDimensions.HD_720P_VIDEO_DIMENSIONS;
+    private static final int DEFAULT_VIDEO_FRAME_RATE = 30;
     private boolean enableRemoteAudio = false;
     private boolean enableNetworkQualityReporting = false;
     private boolean isVideoEnabled = false;
@@ -387,11 +389,10 @@ public class CustomTwilioVideoView extends View
     // ===== SETUP =================================================================================
 
     private VideoFormat buildVideoFormat() {
-        // If user specified dimensions, use them
-        if (requestedVideoWidth > 0 && requestedVideoHeight > 0) {
+        // If user specified dimensions and frame rate, use them
+        if (requestedVideoWidth > 0 && requestedVideoHeight > 0 && requestedVideoFrameRate > 0) {
             VideoDimensions dimensions = new VideoDimensions(requestedVideoWidth, requestedVideoHeight);
-            int frameRate = requestedVideoFrameRate > 0 ? requestedVideoFrameRate : 30;
-            return new VideoFormat(dimensions, frameRate);
+            return new VideoFormat(dimensions, requestedVideoFrameRate);
         }
 
         // Autoselect best format from camera
@@ -404,7 +405,7 @@ public class CustomTwilioVideoView extends View
         }
 
         // Fallback to HD 720p @ 30fps
-        return new VideoFormat(VideoDimensions.HD_720P_VIDEO_DIMENSIONS, 30);
+        return new VideoFormat(DEFAULT_VIDEO_DIMENSIONS, DEFAULT_VIDEO_FRAME_RATE);
     }
 
     private String getCurrentCameraId() {
