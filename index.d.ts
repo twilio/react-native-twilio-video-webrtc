@@ -43,12 +43,12 @@ declare module "@twilio/video-react-native-sdk" {
     applyZOrder?: boolean | undefined;
   }
 
-  interface Participant {
+  export interface Participant {
     sid: string;
     identity: string;
   }
 
-  interface Track {
+  export interface Track {
     enabled: boolean;
     trackName: string;
     trackSid: string;
@@ -80,7 +80,7 @@ declare module "@twilio/video-react-native-sdk" {
 
   export type DataTrackEventCb = (t: DataTrackEventCbArgs) => void;
 
-  interface RoomEventCommonArgs {
+  export interface RoomEventCommonArgs {
     roomName: string;
     roomSid: string;
   }
@@ -89,16 +89,16 @@ declare module "@twilio/video-react-native-sdk" {
     error: any;
   };
 
-  type RoomEventArgs = RoomEventCommonArgs & {
+  export type RoomEventArgs = RoomEventCommonArgs & {
     participants: Participant[];
     localParticipant: Participant;
   };
 
-  type ParticipantEventArgs = RoomEventCommonArgs & {
+  export type ParticipantEventArgs = RoomEventCommonArgs & {
     participant: Participant;
   };
 
-  type NetworkLevelChangeEventArgs = {
+  export type NetworkLevelChangeEventArgs = {
     participant: Participant;
     isLocalUser: boolean;
     quality: number;
