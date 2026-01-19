@@ -1145,20 +1145,37 @@ public class CustomTwilioVideoView extends View
     }
 
     public void publishLocalVideo(boolean enabled) {
-        if (localParticipant != null && localVideoTrack != null) {
-            if (enabled) {
+        if (enabled) {
+            // Create the video track if it doesn't exist
+            if (cameraCapturer == null) {
+                String fallbackCameraType = cameraType == null ? CustomTwilioVideoView.FRONT_CAMERA_TYPE : cameraType;
+                boolean createVideoStatus = createLocalVideo(true, fallbackCameraType);
+                if (!createVideoStatus) {
+                    Log.d("RNTwilioVideo", "Failed to create local video");
+                    return;
+                }
+            }
+            if (localParticipant != null && localVideoTrack != null) {
                 localParticipant.publishTrack(localVideoTrack);
-            } else {
+            }
+        } else {
+            if (localParticipant != null && localVideoTrack != null) {
                 localParticipant.unpublishTrack(localVideoTrack);
             }
         }
     }
 
     public void publishLocalAudio(boolean enabled) {
-        if (localParticipant != null && localAudioTrack != null) {
-            if (enabled) {
+        if (enabled) {
+            // Create the audio track if it doesn't exist
+            if (localAudioTrack == null) {
+                localAudioTrack = LocalAudioTrack.create(getContext(), true, TRACK_NAME_MICROPHONE);
+            }
+            if (localParticipant != null && localAudioTrack != null) {
                 localParticipant.publishTrack(localAudioTrack);
-            } else {
+            }
+        } else {
+            if (localParticipant != null && localAudioTrack != null) {
                 localParticipant.unpublishTrack(localAudioTrack);
             }
         }
