@@ -125,20 +125,20 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectBestFormat(AVCaptureDevice *de
 
 // Select the best supported video format that fits within the requested dimensions
 TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectFittingFormat(AVCaptureDevice *device,
-                                                                 int32_t targetWidth,
-                                                                 int32_t targetHeight,
-                                                                 NSUInteger targetFrameRate) {
+                                                                int32_t targetWidth,
+                                                                int32_t targetHeight,
+                                                                NSUInteger targetFrameRate) {
     TVIVideoFormat *bestFittingFormat = nil;
     NSOrderedSet<TVIVideoFormat *> *formats =
             [TVICameraSource supportedFormatsForDevice:device];
 
-    int64_t targetPixels = (int64_t)targetWidth * targetHeight;
+    int64_t targetPixels = (int64_t) targetWidth * targetHeight;
     int64_t maxFittingPixels = 0;
 
     // Find the largest format that fits within the target dimensions (pixels <= target)
     for (TVIVideoFormat *format in formats) {
         CMVideoDimensions dimensions = format.dimensions;
-        int64_t pixels = (int64_t)dimensions.width * dimensions.height;
+        int64_t pixels = (int64_t) dimensions.width * dimensions.height;
 
         if (pixels <= targetPixels) {
             if (pixels > maxFittingPixels) {
@@ -149,18 +149,17 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectFittingFormat(AVCaptureDevice 
     }
 
     // If we found a fitting format, create a new one with the same dimensions but our target frame rate
-    if (bestFittingFormat != nil && targetFrameRate > 0) {
+    if (bestFittingFormat != nil) {
         CMVideoDimensions selectedDimensions = bestFittingFormat.dimensions;
         TVIVideoFormat *customFormat = [[TVIVideoFormat alloc] init];
         customFormat.dimensions = selectedDimensions;
-        customFormat.frameRate = targetFrameRate;
+        // Use targetFrameRate if provided, otherwise fall back to the format's frame rate
+        customFormat.frameRate = (targetFrameRate > 0) ? targetFrameRate : bestFittingFormat.frameRate;
         customFormat.pixelFormat = bestFittingFormat.pixelFormat;
         return customFormat;
-    } else if (bestFittingFormat != nil) {
-        return bestFittingFormat;
-    } else {
-        return nil;
     }
+
+    return nil;
 }
 
 @interface RCTTWVideoModule () <
@@ -279,10 +278,9 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)updateLocalViewMirroring:(TVIVideoView *)view {
-    if (self.camera &&
-        self.camera.device.position == AVCaptureDevicePositionFront) {
-        view.mirror = true;
-    }
+    BOOL isFrontCamera = self.camera &&
+                         self.camera.device.position == AVCaptureDevicePositionFront;
+    view.mirror = isFrontCamera;
 }
 
 - (void)removeLocalView:(TVIVideoView *)view {
@@ -378,51 +376,7 @@ RCT_EXPORT_METHOD(startLocalVideo) {
     }
 
     // Determine the video format to use
-    TVIVideoFormat *format = nil;
-    
-    if (self.requestedVideoFormat != nil) {
-        // User specified a format - find the closest supported format
-        // Handle NSNull values from JavaScript (when null is passed for individual fields)
-        id widthValue = self.requestedVideoFormat[@"width"];
-        id heightValue = self.requestedVideoFormat[@"height"];
-        id frameRateValue = self.requestedVideoFormat[@"frameRate"];
-        
-        NSNumber *width = ([widthValue isKindOfClass:[NSNumber class]]) ? widthValue : nil;
-        NSNumber *height = ([heightValue isKindOfClass:[NSNumber class]]) ? heightValue : nil;
-        NSNumber *frameRate = ([frameRateValue isKindOfClass:[NSNumber class]]) ? frameRateValue : nil;
-
-        BOOL hasCustomFormat =
-                width != nil &&
-                height != nil &&
-                frameRate != nil &&
-                [width intValue] > 0 &&
-                [height intValue] > 0 &&
-                [frameRate unsignedIntegerValue] > 0;
-
-        if (hasCustomFormat) {
-            NSUInteger fps = [frameRate unsignedIntegerValue];
-            format = RCTTWVideoModuleCameraSourceSelectFittingFormat(
-                camera,
-                [width intValue],
-                [height intValue],
-                fps
-            );
-        }
-    }
-
-    // If no format specified (or couldn't find closest), use the best available
-    if (format == nil) {
-        format = RCTTWVideoModuleCameraSourceSelectBestFormat(camera);
-    }
-
-    // Fallback to default HD format if no format found (matches Android behavior)
-    if (format == nil) {
-        TVIVideoFormat *defaultFormat = [[TVIVideoFormat alloc] init];
-        defaultFormat.dimensions = kRCTTWVideoAppCameraSourceDimensionsDefault;
-        defaultFormat.frameRate = kRCTTWVideoCameraSourceFrameRateDefault;
-        defaultFormat.pixelFormat = TVIPixelFormatYUV420BiPlanarFullRange;
-        format = defaultFormat;
-    }
+    TVIVideoFormat *format = [self videoFormatForCameraDevice:camera];
 
     if (format != nil) {
         [self.camera
@@ -440,6 +394,55 @@ RCT_EXPORT_METHOD(startLocalVideo) {
                               }
                             }];
     }
+}
+
+- (TVIVideoFormat *)videoFormatForCameraDevice:(AVCaptureDevice *)camera {
+    TVIVideoFormat *format = nil;
+
+    if (self.requestedVideoFormat != nil) {
+        // User specified a format - find the closest supported format
+        // Handle NSNull values from JavaScript (when null is passed for individual fields)
+        id widthValue = self.requestedVideoFormat[@"width"];
+        id heightValue = self.requestedVideoFormat[@"height"];
+        id frameRateValue = self.requestedVideoFormat[@"frameRate"];
+
+        NSNumber *width = ([widthValue isKindOfClass:[NSNumber class]]) ? widthValue : nil;
+        NSNumber *height = ([heightValue isKindOfClass:[NSNumber class]]) ? heightValue : nil;
+        NSNumber *frameRate = ([frameRateValue isKindOfClass:[NSNumber class]]) ? frameRateValue : nil;
+
+        BOOL hasCustomFormat =
+                width != nil &&
+                height != nil &&
+                frameRate != nil &&
+                [width intValue] > 0 &&
+                [height intValue] > 0 &&
+                [frameRate unsignedIntegerValue] > 0;
+
+        if (hasCustomFormat) {
+            NSUInteger fps = [frameRate unsignedIntegerValue];
+            format = RCTTWVideoModuleCameraSourceSelectFittingFormat(
+                    camera,
+                    [width intValue],
+                    [height intValue],
+                    fps);
+        }
+    }
+
+    // If no format specified (or couldn't find closest), use the best available
+    if (format == nil) {
+        format = RCTTWVideoModuleCameraSourceSelectBestFormat(camera);
+    }
+
+    // Fallback to default HD format if no format found (matches Android behavior)
+    if (format == nil) {
+        TVIVideoFormat *defaultFormat = [[TVIVideoFormat alloc] init];
+        defaultFormat.dimensions = kRCTTWVideoAppCameraSourceDimensionsDefault;
+        defaultFormat.frameRate = kRCTTWVideoCameraSourceFrameRateDefault;
+        defaultFormat.pixelFormat = TVIPixelFormatYUV420BiPlanarFullRange;
+        format = defaultFormat;
+    }
+
+    return format;
 }
 
 RCT_EXPORT_METHOD(startLocalAudio) {
@@ -668,25 +671,28 @@ RCT_EXPORT_METHOD(flipCamera) {
         AVCaptureDevicePosition nextPosition =
                 position == AVCaptureDevicePositionFront ? AVCaptureDevicePositionBack
                                                          : AVCaptureDevicePositionFront;
-        BOOL mirror = nextPosition == AVCaptureDevicePositionFront;
-
         AVCaptureDevice *captureDevice =
                 [TVICameraSource captureDeviceForPosition:nextPosition];
-        [self.camera
-                selectCaptureDevice:captureDevice
-                         completion:^(AVCaptureDevice *device,
-                                      TVIVideoFormat *startFormat, NSError *error) {
-                           if (!error) {
-                               for (TVIVideoView *renderer in self.localVideoTrack
-                                            .renderers) {
-                                   renderer.mirror = mirror;
-                               }
-                               [self sendEventCheckingListenerWithName:cameraSwitched
-                                                                  body:@{
-                                                                      @"isBackCamera": @(nextPosition == AVCaptureDevicePositionBack)
-                                                                  }];
-                           }
-                         }];
+        if (captureDevice == nil) {
+            return;
+        }
+        TVIVideoFormat *format = [self videoFormatForCameraDevice:captureDevice];
+
+        [self.camera selectCaptureDevice:captureDevice
+                                  format:format
+                              completion:^(AVCaptureDevice *device,
+                                           TVIVideoFormat *startFormat, NSError *error) {
+                                if (!error) {
+                                    for (TVIVideoView *renderer in self.localVideoTrack
+                                                 .renderers) {
+                                        [self updateLocalViewMirroring:renderer];
+                                    }
+                                    [self sendEventCheckingListenerWithName:cameraSwitched
+                                                                       body:@{
+                                                                           @"isBackCamera": @(nextPosition == AVCaptureDevicePositionBack)
+                                                                       }];
+                                }
+                              }];
     }
 }
 
