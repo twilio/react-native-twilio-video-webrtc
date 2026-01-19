@@ -456,15 +456,23 @@ RCT_EXPORT_METHOD(stopLocalVideo) { [self clearCameraInstance]; }
 RCT_EXPORT_METHOD(stopLocalAudio) { self.localAudioTrack = nil; }
 
 RCT_EXPORT_METHOD(publishLocalVideo) {
-    if (self.localVideoTrack != nil) {
-        TVILocalParticipant *localParticipant = self.room.localParticipant;
-        [localParticipant publishVideoTrack:self.localVideoTrack];
+    // Create the video track if it doesn't exist
+    if (self.localVideoTrack == nil) {
+        [self _createVideoTrack:@"front"];
+    }
+    if (self.localVideoTrack != nil && self.room.localParticipant != nil) {
+        [self.room.localParticipant publishVideoTrack:self.localVideoTrack];
     }
 }
 
 RCT_EXPORT_METHOD(publishLocalAudio) {
-    TVILocalParticipant *localParticipant = self.room.localParticipant;
-    [localParticipant publishAudioTrack:self.localAudioTrack];
+    // Create the audio track if it doesn't exist
+    if (self.localAudioTrack == nil) {
+        [self _createAudioTrack];
+    }
+    if (self.localAudioTrack != nil && self.room.localParticipant != nil) {
+        [self.room.localParticipant publishAudioTrack:self.localAudioTrack];
+    }
 }
 
 RCT_EXPORT_METHOD(unpublishLocalVideo) {
