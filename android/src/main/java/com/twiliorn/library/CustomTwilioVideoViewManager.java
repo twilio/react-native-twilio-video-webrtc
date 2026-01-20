@@ -116,6 +116,30 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ReadableMap encodingParameters = args.getMap(10);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
                 boolean enableDataTrack = args.getBoolean(11);
+                
+                // Parse optional videoFormat (index 11)
+                int videoWidth = 0;
+                int videoHeight = 0;
+                int videoFrameRate = 0;
+                if (args.size() > 12 && !args.isNull(12)) {
+                    ReadableMap videoFormat = args.getMap(12);
+                    if (videoFormat != null) {
+                        boolean hasWidth = videoFormat.hasKey("width");
+                        boolean hasHeight = videoFormat.hasKey("height");
+                        boolean hasFrameRate = videoFormat.hasKey("frameRate");
+                        int widthValue = hasWidth ? videoFormat.getInt("width") : 0;
+                        int heightValue = hasHeight ? videoFormat.getInt("height") : 0;
+                        int frameRateValue = hasFrameRate ? videoFormat.getInt("frameRate") : 0;
+
+                        if (hasWidth && hasHeight && hasFrameRate &&
+                                widthValue > 0 && heightValue > 0 && frameRateValue > 0) {
+                            videoWidth = widthValue;
+                            videoHeight = heightValue;
+                            videoFrameRate = frameRateValue;
+                        }
+                    }
+                }
+                
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
@@ -128,7 +152,10 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         maintainVideoTrackInBackground,
                         cameraType,
                         enableH264Codec,
-                        enableDataTrack);
+                        enableDataTrack,
+                        videoWidth,
+                        videoHeight,
+                        videoFrameRate);
                 break;
             case DISCONNECT:
                 view.disconnect();
