@@ -15,7 +15,22 @@ import {
     TwilioVideoScreenShareView,
     TwilioVideoParticipantView,
     TwilioVideo,
-    RoomFetchedEventArgs
+    RoomFetchedEventArgs,
+    TranscriptionEventArgs,
+    TrackEventCbArgs,
+    TrackErrorEventArgs,
+    RoomEventArgs,
+    RoomErrorEventArgs,
+    RoomEventCommonArgs,
+    NetworkLevelChangeEventArgs,
+    DominantSpeakerChangedEventArgs,
+    DataTrackEventCbArgs,
+    LocalParticipantSupportedCodecsCbEventArgs,
+    ScreenShareChangedEventArgs,
+    DataChangedEventArgs,
+    ReconnectingEventArgs,
+    Participant,
+    Track
 } from "@twilio/video-react-native-sdk";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import { styles } from "./styles";
@@ -185,6 +200,7 @@ const Example = () => {
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [logs, setLogs] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
+    const [receiveTranscriptions, setReceiveTranscriptions] = useState(false);
 
     // Video format settings
     const [selectedVideoFormatId, setSelectedVideoFormatId] = useState("default");
@@ -211,6 +227,7 @@ const Example = () => {
         setSelectedRegion(null);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
+        setReceiveTranscriptions(false);
         setSelectedVideoFormatId("default");
         setVideoWidth("");
         setVideoHeight("");
@@ -287,6 +304,7 @@ const Example = () => {
             enableNetworkQualityReporting: networkQualityEnabled,
             dominantSpeakerEnabled,
             encodingParameters: { enableH264Codec },
+            receiveTranscriptions,
             ...(videoFormat && { videoFormat }),
         };
 
@@ -320,7 +338,7 @@ const Example = () => {
         twilioRef.current?.setLocalDataTrackEnabled(!isDataTrackEnabled).then((enabled: boolean) => setIsDataTrackEnabled(enabled));
     };
 
-    const _onDataChanged = (event: any) => {
+    const _onDataChanged = (event: DataChangedEventArgs) => {
         setIsDataTrackEnabled(event.dataEnabled);
         _log(`Data Track ${event.dataEnabled ? 'Enabled' : 'Disabled'}`);
     };
@@ -353,12 +371,12 @@ const Example = () => {
         twilioRef.current?.toggleScreenSharing(!isSharing);
     };
 
-    const _onScreenShareChanged = (event: any) => {
+    const _onScreenShareChanged = (event: ScreenShareChangedEventArgs) => {
         setIsSharing(event.screenShareEnabled);
         _log(`Screen Share ${event.screenShareEnabled ? 'Started' : 'Stopped'}`);
     };
 
-    const _onCameraSwitched = (event: any) => {
+    const _onCameraSwitched = (event: { isBackCamera: boolean }) => {
         _log(`Camera switched -> ${event?.isBackCamera ? "back" : "front"}`);
     };
 
@@ -366,7 +384,7 @@ const Example = () => {
         _log("Camera started");
     };
 
-    const _onCameraWasInterrupted = (event: any) => {
+    const _onCameraWasInterrupted = (event?: { reason?: string }) => {
         _log(`Camera interrupted${event?.reason ? `: ${event.reason}` : ""}`);
     };
 
@@ -374,24 +392,24 @@ const Example = () => {
         _log("Camera interruption ended");
     };
 
-    const _onCameraDidStopRunning = (event: any) => {
+    const _onCameraDidStopRunning = (event?: { error?: string }) => {
         _log(`Camera stopped${event?.error ? `: ${event.error}` : ""}`);
     };
 
-    const _onVideoChanged = (event: any) => {
+    const _onVideoChanged = (event: { videoEnabled: boolean }) => {
         _log(`Video ${event?.videoEnabled ? "enabled" : "disabled"}`);
     };
 
-    const _onAudioChanged = (event: any) => {
+    const _onAudioChanged = (event: { audioEnabled: boolean }) => {
         _log(`Audio ${event?.audioEnabled ? "enabled" : "disabled"}`);
     };
 
-    const _onLocalParticipantSupportedCodecs = (event: any) => {
+    const _onLocalParticipantSupportedCodecs = (event: LocalParticipantSupportedCodecsCbEventArgs) => {
         const codecs = Array.isArray(event?.supportedCodecs) ? event.supportedCodecs.join(", ") : "unknown";
         _log(`Supported codecs -> ${codecs}`);
     };
 
-    const _onRoomDidConnect = (event: any) => {
+    const _onRoomDidConnect = (event: RoomEventArgs) => {
         if (event.roomName) {
             setRoomDetails({
                 roomName: event.roomName,
@@ -401,14 +419,14 @@ const Example = () => {
         setStatus("connected");
     };
 
-    const _onRoomDidDisconnect = (event: any) => {
+    const _onRoomDidDisconnect = (event: RoomErrorEventArgs) => {
         if (event.error) {
             setErrorMessage(_formatErrorMessage(event));
         }
         resetStates();
     };
 
-    const _onRoomDidFailToConnect = (event: any) => {
+    const _onRoomDidFailToConnect = (event: RoomErrorEventArgs) => {
         setStatus("disconnected");
         setErrorMessage(_formatErrorMessage(event));
     };
@@ -424,15 +442,15 @@ const Example = () => {
         return errorMsg;
     };
 
-    const describeParticipant = (participant?: any) => participant?.identity || participant?.sid || "unknown participant";
-    const describeTrack = (track?: any) => track?.trackName || track?.trackSid || "unknown track";
-    const describeRoom = (event: any) => {
+    const describeParticipant = (participant?: Participant) => participant?.identity || participant?.sid || "unknown participant";
+    const describeTrack = (track?: Track) => track?.trackName || track?.trackSid || "unknown track";
+    const describeRoom = (event: RoomEventCommonArgs) => {
         if (event?.roomName) {
             return `${event.roomName}${event?.roomSid ? ` (${event.roomSid})` : ""}`;
         }
         return event?.roomSid || "unknown room";
     };
-    const describeError = (event: any) => {
+    const describeError = (event: TrackErrorEventArgs) => {
         let details = event?.error || "Unknown error";
         if (event?.code) {
             details += ` (code ${event.code})`;
@@ -442,31 +460,31 @@ const Example = () => {
         }
         return details;
     };
-    const logTrackEvent = (prefix: string, participant?: any, track?: any) => {
+    const logTrackEvent = (prefix: string, participant?: Participant, track?: Track) => {
         _log(`${prefix}: ${describeParticipant(participant)} -> ${describeTrack(track)}`);
     };
-    const logTrackErrorEvent = (prefix: string, event: any) => {
+    const logTrackErrorEvent = (prefix: string, event: TrackErrorEventArgs) => {
         _log(`${prefix}: ${describeParticipant(event?.participant)} -> ${describeTrack(event?.track)} | ${describeError(event)}`);
     };
 
-    const _onRecordingStarted = (event: any) => {
+    const _onRecordingStarted = (event: RoomEventCommonArgs) => {
         _log(`Recording started for ${describeRoom(event)}`);
     };
 
-    const _onRecordingStopped = (event: any) => {
+    const _onRecordingStopped = (event: RoomEventCommonArgs) => {
         _log(`Recording stopped for ${describeRoom(event)}`);
     };
 
-    const _onNetworkQualityLevelsChanged = (event: any) => {
+    const _onNetworkQualityLevelsChanged = (event: NetworkLevelChangeEventArgs) => {
         const participantName = describeParticipant(event?.participant) || "local";
         _log(`Network Quality ${participantName} -> ${event?.quality}`);
     };
 
-    const _onDominantSpeakerDidChange = (event: any) => {
+    const _onDominantSpeakerDidChange = (event: DominantSpeakerChangedEventArgs) => {
         _log(`Dominant Speaker -> ${event?.participant?.identity || "none"}`);
     };
 
-    const _onDataTrackMessageReceived = (event: any) => {
+    const _onDataTrackMessageReceived = (event: DataTrackEventCbArgs) => {
         if (event?.isBinary) {
             _log(`Data Track Binary (track ${event.trackSid}) payload=${event.payloadBase64?.slice(0, 16) || ""}...`);
         } else {
@@ -481,67 +499,67 @@ const Example = () => {
         _log(`Fetched room ${roomName} (${state}) with ${remoteCount} remote participant(s) ${signalingRegion ? `in region ${signalingRegion}` : ""}`);
     };
 
-    const _onLocalAudioTrackPublished = ({ participant, track }: any) => {
+    const _onLocalAudioTrackPublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Local audio track published", participant, track);
     };
 
-    const _onLocalAudioTrackPublicationFailed = (event: any) => {
+    const _onLocalAudioTrackPublicationFailed = (event: TrackErrorEventArgs) => {
         logTrackErrorEvent("Local audio track publication failed", event);
     };
 
-    const _onLocalVideoTrackPublished = ({ participant, track }: any) => {
+    const _onLocalVideoTrackPublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Local video track published", participant, track);
     };
 
-    const _onLocalVideoTrackPublicationFailed = (event: any) => {
+    const _onLocalVideoTrackPublicationFailed = (event: TrackErrorEventArgs) => {
         logTrackErrorEvent("Local video track publication failed", event);
     };
 
-    const _onLocalDataTrackPublished = ({ participant, track }: any) => {
+    const _onLocalDataTrackPublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Local data track published", participant, track);
     };
 
-    const _onLocalDataTrackPublicationFailed = (event: any) => {
+    const _onLocalDataTrackPublicationFailed = (event: TrackErrorEventArgs) => {
         logTrackErrorEvent("Local data track publication failed", event);
     };
 
-    const _onRemoteAudioTrackPublished = ({ participant, track }: any) => {
+    const _onRemoteAudioTrackPublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Remote audio track published", participant, track);
     };
 
-    const _onRemoteAudioTrackUnpublished = ({ participant, track }: any) => {
+    const _onRemoteAudioTrackUnpublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Remote audio track unpublished", participant, track);
     };
 
-    const _onRemoteAudioTrackSubscriptionFailed = (event: any) => {
+    const _onRemoteAudioTrackSubscriptionFailed = (event: TrackErrorEventArgs) => {
         logTrackErrorEvent("Remote audio track subscription failed", event);
     };
 
-    const _onRemoteVideoTrackPublished = ({ participant, track }: any) => {
+    const _onRemoteVideoTrackPublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Remote video track published", participant, track);
     };
 
-    const _onRemoteVideoTrackUnpublished = ({ participant, track }: any) => {
+    const _onRemoteVideoTrackUnpublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Remote video track unpublished", participant, track);
     };
 
-    const _onRemoteVideoTrackSubscriptionFailed = (event: any) => {
+    const _onRemoteVideoTrackSubscriptionFailed = (event: TrackErrorEventArgs) => {
         logTrackErrorEvent("Remote video track subscription failed", event);
     };
 
-    const _onRemoteDataTrackPublished = ({ participant, track }: any) => {
+    const _onRemoteDataTrackPublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Remote data track published", participant, track);
     };
 
-    const _onRemoteDataTrackUnpublished = ({ participant, track }: any) => {
+    const _onRemoteDataTrackUnpublished = ({ participant, track }: TrackEventCbArgs) => {
         logTrackEvent("Remote data track unpublished", participant, track);
     };
 
-    const _onRemoteDataTrackSubscriptionFailed = (event: any) => {
+    const _onRemoteDataTrackSubscriptionFailed = (event: TrackErrorEventArgs) => {
         logTrackErrorEvent("Remote data track subscription failed", event);
     };
 
-    const _onParticipantAddedVideoTrack = ({ participant, track }: any) => {
+    const _onParticipantAddedVideoTrack = ({ participant, track }: TrackEventCbArgs) => {
         setVideoTracks((originalVideoTracks: Map<string, any>) => {
             originalVideoTracks.set(track.trackSid, {
                 participantSid: participant.sid,
@@ -551,21 +569,32 @@ const Example = () => {
         });
     };
 
-    const _onParticipantRemovedVideoTrack = ({ track }: any) => {
+    const _onParticipantRemovedVideoTrack = ({ track }: TrackEventCbArgs) => {
         setVideoTracks((originalVideoTracks: Map<string, any>) => {
             originalVideoTracks.delete(track.trackSid);
             return new Map(originalVideoTracks);
         });
     };
 
-    const _onRoomIsReconnecting = (event: any) => {
+    const _onRoomIsReconnecting = (event: ReconnectingEventArgs) => {
         setStatus("reconnecting");
         _log(`Room Is Reconnecting ${event.roomName} ${event.error}`);
     };
 
-    const _onRoomDidReconnect = (event: any) => {
+    const _onRoomDidReconnect = (event: RoomEventCommonArgs) => {
         setStatus("connected");
         _log(`Room Did Reconnect ${event.roomName}`);
+    };
+
+    const _onTranscriptionReceived = (event: TranscriptionEventArgs) => {
+        const transcriptionText = event?.transcription || "";
+        const participant = event?.participant || "unknown";
+
+        if (transcriptionText) {
+            const displayText = `${participant}: ${transcriptionText}`;
+
+            _log(`Transcription: ${displayText}`);
+        }
     };
 
     return (
@@ -590,6 +619,7 @@ const Example = () => {
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
+                    <ToggleRow label="Receive Transcriptions" value={receiveTranscriptions} onValueChange={setReceiveTranscriptions} />
 
                     <View style={styles.regionPickerContainer}>
                         <Text style={styles.regionPickerLabel}>Video Format:</Text>
@@ -697,6 +727,7 @@ const Example = () => {
                 onRemoteDataTrackUnpublished={_onRemoteDataTrackUnpublished}
                 onRemoteDataTrackSubscriptionFailed={_onRemoteDataTrackSubscriptionFailed}
                 onRoomFetched={_onRoomFetched}
+                onTranscriptionReceived={_onTranscriptionReceived}
             />
 
             <Modal

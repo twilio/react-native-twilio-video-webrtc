@@ -56,6 +56,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_VIDEO_
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_ROOM_FETCHED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_TRANSCRIPTION_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
 
 import androidx.annotation.Nullable;
@@ -116,13 +117,14 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ReadableMap encodingParameters = args.getMap(10);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
                 boolean enableDataTrack = args.getBoolean(11);
-                
-                // Parse optional videoFormat (index 11)
+                boolean receiveTranscriptions = args.getBoolean(12);
+
+                // Parse optional videoFormat (index 12)
                 int videoWidth = 0;
                 int videoHeight = 0;
                 int videoFrameRate = 0;
-                if (args.size() > 12 && !args.isNull(12)) {
-                    ReadableMap videoFormat = args.getMap(12);
+                if (args.size() > 13 && !args.isNull(13)) {
+                    ReadableMap videoFormat = args.getMap(13);
                     if (videoFormat != null) {
                         boolean hasWidth = videoFormat.hasKey("width");
                         boolean hasHeight = videoFormat.hasKey("height");
@@ -132,14 +134,14 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         int frameRateValue = hasFrameRate ? videoFormat.getInt("frameRate") : 0;
 
                         if (hasWidth && hasHeight && hasFrameRate &&
-                                widthValue > 0 && heightValue > 0 && frameRateValue > 0) {
+                            widthValue > 0 && heightValue > 0 && frameRateValue > 0) {
                             videoWidth = widthValue;
                             videoHeight = heightValue;
                             videoFrameRate = frameRateValue;
                         }
                     }
                 }
-                
+
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
@@ -153,6 +155,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         cameraType,
                         enableH264Codec,
                         enableDataTrack,
+                        receiveTranscriptions,
                         videoWidth,
                         videoHeight,
                         videoFrameRate);
@@ -293,6 +296,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
 
         map.putAll(MapBuilder.of(
                 ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED, MapBuilder.of("registrationName", ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED)));
+
+        map.putAll(MapBuilder.of(
+                ON_TRANSCRIPTION_RECEIVED, MapBuilder.of("registrationName", ON_TRANSCRIPTION_RECEIVED)));
 
         return map;
     }

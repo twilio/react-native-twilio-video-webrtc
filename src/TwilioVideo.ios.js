@@ -367,6 +367,13 @@ export default class TwilioVideo extends Component {
      * @deprecated Only available on iOS and will be removed in a future release
      */
     autoInitializeCamera: PropTypes.bool,
+
+    /**
+     * Called when a transcription is received
+     *
+     * @param {{transcription: string, participant: string, track: string, partialResults: boolean, stability?: number, languageCode: string, timestamp: string, sequenceNumber: number}}
+     */
+    onTranscriptionReceived: PropTypes.func,
   };
 
   constructor(props) {
@@ -495,6 +502,7 @@ export default class TwilioVideo extends Component {
    * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
+   * @param {boolean} [params.receiveTranscriptions=false] - Whether to receive transcription events
    * @param {Object} [params.videoFormat=null] - Video capture format { width, height, frameRate }
    */
   connect({
@@ -508,6 +516,7 @@ export default class TwilioVideo extends Component {
     enableNetworkQualityReporting = false,
     dominantSpeakerEnabled = false,
     enableDataTrack = false,
+    receiveTranscriptions = false,
     videoFormat = null,
   }) {
     TWVideoModule.connect(
@@ -521,6 +530,7 @@ export default class TwilioVideo extends Component {
       dominantSpeakerEnabled,
       cameraType,
       enableDataTrack,
+      receiveTranscriptions,
       videoFormat
     );
   }
@@ -850,6 +860,11 @@ export default class TwilioVideo extends Component {
       this._eventEmitter.addListener("dataChanged", (data) => {
         if (this.props.onDataChanged) {
           this.props.onDataChanged(data);
+        }
+      }),
+      this._eventEmitter.addListener("onTranscriptionReceived", (data) => {
+        if (this.props.onTranscriptionReceived) {
+          this.props.onTranscriptionReceived(data);
         }
       }),
     ];
