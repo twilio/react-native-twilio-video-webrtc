@@ -2,6 +2,61 @@
 
 ### Changes
 
+- Added `videoFormat` option to `connect()` method on both iOS and Android platforms. This allows users to specify the maximum video capture format (width, height, and frame rate) when connecting to a room. When `videoFormat` is not provided, the SDK automatically selects the best available format from the camera, or fallbacks to 1280x720, 30 FPS video if the camera video format cannot be determined. Note: On Android, frame rates lower than 15 fps will have no effect.
+
+  > **Please note:** with this change, the SDK will no longer set the following default resolutions:
+  >
+  > - 352x258, 15 FPS on Android
+  > - 900x720, 15 FPS on iOS
+  >
+  > To opt-out of this change and keep the old video constraints, you can use platform-specific code snippets:
+  >
+  > **Android:**
+  >
+  > ```typescript
+  > const connectOptions: any = {
+  >   ...,
+  >   videoFormat: {
+  >     height: 352,
+  >     width: 258,
+  >     frameRate: 15,
+  >   }
+  > };
+  >
+  > twilioRef.current?.connect(connectOptions);
+  > ```
+  >
+  > **iOS:**
+  >
+  > ```typescript
+  > const connectOptions: any = {
+  >   ...,
+  >   videoFormat: {
+  >     height: 900,
+  >     width: 720,
+  >     frameRate: 15,
+  >   }
+  > };
+  >
+  > twilioRef.current?.connect(connectOptions);
+  > ```
+  >
+  > Or use a platform-specific conditional:
+  >
+  > ```typescript
+  > import { Platform } from 'react-native';
+  >
+  > const connectOptions: any = {
+  >   ...,
+  >   videoFormat: Platform.OS === 'android'
+  >     ? { height: 352, width: 258, frameRate: 15 }
+  >     : { height: 900, width: 720, frameRate: 15 },
+  > };
+  >
+  > twilioRef.current?.connect(connectOptions);
+  > ```
+
+- Fixed bug where `publishLocalVideo` and `publishLocalAudio` methods didn't create the tracks.
 - Added `region` connect option for both Android and iOS to specify the [Twilio Signaling Region](https://www.twilio.com/docs/video/tutorials/video-regions-and-global-low-latency) (e.g., `us1`, `us2`, `au1`, `br1`, `de1`, `ie1`, `in1`, `jp1`, `sg1`). The `onRoomFetched` callback will now return the local participant's selected region via the `signalingRegion` parameter.
 - Added a region selector dropdown to the Example App main menu for testing different Twilio Signaling Regions.
 - Added `receiveTranscriptions` connect option to enable receiving live transcription events when transcriptions are enabled on the room. When set to `true`, transcription events will be emitted via the `onTranscriptionReceived` callback. (Room needs to have transcription enabled). For more information about the feature, please see the develoiper documentation - [Real-time Transcriptions for Video](https://www.twilio.com/docs/video/api/transcriptions)

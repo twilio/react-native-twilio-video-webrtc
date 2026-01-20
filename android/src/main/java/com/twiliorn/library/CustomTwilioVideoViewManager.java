@@ -118,6 +118,30 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
                 boolean enableDataTrack = args.getBoolean(11);
                 boolean receiveTranscriptions = args.getBoolean(12);
+
+                // Parse optional videoFormat (index 12)
+                int videoWidth = 0;
+                int videoHeight = 0;
+                int videoFrameRate = 0;
+                if (args.size() > 13 && !args.isNull(13)) {
+                    ReadableMap videoFormat = args.getMap(13);
+                    if (videoFormat != null) {
+                        boolean hasWidth = videoFormat.hasKey("width");
+                        boolean hasHeight = videoFormat.hasKey("height");
+                        boolean hasFrameRate = videoFormat.hasKey("frameRate");
+                        int widthValue = hasWidth ? videoFormat.getInt("width") : 0;
+                        int heightValue = hasHeight ? videoFormat.getInt("height") : 0;
+                        int frameRateValue = hasFrameRate ? videoFormat.getInt("frameRate") : 0;
+
+                        if (hasWidth && hasHeight && hasFrameRate &&
+                            widthValue > 0 && heightValue > 0 && frameRateValue > 0) {
+                            videoWidth = widthValue;
+                            videoHeight = heightValue;
+                            videoFrameRate = frameRateValue;
+                        }
+                    }
+                }
+
                 view.connectToRoomWrapper(
                         roomName,
                         accessToken,
@@ -131,7 +155,10 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         cameraType,
                         enableH264Codec,
                         enableDataTrack,
-                        receiveTranscriptions);
+                        receiveTranscriptions,
+                        videoWidth,
+                        videoHeight,
+                        videoFrameRate);
                 break;
             case DISCONNECT:
                 view.disconnect();

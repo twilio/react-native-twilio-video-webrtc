@@ -503,6 +503,7 @@ export default class TwilioVideo extends Component {
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
    * @param {boolean} [params.receiveTranscriptions=false] - Whether to receive transcription events
+   * @param {Object} [params.videoFormat=null] - Video capture format { width, height, frameRate }
    */
   connect({
     roomName,
@@ -516,6 +517,7 @@ export default class TwilioVideo extends Component {
     dominantSpeakerEnabled = false,
     enableDataTrack = false,
     receiveTranscriptions = false,
+    videoFormat = null,
   }) {
     TWVideoModule.connect(
       accessToken,
@@ -528,7 +530,8 @@ export default class TwilioVideo extends Component {
       dominantSpeakerEnabled,
       cameraType,
       enableDataTrack,
-      receiveTranscriptions
+      receiveTranscriptions,
+      videoFormat
     );
   }
 

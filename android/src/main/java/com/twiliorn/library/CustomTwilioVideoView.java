@@ -140,6 +140,7 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
 import tvi.webrtc.Camera1Enumerator;
+import tvi.webrtc.CameraEnumerationAndroid.CaptureFormat;
 import tvi.webrtc.HardwareVideoDecoderFactory;
 import tvi.webrtc.HardwareVideoEncoderFactory;
 import tvi.webrtc.VideoCodecInfo;
@@ -158,6 +159,8 @@ public class CustomTwilioVideoView extends View
     private static final String PRODUCT_NAME_KEY = "com.twilio.video.product.name";
     private static final String PRODUCT_VERSION_KEY = "com.twilio.video.product.version";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
+    private static final VideoDimensions DEFAULT_VIDEO_DIMENSIONS = VideoDimensions.HD_720P_VIDEO_DIMENSIONS;
+    private static final int DEFAULT_VIDEO_FRAME_RATE = 30;
     private boolean enableRemoteAudio = false;
     private boolean enableNetworkQualityReporting = false;
     private boolean isVideoEnabled = false;
@@ -171,6 +174,11 @@ public class CustomTwilioVideoView extends View
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
     private boolean receiveTranscriptions = false;
+
+    // User-specified video format (0 means auto-select best)
+    private int requestedVideoWidth = 0;
+    private int requestedVideoHeight = 0;
+    private int requestedVideoFrameRate = 0;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({Events.ON_CAMERA_SWITCHED,
@@ -386,10 +394,65 @@ public class CustomTwilioVideoView extends View
     // ===== SETUP =================================================================================
 
     private VideoFormat buildVideoFormat() {
-        return new VideoFormat(VideoDimensions.CIF_VIDEO_DIMENSIONS, 15);
+        // If user specified dimensions and frame rate, use them
+        if (requestedVideoWidth > 0 && requestedVideoHeight > 0 && requestedVideoFrameRate > 0) {
+            VideoDimensions dimensions = new VideoDimensions(requestedVideoWidth, requestedVideoHeight);
+            return new VideoFormat(dimensions, requestedVideoFrameRate);
+        }
+
+        // Autoselect best format from camera
+        String cameraId = getCurrentCameraId();
+        if (cameraId != null) {
+            VideoFormat bestFormat = getBestVideoFormatForCamera(cameraId);
+            if (bestFormat != null) {
+                return bestFormat;
+            }
+        }
+
+        // Fallback to HD 720p @ 30fps
+        return new VideoFormat(DEFAULT_VIDEO_DIMENSIONS, DEFAULT_VIDEO_FRAME_RATE);
     }
 
-    private CameraCapturer createCameraCaputer(Context context, String cameraId) {
+    private String getCurrentCameraId() {
+        if (cameraCapturer != null) {
+            return cameraCapturer.getCameraId();
+        }
+        // Return the camera ID based on cameraType preference
+        buildDeviceInfo();
+        if (FRONT_CAMERA_TYPE.equals(cameraType)) {
+            return frontFacingDevice != null ? frontFacingDevice : backFacingDevice;
+        } else {
+            return backFacingDevice != null ? backFacingDevice : frontFacingDevice;
+        }
+    }
+
+    private VideoFormat getBestVideoFormatForCamera(String cameraId) {
+        if (cameraId == null) {
+            return null;
+        }
+        Camera1Enumerator enumerator = new Camera1Enumerator();
+        List<CaptureFormat> formats = enumerator.getSupportedFormats(cameraId);
+        if (formats == null || formats.isEmpty()) {
+            return null;
+        }
+        // Find the format with highest resolution
+        CaptureFormat bestFormat = null;
+        int maxPixels = 0;
+        for (CaptureFormat format : formats) {
+            int pixels = format.width * format.height;
+            if (pixels > maxPixels) {
+                maxPixels = pixels;
+                bestFormat = format;
+            }
+        }
+        if (bestFormat != null) {
+            int frameRate = (bestFormat.framerate.max / 1000);
+            return new VideoFormat(new VideoDimensions(bestFormat.width, bestFormat.height), frameRate);
+        }
+        return null;
+    }
+
+    private CameraCapturer createCameraCapturer(Context context, String cameraId) {
         CameraCapturer newCameraCapturer = null;
         try {
             newCameraCapturer = new CameraCapturer(
@@ -446,17 +509,17 @@ public class CustomTwilioVideoView extends View
 
         if (cameraType.equals(CustomTwilioVideoView.FRONT_CAMERA_TYPE)) {
             if (frontFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), frontFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), backFacingDevice);
             }
         } else {
             if (backFacingDevice != null) {
-                cameraCapturer = this.createCameraCaputer(getContext(), backFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), backFacingDevice);
             } else {
                 // IF the camera is unavailable try the other camera
-                cameraCapturer = this.createCameraCaputer(getContext(), frontFacingDevice);
+                cameraCapturer = this.createCameraCapturer(getContext(), frontFacingDevice);
             }
         }
 
@@ -633,7 +696,10 @@ public class CustomTwilioVideoView extends View
             String cameraType,
             boolean enableH264Codec,
             boolean enableDataTrack,
-            boolean receiveTranscriptions) {
+            boolean receiveTranscriptions,
+            int videoWidth,
+            int videoHeight,
+            int videoFrameRate) {
         this.roomName = roomName;
         this.accessToken = accessToken;
         this.enableRemoteAudio = enableRemoteAudio;
@@ -644,6 +710,9 @@ public class CustomTwilioVideoView extends View
         this.enableH264Codec = enableH264Codec;
         this.isDataEnabled = enableDataTrack;
         this.receiveTranscriptions = receiveTranscriptions;
+        this.requestedVideoWidth = videoWidth;
+        this.requestedVideoHeight = videoHeight;
+        this.requestedVideoFrameRate = videoFrameRate;
         this.region = region;
 
         // Share your microphone
@@ -1154,20 +1223,37 @@ public class CustomTwilioVideoView extends View
     }
 
     public void publishLocalVideo(boolean enabled) {
-        if (localParticipant != null && localVideoTrack != null) {
-            if (enabled) {
+        if (enabled) {
+            // Create the video track if it doesn't exist
+            if (cameraCapturer == null) {
+                String fallbackCameraType = cameraType == null ? CustomTwilioVideoView.FRONT_CAMERA_TYPE : cameraType;
+                boolean createVideoStatus = createLocalVideo(true, fallbackCameraType);
+                if (!createVideoStatus) {
+                    Log.d("RNTwilioVideo", "Failed to create local video");
+                    return;
+                }
+            }
+            if (localParticipant != null && localVideoTrack != null) {
                 localParticipant.publishTrack(localVideoTrack);
-            } else {
+            }
+        } else {
+            if (localParticipant != null && localVideoTrack != null) {
                 localParticipant.unpublishTrack(localVideoTrack);
             }
         }
     }
 
     public void publishLocalAudio(boolean enabled) {
-        if (localParticipant != null && localAudioTrack != null) {
-            if (enabled) {
+        if (enabled) {
+            // Create the audio track if it doesn't exist
+            if (localAudioTrack == null) {
+                localAudioTrack = LocalAudioTrack.create(getContext(), true, TRACK_NAME_MICROPHONE);
+            }
+            if (localParticipant != null && localAudioTrack != null) {
                 localParticipant.publishTrack(localAudioTrack);
-            } else {
+            }
+        } else {
+            if (localParticipant != null && localAudioTrack != null) {
                 localParticipant.unpublishTrack(localAudioTrack);
             }
         }
