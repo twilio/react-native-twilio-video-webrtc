@@ -14,7 +14,7 @@ declare module "@twilio/video-react-native-sdk" {
    * Video capture format configuration.
    * When not specified, the SDK will automatically select the best available format from the camera.
    */
-    interface VideoFormat {
+    export interface VideoFormat {
         /** Video width in pixels */
         width: number;
         /** Video height in pixels */
@@ -236,7 +236,7 @@ declare module "@twilio/video-react-native-sdk" {
         ref?: React.Ref<any>;
     };
 
-    type iOSConnectParams = {
+    export type iOSConnectParams = {
         roomName?: string;
         accessToken: string;
         cameraType?: cameraType;
@@ -254,9 +254,11 @@ declare module "@twilio/video-react-native-sdk" {
         receiveTranscriptions?: boolean;
         /** Video capture format. When not specified, the best available camera format is used. */
         videoFormat?: VideoFormat | null;
+        /** Twilio signaling region (e.g. 'gll', 'us1', 'us2', 'au1', 'br1', 'de1', 'ie1', 'in1', 'jp1', 'sg1') */
+        region?: string | null;
     };
 
-    type androidConnectParams = {
+    export type androidConnectParams = {
         roomName?: string;
         accessToken: string;
         cameraType?: cameraType;
@@ -273,6 +275,8 @@ declare module "@twilio/video-react-native-sdk" {
         receiveTranscriptions?: boolean;
         /** Video capture format. When not specified, the best available camera format is used. */
         videoFormat?: VideoFormat | null;
+        /** Twilio signaling region (e.g. 'gll', 'us1', 'us2', 'au1', 'br1', 'de1', 'ie1', 'in1', 'jp1', 'sg1') */
+        region?: string | null;
     };
 
     class TwilioVideo extends React.Component<TwilioVideoProps> {
@@ -285,6 +289,7 @@ declare module "@twilio/video-react-native-sdk" {
         disconnect: () => void;
         flipCamera: () => void;
         toggleSoundSetup: (speaker: boolean) => void;
+        toggleScreenSharing: (enabled: boolean) => void;
         getStats: () => void;
         publishLocalAudio: () => void;
         unpublishLocalAudio: () => void;
