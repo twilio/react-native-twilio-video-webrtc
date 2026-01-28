@@ -15,6 +15,8 @@ import {
     TwilioVideoScreenShareView,
     TwilioVideoParticipantView,
     TwilioVideo,
+    TrackIdentifier,
+    VideoFormat,
     RoomFetchedEventArgs,
     TranscriptionEventArgs,
     TrackEventCbArgs,
@@ -22,6 +24,7 @@ import {
     RoomEventArgs,
     RoomErrorEventArgs,
     RoomEventCommonArgs,
+    ParticipantEventArgs,
     NetworkLevelChangeEventArgs,
     DominantSpeakerChangedEventArgs,
     DataTrackEventCbArgs,
@@ -30,7 +33,9 @@ import {
     DataChangedEventArgs,
     ReconnectingEventArgs,
     Participant,
-    Track
+    Track,
+    iOSConnectParams,
+    androidConnectParams,
 } from "@twilio/video-react-native-sdk";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import { styles } from "./styles";
@@ -195,8 +200,8 @@ const Example = () => {
     const [enableH264Codec, setEnableH264Codec] = useState(false);
     const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
     const [isSharing, setIsSharing] = useState(false);
-    const [status, setStatus] = useState("disconnected");
-    const [videoTracks, setVideoTracks] = useState(new Map());
+    const [status, setStatus] = useState<"disconnected" | "connecting" | "connected" | "reconnecting">("disconnected");
+    const [videoTracks, setVideoTracks] = useState<Map<string, TrackIdentifier>>(new Map());
     const [roomDetails, setRoomDetails] = useState({ roomName: "", roomSid: "" });
     const [logs, setLogs] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -208,7 +213,7 @@ const Example = () => {
     const [videoHeight, setVideoHeight] = useState("");
     const [videoFrameRate, setVideoFrameRate] = useState("");
     const scrollRef = useRef<ScrollView>(null);
-    const twilioRef = useRef<any>(null);
+    const twilioRef = useRef<TwilioVideo>(null);
     const insets = useSafeAreaInsets();
     const _log = (line: string) =>
         setLogs(prev => [...prev.slice(-MAX_LOG_LINES), line]);
@@ -274,7 +279,7 @@ const Example = () => {
         const customFrameRate = videoFrameRate ? parseInt(videoFrameRate, 10) : undefined;
 
         // Build videoFormat based on selected preset
-        let videoFormat: { width?: number; height?: number; frameRate?: number } | undefined;
+        let videoFormat: VideoFormat | undefined;
         const selectedPreset = VIDEO_FORMAT_PRESETS.find(f => f.value === selectedVideoFormatId);
 
         if (selectedPreset) {
@@ -286,15 +291,15 @@ const Example = () => {
                         frameRate: customFrameRate,
                     };
                 }
-            } else if (selectedPreset.value !== "default") {
+            } else if (selectedPreset.value !== "default" && selectedPreset.width && selectedPreset.height && selectedPreset.frameRate) {
                 videoFormat = {
-                    ...(selectedPreset.width ? { width: selectedPreset.width } : {}),
-                    ...(selectedPreset.height ? { height: selectedPreset.height } : {}),
-                    ...(selectedPreset.frameRate ? { frameRate: selectedPreset.frameRate } : {}),
+                    width: selectedPreset.width,
+                    height: selectedPreset.height,
+                    frameRate: selectedPreset.frameRate,
                 };
             }
         }
-        const connectOptions: any = {
+        const connectOptions: iOSConnectParams | androidConnectParams = {
             accessToken: token,
             region: selectedRegion,
             enableAudio: isAudioEnabled,
@@ -560,7 +565,7 @@ const Example = () => {
     };
 
     const _onParticipantAddedVideoTrack = ({ participant, track }: TrackEventCbArgs) => {
-        setVideoTracks((originalVideoTracks: Map<string, any>) => {
+        setVideoTracks((originalVideoTracks) => {
             originalVideoTracks.set(track.trackSid, {
                 participantSid: participant.sid,
                 videoTrackSid: track.trackSid,
@@ -570,7 +575,7 @@ const Example = () => {
     };
 
     const _onParticipantRemovedVideoTrack = ({ track }: TrackEventCbArgs) => {
-        setVideoTracks((originalVideoTracks: Map<string, any>) => {
+        setVideoTracks((originalVideoTracks) => {
             originalVideoTracks.delete(track.trackSid);
             return new Map(originalVideoTracks);
         });
@@ -595,6 +600,14 @@ const Example = () => {
 
             _log(`Transcription: ${displayText}`);
         }
+    };
+
+    const _onRoomParticipantDidConnect = (event: ParticipantEventArgs) => {
+        _log(`Room participant did connect: ${event.participant.identity}`);
+    };
+
+    const _onRoomParticipantDidDisconnect = (event: ParticipantEventArgs) => {
+        _log(`Room participant did disconnect: ${event.participant.identity}`);
     };
 
     return (
@@ -655,15 +668,13 @@ const Example = () => {
                     <View style={styles.callContainer}>
                         {status === "connected" && (
                             <View style={styles.remoteGrid}>
-                                {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
-                                    return (
-                                        <TwilioVideoParticipantView
-                                            style={styles.remoteVideo}
-                                            key={trackSid}
-                                            trackIdentifier={trackIdentifier as any}
-                                        />
-                                    );
-                                })}
+                                {Array.from(videoTracks, ([trackSid, trackIdentifier]) => (
+                                    <TwilioVideoParticipantView
+                                        style={styles.remoteVideo}
+                                        key={trackSid}
+                                        trackIdentifier={trackIdentifier}
+                                    />
+                                ))}
                             </View>
                         )}
                         <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
@@ -687,7 +698,7 @@ const Example = () => {
             )
             }
             <TwilioVideo
-                ref={twilioRef as any}
+                ref={twilioRef}
                 onRoomDidConnect={_onRoomDidConnect}
                 onRoomDidDisconnect={_onRoomDidDisconnect}
                 onRoomDidFailToConnect={_onRoomDidFailToConnect}
@@ -728,6 +739,8 @@ const Example = () => {
                 onRemoteDataTrackSubscriptionFailed={_onRemoteDataTrackSubscriptionFailed}
                 onRoomFetched={_onRoomFetched}
                 onTranscriptionReceived={_onTranscriptionReceived}
+                onRoomParticipantDidConnect={_onRoomParticipantDidConnect}
+                onRoomParticipantDidDisconnect={_onRoomParticipantDidDisconnect}
             />
 
             <Modal
