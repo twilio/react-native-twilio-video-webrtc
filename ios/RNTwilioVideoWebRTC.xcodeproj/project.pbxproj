@@ -11,10 +11,12 @@
 		73814A35203776CD00E8C67D /* RCTTWRemoteVideoViewManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 738F9D6A203760FF00058972 /* RCTTWRemoteVideoViewManager.h */; };
 		73814A36203776CD00E8C67D /* RCTTWSerializable.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 738F9D65203760FF00058972 /* RCTTWSerializable.h */; };
 		73814A37203776CD00E8C67D /* RCTTWVideoModule.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 738F9D63203760FF00058972 /* RCTTWVideoModule.h */; };
+		73814A38203776CD00E8C67D /* RCTTWRemoteVideoView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 738F9D70203760FF00058972 /* RCTTWRemoteVideoView.h */; };
 		738F9D6B203760FF00058972 /* RCTTWSerializable.m in Sources */ = {isa = PBXBuildFile; fileRef = 738F9D64203760FF00058972 /* RCTTWSerializable.m */; };
 		738F9D6C203760FF00058972 /* RCTTWRemoteVideoViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 738F9D66203760FF00058972 /* RCTTWRemoteVideoViewManager.m */; };
 		738F9D6D203760FF00058972 /* RCTTWLocalVideoViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 738F9D67203760FF00058972 /* RCTTWLocalVideoViewManager.m */; };
 		738F9D6E203760FF00058972 /* RCTTWVideoModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 738F9D68203760FF00058972 /* RCTTWVideoModule.m */; };
+		738F9D6F203760FF00058972 /* RCTTWRemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 738F9D71203760FF00058972 /* RCTTWRemoteVideoView.m */; };
 		73AC89CA20377EA700038475 /* TwilioVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73AC89C920377EA700038475 /* TwilioVideo.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +29,7 @@
 			files = (
 				73814A34203776CD00E8C67D /* RCTTWLocalVideoViewManager.h in CopyFiles */,
 				73814A35203776CD00E8C67D /* RCTTWRemoteVideoViewManager.h in CopyFiles */,
+				73814A38203776CD00E8C67D /* RCTTWRemoteVideoView.h in CopyFiles */,
 				73814A36203776CD00E8C67D /* RCTTWSerializable.h in CopyFiles */,
 				73814A37203776CD00E8C67D /* RCTTWVideoModule.h in CopyFiles */,
 			);
@@ -44,6 +47,8 @@
 		738F9D68203760FF00058972 /* RCTTWVideoModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTWVideoModule.m; sourceTree = SOURCE_ROOT; };
 		738F9D69203760FF00058972 /* RCTTWLocalVideoViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTWLocalVideoViewManager.h; sourceTree = SOURCE_ROOT; };
 		738F9D6A203760FF00058972 /* RCTTWRemoteVideoViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTWRemoteVideoViewManager.h; sourceTree = SOURCE_ROOT; };
+		738F9D70203760FF00058972 /* RCTTWRemoteVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTWRemoteVideoView.h; sourceTree = SOURCE_ROOT; };
+		738F9D71203760FF00058972 /* RCTTWRemoteVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTWRemoteVideoView.m; sourceTree = SOURCE_ROOT; };
 		73AC89C920377EA700038475 /* TwilioVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TwilioVideo.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -83,6 +88,8 @@
 				738F9D67203760FF00058972 /* RCTTWLocalVideoViewManager.m */,
 				738F9D6A203760FF00058972 /* RCTTWRemoteVideoViewManager.h */,
 				738F9D66203760FF00058972 /* RCTTWRemoteVideoViewManager.m */,
+				738F9D70203760FF00058972 /* RCTTWRemoteVideoView.h */,
+				738F9D71203760FF00058972 /* RCTTWRemoteVideoView.m */,
 				738F9D65203760FF00058972 /* RCTTWSerializable.h */,
 				738F9D64203760FF00058972 /* RCTTWSerializable.m */,
 				738F9D63203760FF00058972 /* RCTTWVideoModule.h */,
@@ -158,6 +165,7 @@
 			files = (
 				738F9D6E203760FF00058972 /* RCTTWVideoModule.m in Sources */,
 				738F9D6C203760FF00058972 /* RCTTWRemoteVideoViewManager.m in Sources */,
+				738F9D6F203760FF00058972 /* RCTTWRemoteVideoView.m in Sources */,
 				738F9D6B203760FF00058972 /* RCTTWSerializable.m in Sources */,
 				738F9D6D203760FF00058972 /* RCTTWLocalVideoViewManager.m in Sources */,
 			);

@@ -10,6 +10,7 @@
 
 #import <React/RCTConvert.h>
 #import "RCTTWVideoModule.h"
+#import "RCTTWRemoteVideoView.h"
 
 @interface RCTTWVideoTrackIdentifier : NSObject
 
@@ -47,26 +48,22 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_CUSTOM_VIEW_PROPERTY(scalesType, NSInteger, TVIVideoView) {
-  view.subviews[0].contentMode = [RCTConvert NSInteger:json];
-}
-
 - (UIView *)view {
-  UIView *container = [[UIView alloc] init];
-  TVIVideoView *inner = [[TVIVideoView alloc] init];
-  inner.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-  [container addSubview:inner];
-  return container;
+  return [[RCTTWRemoteVideoView alloc] init];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(trackIdentifier, RCTTWVideoTrackIdentifier, TVIVideoView) {
+RCT_EXPORT_VIEW_PROPERTY(onFrameDimensionsChanged, RCTDirectEventBlock)
+
+RCT_CUSTOM_VIEW_PROPERTY(scalesType, NSInteger, RCTTWRemoteVideoView) {
+  view.videoView.contentMode = [RCTConvert NSInteger:json];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(trackIdentifier, RCTTWVideoTrackIdentifier, RCTTWRemoteVideoView) {
   if (json) {
     RCTTWVideoModule *videoModule = [self.bridge moduleForName:@"TWVideoModule"];
     RCTTWVideoTrackIdentifier *id = [RCTConvert RCTTWVideoTrackIdentifier:json];
-
-    [videoModule addParticipantView:view.subviews[0] sid:id.participantSid trackSid:id.videoTrackSid];
+    [videoModule addParticipantView:view.videoView sid:id.participantSid trackSid:id.videoTrackSid];
   }
 }
-
 
 @end

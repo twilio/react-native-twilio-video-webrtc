@@ -2,6 +2,31 @@
 
 ### Changes
 
+- Added `onFrameDimensionsChanged` callback to `TwilioVideoParticipantView` on iOS, providing parity with Android. This callback is fired when the remote video frame dimensions change, returning `{width, height, rotation}`. This enables dynamic video view sizing based on the actual video dimensions.
+
+  **Example usage:**
+
+  ```tsx
+  const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
+
+  const handleFrameDimensionsChanged = (data: { width: number; height: number; rotation: number }) => {
+    if (data.width > 0 && data.height > 0) {
+      // Scale to fit within max dimensions while maintaining aspect ratio
+      const maxSize = 200;
+      const aspectRatio = data.width / data.height;
+      const scaledWidth = aspectRatio > 1 ? maxSize : maxSize * aspectRatio;
+      const scaledHeight = aspectRatio > 1 ? maxSize / aspectRatio : maxSize;
+      setDimensions({ width: scaledWidth, height: scaledHeight });
+    }
+  };
+
+  <TwilioVideoParticipantView
+    style={{ width: dimensions.width, height: dimensions.height }}
+    scaleType="fit"
+    trackIdentifier={trackIdentifier}
+    onFrameDimensionsChanged={handleFrameDimensionsChanged}
+  />
+  ```
 - Added `videoFormat` option to `connect()` method on both iOS and Android platforms. This allows users to specify the maximum video capture format (width, height, and frame rate) when connecting to a room. When `videoFormat` is not provided, the SDK automatically selects the best available format from the camera, or fallbacks to 1280x720, 30 FPS video if the camera video format cannot be determined. Note: On Android, frame rates lower than 15 fps will have no effect.
 
   > **Please note:** with this change, the SDK will no longer set the following default resolutions:

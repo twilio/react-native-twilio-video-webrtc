@@ -23,15 +23,28 @@ declare module "@twilio/video-react-native-sdk" {
         frameRate: number;
     }
 
+    interface FrameDimensionsData {
+        /** Video frame height */
+        height: number;
+        /** Video frame width */
+        width: number;
+        /** Video frame rotation */
+        rotation: number;
+    }
+
     interface TwilioVideoParticipantViewProps extends ViewProps {
         trackIdentifier: TrackIdentifier;
         ref?: React.Ref<any>;
         scaleType?: scaleType;
         /**
- * Whether to apply Z ordering to this view.  Setting this to true will cause
- * this view to appear above other Twilio Video views.
- */
+         * Whether to apply Z ordering to this view.  Setting this to true will cause
+         * this view to appear above other Twilio Video views.
+         */
         applyZOrder?: boolean|undefined;
+        /**
+         * Callback when video frame dimensions change.
+         */
+        onFrameDimensionsChanged?: (data: FrameDimensionsData) => void;
     }
 
     interface TwilioVideoLocalViewProps extends ViewProps {
