@@ -237,6 +237,12 @@
 | trackIdentifier | shape({participantSid: string, videoTrackSid: string}) | The participant sid and video track sid you want to render in the view |
 | scaleType       | enum('fit','fill')                                     | How the video stream should be scaled to fit its container             |
 
+#### Callbacks
+
+| Property                 | Parameters                                          | Description                                 |
+| :----------------------- | :-------------------------------------------------- | :------------------------------------------ |
+| onFrameDimensionsChanged | `{height: number, width: number, rotation: number}` | Callback when video frame dimensions change |
+
 ---
 
 ### TwilioVideoScreenShareView ([src/TwilioVideoScreenShareView.android.js](../src/TwilioVideoScreenShareView.android.js))
