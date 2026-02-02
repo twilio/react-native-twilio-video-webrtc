@@ -78,7 +78,7 @@ declare module "@twilio/video-react-native-sdk" {
         participant: Participant;
         track?: Track;
         error: string;
-        code?: string;
+        code?: number;
         errorExplanation?: string;
     };
 

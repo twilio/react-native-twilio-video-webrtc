@@ -1423,7 +1423,7 @@ public class CustomTwilioVideoView extends View
                 event.putString("roomName", room.getName());
                 event.putString("roomSid", room.getSid());
                 event.putString("error", e.getMessage());
-                event.putString("code", Integer.toString(e.getCode()));
+                event.putInt("code", e.getCode());
                 event.putString("errorExplanation", e.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECT_FAILURE, event);
             }
@@ -1613,7 +1613,7 @@ public class CustomTwilioVideoView extends View
                                                        RemoteAudioTrackPublication publication, TwilioException twilioException) {
                 WritableMap event = buildParticipantVideoEvent(participant, publication);
                 event.putString("error", twilioException.getMessage());
-                event.putString("code", Integer.toString(twilioException.getCode()));
+                event.putInt("code", twilioException.getCode());
                 event.putString("errorExplanation", twilioException.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_REMOTE_AUDIO_TRACK_SUBSCRIPTION_FAILED, event);
             }
@@ -1651,7 +1651,7 @@ public class CustomTwilioVideoView extends View
                                                       RemoteDataTrackPublication publication, TwilioException twilioException) {
                 WritableMap event = buildParticipantDataEvent(participant, publication);
                 event.putString("error", twilioException.getMessage());
-                event.putString("code", Integer.toString(twilioException.getCode()));
+                event.putInt("code", twilioException.getCode());
                 event.putString("errorExplanation", twilioException.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_REMOTE_DATA_TRACK_SUBSCRIPTION_FAILED, event);
             }
@@ -1685,7 +1685,7 @@ public class CustomTwilioVideoView extends View
                                                        RemoteVideoTrackPublication publication, TwilioException twilioException) {
                 WritableMap event = buildParticipantVideoEvent(participant, publication);
                 event.putString("error", twilioException.getMessage());
-                event.putString("code", Integer.toString(twilioException.getCode()));
+                event.putInt("code", twilioException.getCode());
                 event.putString("errorExplanation", twilioException.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_REMOTE_VIDEO_TRACK_SUBSCRIPTION_FAILED, event);
             }
@@ -1761,7 +1761,7 @@ public class CustomTwilioVideoView extends View
                 WritableMap event = new WritableNativeMap();
                 event.putMap("participant", buildParticipant(localParticipant));
                 event.putString("error", twilioException.getMessage());
-                event.putString("code", Integer.toString(twilioException.getCode()));
+                event.putInt("code", twilioException.getCode());
                 event.putString("errorExplanation", twilioException.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_LOCAL_AUDIO_TRACK_PUBLICATION_FAILED, event);
             }
@@ -1781,7 +1781,7 @@ public class CustomTwilioVideoView extends View
                 WritableMap event = new WritableNativeMap();
                 event.putMap("participant", buildParticipant(localParticipant));
                 event.putString("error", twilioException.getMessage());
-                event.putString("code", Integer.toString(twilioException.getCode()));
+                event.putInt("code", twilioException.getCode());
                 event.putString("errorExplanation", twilioException.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_LOCAL_VIDEO_TRACK_PUBLICATION_FAILED, event);
             }
@@ -1801,7 +1801,7 @@ public class CustomTwilioVideoView extends View
                 WritableMap event = new WritableNativeMap();
                 event.putMap("participant", buildParticipant(localParticipant));
                 event.putString("error", twilioException.getMessage());
-                event.putString("code", Integer.toString(twilioException.getCode()));
+                event.putInt("code", twilioException.getCode());
                 event.putString("errorExplanation", twilioException.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_LOCAL_DATA_TRACK_PUBLICATION_FAILED, event);
             }

@@ -63,6 +63,13 @@
 - Added `onTranscriptionReceived` callback that is called when a live transcription is received. The callback receives an object containing `transcription`, `participant`, `track`, `partialResults`, `stability`, `languageCode`, `timestamp`, and `sequenceNumber` properties.
 - Cleaned up and fixed TypeScript type definitions: exported `VideoFormat` interface, added `region` parameter to `iOSConnectParams` and `androidConnectParams` types, added missing `toggleScreenSharing` method to `TwilioVideo` class, and improved type safety in Example App by using proper SDK types instead of `any`.
 
+### Breaking Change
+Error codes in error callbacks are now returned as `number` instead of `string` on both iOS and Android. Previously, Android returned error codes as strings, while iOS had inconsistent behavior. This change standardizes all error codes to be numbers. Affected callbacks: `onRoomDidFailToConnect`, `onLocalAudioTrackPublicationFailed`, `onLocalVideoTrackPublicationFailed`, `onLocalDataTrackPublicationFailed`, `onRemoteAudioTrackSubscriptionFailed`, `onRemoteVideoTrackSubscriptionFailed`, `onRemoteDataTrackSubscriptionFailed`.
+
+**Migration:**
+
+Update any string comparisons (e.g., `error.code === "53000"`) to number comparisons (e.g., `error.code === 53000`).
+
 ### Known issues
 
 - Screensharing on iOS only supports in-app sharing. The screen share track will freeze when the app is backgrounded.
