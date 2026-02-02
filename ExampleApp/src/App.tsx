@@ -658,6 +658,7 @@ const Example = () => {
                                 {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
                                     return (
                                         <TwilioVideoParticipantView
+                                            scaleType="fit"
                                             style={styles.remoteVideo}
                                             key={trackSid}
                                             trackIdentifier={trackIdentifier as any}
