@@ -80,6 +80,7 @@
 - Added a region selector dropdown to the Example App main menu for testing different Twilio Signaling Regions.
 - Added `receiveTranscriptions` connect option to enable receiving live transcription events when transcriptions are enabled on the room. When set to `true`, transcription events will be emitted via the `onTranscriptionReceived` callback. (Room needs to have transcription enabled). For more information about the feature, please see the develoiper documentation - [Real-time Transcriptions for Video](https://www.twilio.com/docs/video/api/transcriptions)
 - Added `onTranscriptionReceived` callback that is called when a live transcription is received. The callback receives an object containing `transcription`, `participant`, `track`, `partialResults`, `stability`, `languageCode`, `timestamp`, and `sequenceNumber` properties.
+- Cleaned up and fixed TypeScript type definitions: exported `VideoFormat` interface, added `region` parameter to `iOSConnectParams` and `androidConnectParams` types, added missing `toggleScreenSharing` method to `TwilioVideo` class, and improved type safety in Example App by using proper SDK types instead of `any`.
 
 ### Known issues
 
