@@ -11,18 +11,12 @@
 
   const handleFrameDimensionsChanged = (data: { width: number; height: number; rotation: number }) => {
     if (data.width > 0 && data.height > 0) {
-      // Scale to fit within max dimensions while maintaining aspect ratio
-      const maxSize = 200;
-      const aspectRatio = data.width / data.height;
-      const scaledWidth = aspectRatio > 1 ? maxSize : maxSize * aspectRatio;
-      const scaledHeight = aspectRatio > 1 ? maxSize / aspectRatio : maxSize;
-      setDimensions({ width: scaledWidth, height: scaledHeight });
+      setDimensions({ width: data.width, height: data.height });
     }
   };
 
   <TwilioVideoParticipantView
     style={{ width: dimensions.width, height: dimensions.height }}
-    scaleType="fit"
     trackIdentifier={trackIdentifier}
     onFrameDimensionsChanged={handleFrameDimensionsChanged}
   />
