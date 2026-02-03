@@ -1231,7 +1231,7 @@ RCT_EXPORT_METHOD(disconnect) {
     if (error.localizedDescription) {
         body[@"error"] = error.localizedDescription;
     }
-    body[@"code"] = [NSString stringWithFormat:@"%ld", (long) error.code];
+    body[@"code"] = @(error.code);
     NSString *explanation = error.localizedFailureReason ?: error.localizedRecoverySuggestion;
     if (explanation.length > 0) {
         body[@"errorExplanation"] = explanation;

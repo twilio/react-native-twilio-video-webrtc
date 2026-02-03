@@ -127,7 +127,7 @@ const propTypes = {
 
   /**
    * Called when publishing the local audio track fails
-   * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+   * @param {{participant: Participant, error: string, code?: number, errorExplanation?: string}}
    */
   onLocalAudioTrackPublicationFailed: PropTypes.func,
 
@@ -139,7 +139,7 @@ const propTypes = {
 
   /**
    * Called when publishing the local video track fails
-   * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+   * @param {{participant: Participant, error: string, code?: number, errorExplanation?: string}}
    */
   onLocalVideoTrackPublicationFailed: PropTypes.func,
 
@@ -151,7 +151,7 @@ const propTypes = {
 
   /**
    * Called when publishing the local data track fails
-   * @param {{participant: Participant, error: string, code?: string, errorExplanation?: string}}
+   * @param {{participant: Participant, error: string, code?: number, errorExplanation?: string}}
    */
   onLocalDataTrackPublicationFailed: PropTypes.func,
 
@@ -169,7 +169,7 @@ const propTypes = {
 
   /**
    * Called when subscribing to a remote audio track fails
-   * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+   * @param {{participant: Participant, track: Track, error: string, code?: number, errorExplanation?: string}}
    */
   onRemoteAudioTrackSubscriptionFailed: PropTypes.func,
 
@@ -187,7 +187,7 @@ const propTypes = {
 
   /**
    * Called when subscribing to a remote video track fails
-   * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+   * @param {{participant: Participant, track: Track, error: string, code?: number, errorExplanation?: string}}
    */
   onRemoteVideoTrackSubscriptionFailed: PropTypes.func,
 
@@ -205,7 +205,7 @@ const propTypes = {
 
   /**
    * Called when subscribing to a remote data track fails
-   * @param {{participant: Participant, track: Track, error: string, code?: string, errorExplanation?: string}}
+   * @param {{participant: Participant, track: Track, error: string, code?: number, errorExplanation?: string}}
    */
   onRemoteDataTrackSubscriptionFailed: PropTypes.func,
 
