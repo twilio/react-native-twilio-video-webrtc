@@ -174,6 +174,7 @@ public class CustomTwilioVideoView extends View
     private boolean isDataEnabled = false;
     private boolean cameraInterrupted = false;
     private boolean receiveTranscriptions = false;
+    private boolean enableSimulcast = false;
 
     // User-specified video format (0 means auto-select best)
     private int requestedVideoWidth = 0;
@@ -695,6 +696,7 @@ public class CustomTwilioVideoView extends View
             boolean maintainVideoTrackInBackground,
             String cameraType,
             boolean enableH264Codec,
+            boolean enableSimulcast,
             boolean enableDataTrack,
             boolean receiveTranscriptions,
             int videoWidth,
@@ -708,6 +710,7 @@ public class CustomTwilioVideoView extends View
         this.maintainVideoTrackInBackground = maintainVideoTrackInBackground;
         this.cameraType = cameraType;
         this.enableH264Codec = enableH264Codec;
+        this.enableSimulcast = enableSimulcast;
         this.isDataEnabled = enableDataTrack;
         this.receiveTranscriptions = receiveTranscriptions;
         this.requestedVideoWidth = videoWidth;
@@ -803,7 +806,7 @@ public class CustomTwilioVideoView extends View
 
         WritableArray supportedCodecs = new WritableNativeArray();
 
-        VideoCodec videoCodec = new Vp8Codec();
+        VideoCodec videoCodec = new Vp8Codec(this.enableSimulcast);
         // VP8 is supported on all android devices by default
         supportedCodecs.pushString(videoCodec.toString());
 

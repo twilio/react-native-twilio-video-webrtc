@@ -116,6 +116,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 String cameraType = args.getString(9);
                 ReadableMap encodingParameters = args.getMap(10);
                 boolean enableH264Codec = encodingParameters.hasKey("enableH264Codec") ? encodingParameters.getBoolean("enableH264Codec") : false;
+                boolean enableSimulcast = encodingParameters.hasKey("enableSimulcast") ? encodingParameters.getBoolean("enableSimulcast") : false;
                 boolean enableDataTrack = args.getBoolean(11);
                 boolean receiveTranscriptions = args.getBoolean(12);
 
@@ -154,6 +155,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                         maintainVideoTrackInBackground,
                         cameraType,
                         enableH264Codec,
+                        enableSimulcast,
                         enableDataTrack,
                         receiveTranscriptions,
                         videoWidth,

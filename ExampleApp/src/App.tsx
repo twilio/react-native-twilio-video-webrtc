@@ -198,6 +198,7 @@ const Example = () => {
     const [networkQualityEnabled, setNetworkQualityEnabled] = useState(false);
     const [dominantSpeakerEnabled, setDominantSpeakerEnabled] = useState(false);
     const [enableH264Codec, setEnableH264Codec] = useState(false);
+    const [enableSimulcast, setEnableSimulcast] = useState(false);
     const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
     const [isSharing, setIsSharing] = useState(false);
     const [status, setStatus] = useState<"disconnected" | "connecting" | "connected" | "reconnecting">("disconnected");
@@ -229,6 +230,7 @@ const Example = () => {
         setNetworkQualityEnabled(false);
         setDominantSpeakerEnabled(false);
         setEnableH264Codec(false);
+        setEnableSimulcast(false);
         setSelectedRegion(null);
         setLogs([]);
         setRoomDetails({ roomName: "", roomSid: "" });
@@ -308,7 +310,7 @@ const Example = () => {
             enableRemoteAudio: remoteAudioEnabled,
             enableNetworkQualityReporting: networkQualityEnabled,
             dominantSpeakerEnabled,
-            encodingParameters: { enableH264Codec },
+            encodingParameters: { enableH264Codec, enableSimulcast },
             receiveTranscriptions,
             ...(videoFormat && { videoFormat }),
         };
@@ -497,7 +499,7 @@ const Example = () => {
         }
     };
 
-    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, signalingRegion }: RoomFetchedEventArgs) => {
+    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, signalingRegion,...rest }: RoomFetchedEventArgs) => {
         const roomName = name || "unknown";
         const state = roomState || "unknown";
         const remoteCount = remoteParticipants?.length;
@@ -630,6 +632,7 @@ const Example = () => {
                     <ToggleRow label="Connect with audio enabled" value={isAudioEnabled} onValueChange={setIsAudioEnabled} />
                     <ToggleRow label="Connect with data track enabled" value={isDataTrackEnabled} onValueChange={setIsDataTrackEnabled} />
                     <ToggleRow label="Enable H264" value={enableH264Codec} onValueChange={setEnableH264Codec} />
+                    <ToggleRow label="Enable Simulcast (VP8 only)" value={enableSimulcast} onValueChange={setEnableSimulcast} />
                     <ToggleRow label="Network Quality" value={networkQualityEnabled} onValueChange={setNetworkQualityEnabled} />
                     <ToggleRow label="Dominant Speaker" value={dominantSpeakerEnabled} onValueChange={setDominantSpeakerEnabled} />
                     <ToggleRow label="Receive Transcriptions" value={receiveTranscriptions} onValueChange={setReceiveTranscriptions} />

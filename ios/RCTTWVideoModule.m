@@ -978,6 +978,7 @@ RCT_EXPORT_METHOD(
     __block NSMutableArray<NSString *> *supportedCodecs = [NSMutableArray array];
 
     BOOL enableH264 = [encodingParameters[@"enableH264Codec"] boolValue];
+    BOOL enableSimulcast = [encodingParameters[@"enableSimulcast"] boolValue];
     self.screenSharePrefersH264 = enableH264;
 
     TVIConnectOptions *connectOptions = [TVIConnectOptions
@@ -1009,7 +1010,8 @@ RCT_EXPORT_METHOD(
                              builder.preferredVideoCodecs = @[h264Codec];
                              [supportedCodecs addObject:@"H264"];
                          } else {
-                             TVIVideoCodec *vp8Codec = [TVIVp8Codec new];
+                             // VP8 with optional simulcast
+                             TVIVp8Codec *vp8Codec = [[TVIVp8Codec alloc] initWithSimulcast:enableSimulcast];
                              builder.preferredVideoCodecs = @[vp8Codec];
                          }
 
