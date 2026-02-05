@@ -668,13 +668,16 @@ const Example = () => {
                     <View style={styles.callContainer}>
                         {status === "connected" && (
                             <View style={styles.remoteGrid}>
-                                {Array.from(videoTracks, ([trackSid, trackIdentifier]) => (
-                                    <TwilioVideoParticipantView
-                                        style={styles.remoteVideo}
-                                        key={trackSid}
-                                        trackIdentifier={trackIdentifier}
-                                    />
-                                ))}
+                                {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
+                                    return (
+                                        <TwilioVideoParticipantView
+                                            scaleType="fit"
+                                            style={styles.remoteVideo}
+                                            key={trackSid}
+                                            trackIdentifier={trackIdentifier as any}
+                                        />
+                                    );
+                                })}
                             </View>
                         )}
                         <TwilioVideoLocalView enabled={true} style={styles.localVideo} />
