@@ -6,7 +6,7 @@
 
 **Track**: `{enabled: boolean, trackName: string, trackSid: string}`
 
-**VideoFormat**: `{width?: number, height?: number, frameRate?: number}` - Video capture format configuration. When not specified, the SDK automatically selects the best available format from the camera.
+**VideoFormat**: `{width: number, height: number, frameRate: number}` - Video capture format configuration that can be passed in the `connect` method. When not specified, the SDK automatically selects the best available format from the camera. All three fields are mandatory. Note: On Android, frame rates lower than 15 fps will have no effect
 
 ### CustomTwilioVideoView ([src/TwilioVideo.android.js](../src/TwilioVideo.android.js))
 
