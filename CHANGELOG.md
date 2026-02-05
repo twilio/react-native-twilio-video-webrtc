@@ -1,4 +1,4 @@
-## 3.5.0 (In Progress)
+## 3.5.0
 
 ### Changes
 

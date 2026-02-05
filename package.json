@@ -5,7 +5,7 @@
     "url": "https://github.com/twilio/react-native-twilio-video-webrtc.git"
   },
   "homepage": "https://github.com/twilio/react-native-twilio-video-webrtc",
-  "version": "3.5.0-dev",
+  "version": "3.5.0",
   "description": "Twilio Video WebRTC for React Native.",
   "main": "index.js",
   "react-native": "index.js",
