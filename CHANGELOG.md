@@ -18,6 +18,7 @@
   <TwilioVideoParticipantView
     style={{ width: dimensions.width, height: dimensions.height }}
     trackIdentifier={trackIdentifier}
+    key={trackSid}
     onFrameDimensionsChanged={handleFrameDimensionsChanged}
   />
   ```
