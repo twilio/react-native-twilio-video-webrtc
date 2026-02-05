@@ -259,6 +259,8 @@ declare module "@twilio/video-react-native-sdk" {
         enableDataTrack?: boolean;
         encodingParameters?: {
             enableH264Codec?: boolean;
+            /** Enable VP8 simulcast. Simulcast publishes multiple video streams at different resolutions. Only works with VP8 codec (ignored when enableH264Codec is true). */
+            enableSimulcast?: boolean;
             // if audioBitrate OR videoBitrate is provided, you must provide both
             audioBitrate?: number;
             videoBitrate?: number;
@@ -282,6 +284,8 @@ declare module "@twilio/video-react-native-sdk" {
         enableRemoteAudio?: boolean;
         encodingParameters?: {
             enableH264Codec?: boolean;
+            /** Enable VP8 simulcast. Simulcast publishes multiple video streams at different resolutions. Only works with VP8 codec (ignored when enableH264Codec is true). */
+            enableSimulcast?: boolean;
         };
         enableNetworkQualityReporting?: boolean;
         maintainVideoTrackInBackground?: boolean;

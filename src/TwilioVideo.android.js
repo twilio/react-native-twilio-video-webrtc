@@ -385,6 +385,8 @@ class CustomTwilioVideoView extends Component {
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    * @param {boolean} [params.maintainVideoTrackInBackground=false] - Whether to maintain video track in background
    * @param {Object} [params.encodingParameters={}] - Video encoding parameters
+   * @param {boolean} [params.encodingParameters.enableH264Codec=false] - Whether to use H264 codec
+   * @param {boolean} [params.encodingParameters.enableSimulcast=false] - Whether to enable VP8 simulcast (ignored when H264 is enabled)
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track
    * @param {boolean} [params.receiveTranscriptions=false] - Whether to receive transcription events
    * @param {Object} [params.videoFormat=null] - Video capture format { width, height, frameRate }

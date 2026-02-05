@@ -499,6 +499,8 @@ export default class TwilioVideo extends Component {
    * @param {boolean} [params.enableAudio=true] - Whether to enable audio
    * @param {boolean} [params.enableVideo=true] - Whether to enable video
    * @param {Object} [params.encodingParameters=null] - Video encoding parameters
+   * @param {boolean} [params.encodingParameters.enableH264Codec=false] - Whether to use H264 codec
+   * @param {boolean} [params.encodingParameters.enableSimulcast=false] - Whether to enable VP8 simulcast (ignored when H264 is enabled)
    * @param {boolean} [params.enableNetworkQualityReporting=false] - Whether to enable network quality reporting
    * @param {boolean} [params.dominantSpeakerEnabled=false] - Whether to enable dominant speaker detection
    * @param {boolean} [params.enableDataTrack=false] - Whether to enable data track

@@ -82,6 +82,19 @@
 - Added `receiveTranscriptions` connect option to enable receiving live transcription events when transcriptions are enabled on the room. When set to `true`, transcription events will be emitted via the `onTranscriptionReceived` callback. (Room needs to have transcription enabled). For more information about the feature, please see the develoiper documentation - [Real-time Transcriptions for Video](https://www.twilio.com/docs/video/api/transcriptions)
 - Added `onTranscriptionReceived` callback that is called when a live transcription is received. The callback receives an object containing `transcription`, `participant`, `track`, `partialResults`, `stability`, `languageCode`, `timestamp`, and `sequenceNumber` properties.
 - Cleaned up and fixed TypeScript type definitions: exported `VideoFormat` interface, added `region` parameter to `iOSConnectParams` and `androidConnectParams` types, added missing `toggleScreenSharing` method to `TwilioVideo` class, and improved type safety in Example App by using proper SDK types instead of `any`.
+- Added `enableSimulcast` option to `encodingParameters` for VP8 simulcast support on both iOS and Android platforms. When enabled, the SDK publishes multiple video streams at different resolutions, allowing receivers to adaptively select the stream that best matches their available bandwidth. **Note:** Simulcast only works with VP8 codec. When `enableH264Codec` is set to `true`, the `enableSimulcast` option is ignored.
+
+  **Usage example:**
+  ```typescript
+  const connectOptions = {
+    accessToken: token,
+    encodingParameters: {
+      enableSimulcast: true,  // Enable VP8 simulcast
+    },
+  };
+
+  twilioRef.current?.connect(connectOptions);
+  ```
 
 ### Breaking Change
 Error codes in error callbacks are now returned as `number` instead of `string` on both iOS and Android. Previously, Android returned error codes as strings, while iOS had inconsistent behavior. This change standardizes all error codes to be numbers. Affected callbacks: `onRoomDidFailToConnect`, `onLocalAudioTrackPublicationFailed`, `onLocalVideoTrackPublicationFailed`, `onLocalDataTrackPublicationFailed`, `onRemoteAudioTrackSubscriptionFailed`, `onRemoteVideoTrackSubscriptionFailed`, `onRemoteDataTrackSubscriptionFailed`.
