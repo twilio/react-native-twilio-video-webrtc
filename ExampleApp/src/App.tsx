@@ -499,7 +499,7 @@ const Example = () => {
         }
     };
 
-    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, signalingRegion,...rest }: RoomFetchedEventArgs) => {
+    const _onRoomFetched = ({ name, state: roomState, remoteParticipants, signalingRegion }: RoomFetchedEventArgs) => {
         const roomName = name || "unknown";
         const state = roomState || "unknown";
         const remoteCount = remoteParticipants?.length;
