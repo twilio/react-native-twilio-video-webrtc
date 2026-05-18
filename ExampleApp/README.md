@@ -1,12 +1,12 @@
 # ExampleApp – React Native Twilio Video Demo
 
-A sample React Native application that demonstrates how to join a Twilio Programmable Video room using the [`react-native-twilio-video-webrtc`](https://github.com/twilio/react-native-twilio-video-webrtc) package.
+A sample React Native application that demonstrates how to join a Twilio Programmable Video room using the [`@twilio/video-react-native-sdk`](https://github.com/twilio/react-native-twilio-video-webrtc) package.
 
 ---
 
 ## 1. Prerequisites
 
-• **Node ≥ 18**, **Yarn ≥ 1.22**  
+• **Node ≥ 18**, **Yarn ≥ 2**  
 • **Java ≥ 11** + Android SDK (Android Studio)  
 • **Xcode 14+** with Command-line tools (macOS / iOS only)  
 • A **Twilio Account** with a Video-enabled project and an **API Key / Secret** ([signup](https://www.twilio.com/try-twilio)).
@@ -87,6 +87,10 @@ This builds and installs the app on the connected device or emulator.
 yarn ios
 ```
 This opens the iOS simulator and runs the app. Ensure that the `ExampleApp` scheme is selected in Xcode if you choose to run from the IDE.
+
+**Note:** For running the ExampleApp target on a real iOS device, a valid provisioning profile must be created.
+To do so, open [ios/ExampleApp.xcodeproj](ios/ExampleApp.xcodeproj) in Xcode, go to
+Targets → ExampleApp → Signing & Cababilites and set the iOS development team to sign the application.
 
 ---
 

@@ -377,25 +377,33 @@ RCT_EXPORT_METHOD(startLocalVideo) {
                 [TVICameraSource captureDeviceForPosition:AVCaptureDevicePositionFront];
     }
 
+    if (camera == nil) {
+        NSLog(@"[RCTTWVideoModule] AVCaptureDevice for %@ camera could not be initialized", cameraType);
+        return;
+    }
+
     // Determine the video format to use
     TVIVideoFormat *format = [self videoFormatForCameraDevice:camera];
 
-    if (format != nil) {
-        [self.camera
-                startCaptureWithDevice:camera
-                                format:format
-                            completion:^(AVCaptureDevice *device,
-                                         TVIVideoFormat *startFormat, NSError *error) {
-                              if (!error) {
-                                  for (TVIVideoView *renderer in self.localVideoTrack
-                                               .renderers) {
-                                      [self updateLocalViewMirroring:renderer];
-                                  }
-                                  [self sendEventCheckingListenerWithName:cameraDidStart
-                                                                     body:nil];
-                              }
-                            }];
+    if (format == nil) {
+        NSLog(@"[RCTTWVideoModule] TVIVideoFormat for %@ camera could not be initialized", cameraType);
+        return;
     }
+
+    [self.camera
+            startCaptureWithDevice:camera
+                            format:format
+                        completion:^(AVCaptureDevice *device,
+                                     TVIVideoFormat *startFormat, NSError *error) {
+                          if (!error) {
+                              for (TVIVideoView *renderer in self.localVideoTrack
+                                           .renderers) {
+                                  [self updateLocalViewMirroring:renderer];
+                              }
+                              [self sendEventCheckingListenerWithName:cameraDidStart
+                                                                 body:nil];
+                          }
+                        }];
 }
 
 - (TVIVideoFormat *)videoFormatForCameraDevice:(AVCaptureDevice *)camera {
