@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "@react-native/new-app-screen": "0.81.0",
+    "@twilio/video-react-native-sdk": "portal:..",
     "react": "19.1.1",
     "react-native": "^0.82.1",
     "react-native-permissions": "^5.4.2",
-    "react-native-safe-area-context": "^5.5.2",
-    "@twilio/video-react-native-sdk": "file:.."
+    "react-native-safe-area-context": "^5.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -1,3 +1,14 @@
+## 3.5.1 (In development)
+
+### Fixes
+
+- Fixed an issue on iOS where the application would crash if a camera could not be initialized due
+  to a hardware failure
+
+### Changes
+
+- Added support for flexible react (>=19.1.0) and react-native (>=0.81.0) version ranges
+
 ## 3.5.0
 
 ### Changes
