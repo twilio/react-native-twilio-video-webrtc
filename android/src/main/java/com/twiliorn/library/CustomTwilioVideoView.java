@@ -673,6 +673,8 @@ public class CustomTwilioVideoView extends View
     }
 
     public void releaseResource() {
+        // Disconnect before clearing references, or the room and camera can't be stopped
+        disconnect();
         themedReactContext.removeLifecycleEventListener(this);
         room = null;
         localVideoTrack = null;
