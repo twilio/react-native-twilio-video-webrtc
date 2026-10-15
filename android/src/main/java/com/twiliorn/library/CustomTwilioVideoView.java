@@ -323,6 +323,8 @@ public class CustomTwilioVideoView extends View
     private AudioManager audioManager;
     private MediaProjectionManager mediaProjectionManager;
     private int previousAudioMode;
+    private boolean holdsAudioFocus = false;
+    private boolean startedBluetoothSco = false;
     private boolean disconnectedFromOnDestroy;
     private IntentFilter intentFilter;
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver;
@@ -656,7 +658,7 @@ public class CustomTwilioVideoView extends View
 
         if (localAudioTrack != null) {
             localAudioTrack.release();
-            audioManager.stopBluetoothSco();
+            stopOwnBluetoothSco();
             localAudioTrack = null;
         }
 
@@ -850,6 +852,7 @@ public class CustomTwilioVideoView extends View
                 deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
                 audioManager.startBluetoothSco();
                 audioManager.setBluetoothScoOn(true);
+                startedBluetoothSco = true;
                 hasNonSpeakerphoneDevice = true;
             }
         }
@@ -858,7 +861,10 @@ public class CustomTwilioVideoView extends View
 
     private void setAudioFocus(boolean focus) {
         if (focus) {
-            previousAudioMode = audioManager.getMode();
+            if (!holdsAudioFocus) {
+                previousAudioMode = audioManager.getMode();
+            }
+            holdsAudioFocus = true;
             // Request audio focus before making any device switch.
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 audioManager.requestAudioFocus(this,
@@ -887,6 +893,11 @@ public class CustomTwilioVideoView extends View
             getContext().registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
 
         } else {
+            // Only restore audio settings this view changed
+            if (!holdsAudioFocus) {
+                return;
+            }
+            holdsAudioFocus = false;
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 audioManager.abandonAudioFocus(this);
             } else if (audioFocusRequest != null) {
@@ -931,12 +942,12 @@ public class CustomTwilioVideoView extends View
         if (localAudioTrack != null) {
             localAudioTrack.release();
             localAudioTrack = null;
-            audioManager.stopBluetoothSco();
+            stopOwnBluetoothSco();
         }
         if (localVideoTrack != null) {
             localVideoTrack.release();
             localVideoTrack = null;
-            audioManager.stopBluetoothSco();
+            stopOwnBluetoothSco();
         }
         if (screenVideoTrack != null) {
             if (screenSharePreviewView != null) {
@@ -1192,11 +1203,22 @@ public class CustomTwilioVideoView extends View
         AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         if (enabled) {
             audioManager.startBluetoothSco();
+            startedBluetoothSco = true;
             audioManager.setSpeakerphoneOn(false);
         } else {
             audioManager.stopBluetoothSco();
+            startedBluetoothSco = false;
             audioManager.setSpeakerphoneOn(true);
         }
+    }
+
+    // Only stop Bluetooth SCO if this view started it
+    private void stopOwnBluetoothSco() {
+        if (!startedBluetoothSco) {
+            return;
+        }
+        startedBluetoothSco = false;
+        audioManager.stopBluetoothSco();
     }
 
     public void toggleRemoteAudio(boolean enabled) {
