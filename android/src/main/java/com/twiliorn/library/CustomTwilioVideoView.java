@@ -1451,11 +1451,13 @@ public class CustomTwilioVideoView extends View
             @Override
             public void onDisconnected(Room room, TwilioException e) {
                 WritableMap event = new WritableNativeMap();
+                // A previous room can disconnect after the next room has connected
+                boolean isCurrentRoom = CustomTwilioVideoView.room == null || room == CustomTwilioVideoView.room;
 
                 /*
                  * Remove stream voice control
                  */
-                if (themedReactContext.getCurrentActivity() != null) {
+                if (isCurrentRoom && themedReactContext.getCurrentActivity() != null) {
                     themedReactContext.getCurrentActivity()
                             .setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
                 }
@@ -1468,6 +1470,10 @@ public class CustomTwilioVideoView extends View
                     event.putString("error", e.getMessage());
                 }
                 pushEvent(CustomTwilioVideoView.this, ON_DISCONNECTED, event);
+
+                if (!isCurrentRoom) {
+                    return;
+                }
 
                 localParticipant = null;
                 roomName = null;
