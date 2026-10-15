@@ -1347,12 +1347,15 @@ RCT_EXPORT_METHOD(disconnect) {
 }
 
 - (void)room:(TVIRoom *)room didDisconnectWithError:(nullable NSError *)error {
-    // Ensure any lingering local media is cleaned up
-    [self clearAudioInstance];
-    [self clearCameraInstance];
-    [self clearDataInstance];
-    [self clearScreenInstance];
-    self.room = nil;
+    // A previous room can disconnect after the next room has connected
+    if (self.room == nil || room == self.room) {
+        // Ensure any lingering local media is cleaned up
+        [self clearAudioInstance];
+        [self clearCameraInstance];
+        [self clearDataInstance];
+        [self clearScreenInstance];
+        self.room = nil;
+    }
 
     NSMutableDictionary *body =
             [@{@"roomName": room.name, @"roomSid": room.sid} mutableCopy];
@@ -1365,12 +1368,15 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)room:(TVIRoom *)room
         didFailToConnectWithError:(nonnull NSError *)error {
-    // Ensure any lingering local media is cleaned up
-    [self clearAudioInstance];
-    [self clearCameraInstance];
-    [self clearDataInstance];
-    [self clearScreenInstance];
-    self.room = nil;
+    // A previous room can fail after the next room has started connecting
+    if (self.room == nil || room == self.room) {
+        // Ensure any lingering local media is cleaned up
+        [self clearAudioInstance];
+        [self clearCameraInstance];
+        [self clearDataInstance];
+        [self clearScreenInstance];
+        self.room = nil;
+    }
 
     NSMutableDictionary *body = [@{
         @"roomName": room.name ?: @"",
