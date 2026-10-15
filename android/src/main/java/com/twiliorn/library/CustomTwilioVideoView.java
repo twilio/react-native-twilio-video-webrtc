@@ -1035,6 +1035,23 @@ public class CustomTwilioVideoView extends View
             event.putBoolean("videoEnabled", enabled);
             pushEvent(CustomTwilioVideoView.this, ON_VIDEO_CHANGED, event);
         }
+        // A disabled track keeps the camera open, so release the track and capturer
+        if (!enabled) {
+            if (localVideoTrack != null) {
+                if (localParticipant != null) {
+                    localParticipant.unpublishTrack(localVideoTrack);
+                }
+                if (thumbnailVideoView != null) {
+                    localVideoTrack.removeSink(thumbnailVideoView);
+                }
+                localVideoTrack.release();
+                localVideoTrack = null;
+            }
+            if (cameraCapturer != null) {
+                cameraCapturer.stopCapture();
+                cameraCapturer = null;
+            }
+        }
     }
 
     public void toggleScreenSharing(boolean enabled) {
